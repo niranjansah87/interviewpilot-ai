@@ -21,7 +21,6 @@ const eslintConfig = [
     'next/typescript',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
-    'plugin:perfectionist/recommended-natural-errors',
   ),
   {
     ignores: ['.next/**', 'node_modules/**', 'dist/**', 'build/**'],
@@ -48,9 +47,9 @@ const eslintConfig = [
       '@typescript-eslint/await-thenable': 'error',
 
       // React
-      'react/react-in-jsx-scope': 'off', // Next.js provides JSX transform
+      'react/react-in-jsx-scope': 'off',
       'react/display-name': 'off',
-      'react/prop-types': 'off', // TypeScript covers this
+      'react/prop-types': 'off',
 
       // Unicorn
       'unicorn/filename-case': [
@@ -66,11 +65,6 @@ const eslintConfig = [
       ],
       'unicorn/no-null': 'off',
       'unicorn/prefer-string-slice': 'off',
-
-      // Perfectionism
-      'perfectionism/sort-objects': 'off',
-      'perfectionism/sort-named-imports': 'off',
-      'perfectionism/sort-named-exports': 'off',
     },
   },
 ];

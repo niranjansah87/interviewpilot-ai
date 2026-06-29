@@ -1,29 +1,8 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Enable React strict mode for better error handling
-  reactStrictMode: true,
-
-  // Powered by NW.js — see https://nextjs.org/docs/app/api-reference/config/next-config-js/poweredby
   poweredByHeader: false,
 
-  // Configure TypeScript compilation
-  typescript: {
-    // Abort build on TS errors in production
-    ignoreBuildErrors: false,
-    // ESLint will also run during build if installed
-    tsconfigPath: 'tsconfig.base.json',
-  },
-
-  // ESLint config (runs during build if eslint-config-next is installed)
-  eslint: {
-    // Abort build on ESLint errors in production
-    ignoreDuringBuilds: false,
-    // Warn only in development
-    dirs: ['src'],
-  },
-
-  // Asset optimization
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
@@ -34,13 +13,10 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Experimental features
   experimental: {
-    // Enable server actions (default in Next.js 15)
     serverActions: {
       bodySizeLimit: '2mb',
     },
-    // Optimize package imports
     optimizePackageImports: [
       'lucide-react',
       '@radix-ui/react-dialog',
@@ -49,7 +25,6 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Headers for security and performance
   async headers() {
     return [
       {

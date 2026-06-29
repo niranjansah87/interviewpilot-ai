@@ -122,3 +122,13 @@ ehthumbs.db
 .commitlintrc.json
 lint-staged.config.js
 CLAUDE.md
+graphify-out/.graphify_labels.json
+/graphify-out
+graphify-setup.ps1
+graphify-sem-cache.ps1
+graphify-detect.ps1
+graphify-detect.json
+graphify-sem-empty.ps1
+graphify-ast.ps1
+graphify-ast2.ps1
+graphify-sem-cache2.ps1
