@@ -1,0 +1,27 @@
+{
+  "sessionId": "ses_01HXYZ789EXAMPLE",
+  "overallScore": 78,
+  "communicationScore": 82,
+  "confidenceScore": 74,
+  "technicalReasoning": 80,
+  "strengths": [
+    "Clear articulation of technical decisions",
+    "Good use of specific metrics to demonstrate impact",
+    "Acknowledged trade-offs in system design choices"
+  ],
+  "weaknesses": [
+    "Tended to rush through the explanation of technical details",
+    "Did not address alternative approaches before concluding"
+  ],
+  "improvements": [
+    "Practice explaining technical concepts at a slower pace, ensuring each step is clearly articulated",
+    "When presenting a technical solution, briefly mention at least one alternative and why the chosen approach was preferred"
+  ],
+  "summary": "Alex demonstrated solid technical communication skills with clear reasoning around system design decisions. Areas for improvement include more deliberate explanation pacing and proactive consideration of alternatives.",
+  "tokenUsage": {
+    "promptTokens": 1842,
+    "completionTokens": 312,
+    "totalTokens": 2154
+  },
+  "createdAt": "2026-06-29T14:35:00Z"
+}
