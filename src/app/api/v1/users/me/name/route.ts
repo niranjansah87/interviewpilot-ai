@@ -4,26 +4,10 @@ import { getSession } from '@/lib/api/get-session';
 import { userRepository } from '@/repositories/user.repository';
 import { ValidationError } from '@/lib/errors';
 
-export async function GET(_req: NextRequest) {
-  try {
-    const session = await getSession();
-    const user = await userRepository.findById(session.id);
-
-    return apiSuccess({
-      id: user?.id ?? session.id,
-      email: user?.email ?? session.email,
-      name: user?.name ?? null,
-    });
-  } catch (error) {
-    return apiError(error);
-  }
-}
-
 export async function PATCH(req: NextRequest) {
   try {
     const session = await getSession();
-    const body = await req.json();
-    const { name } = body;
+    const { name } = await req.json();
 
     if (name !== undefined && (typeof name !== 'string' || name.length > 255)) {
       throw new ValidationError('Name must be 255 characters or fewer', 'name');
@@ -34,7 +18,7 @@ export async function PATCH(req: NextRequest) {
     return apiSuccess({
       id: user.id,
       email: user.email,
-      name: user.name ?? null,
+      name: user.name,
     });
   } catch (error) {
     return apiError(error);

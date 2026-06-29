@@ -9,6 +9,8 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import type { ConversationState, InterviewConfig, InterviewContext, ConversationTurn } from '@/lib/conversation/engine';
 import { createInterviewContext, transition, decideFollowUp, selectNextTopic } from '@/lib/conversation/engine';
 import { composeSystemPrompt, composeClosingPrompt, estimatePromptTokens } from '@/lib/conversation/prompt-engine';
+import { logger } from '@/monitoring/logger';
+const aiLogger = logger.child({ component: 'interview-session' });
 
 export interface InterviewSessionState {
   context: InterviewContext;
@@ -108,47 +110,33 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
 
       const composedPrompt = composeSystemPrompt(ctx);
 
-      // TODO: Call AI provider to create session + connect
-      // const session = await aiProvider.createRealtimeSession({
-      //   model: 'gpt-4o-realtime-preview',
-      //   instructions: composedPrompt,
-      // });
-      // const conn = await aiProvider.connectToSession(session.id, handleAIEvent);
+      // Try real AI provider
+      let connected = false;
+      let providerError = '';
+      try {
+        const { getActiveProvider } = await import('@/lib/ai/registry');
+        const { provider, name } = getActiveProvider();
+        const session = await provider.createRealtimeSession({
+          model: 'gpt-4o-realtime-preview',
+          instructions: composedPrompt,
+        });
+        const conn = await provider.connectToSession(session.id, handleAIEvent);
+        (connectionRef as React.MutableRefObject<unknown>).current = conn;
+        connected = true;
+        aiLogger.info({ msg: 'Connected via real provider', provider: name });
+      } catch (err) {
+        providerError = err instanceof Error ? err.message : String(err);
+        aiLogger.error({ msg: 'AI provider connection failed', error: providerError });
+        setError(`Voice provider unavailable: ${providerError}. Click below to try demo mode instead.`);
+        updateCtx('error');
+        setStatus('disconnected');
+        return; // Stop — do not silently fall back
+      }
 
       setStatus('connected');
       updateCtx('connected');
       setSpeaker('interviewer');
-
-      // Demo simulation: realistic interview flow
-      const intro = 'Hello! Thank you for joining me today. This will be a ' +
-        ctx.config.type + ' interview for a ' + ctx.config.targetRole + ' position. ' +
-        'I will ask you a series of questions — please take your time and answer naturally. ' +
-        'Let us begin with an introduction: tell me about your current role and what you are looking for next.';
-      addTranscription('interviewer', intro, false);
-
-      // Simulate a full conversation over time
-      const simulateTurn = (delay: number, text: string) => {
-        setTimeout(() => {
-          setSpeaker('candidate');
-          updateCtx('speech_stopped');
-          addTranscription('candidate', text, false);
-        }, delay);
-      };
-
-      const simulateResponse = (delay: number, text: string) => {
-        setTimeout(() => {
-          setSpeaker('interviewer');
-          setAiSpeaking(true);
-          addTranscription('interviewer', text, false);
-          setTimeout(() => setAiSpeaking(false), 500);
-        }, delay);
-      };
-
-      // Demo responses — simulated candidate answers
-      simulateTurn(3000, 'I am currently a ' + ctx.config.targetRole + ' with experience in building scalable systems. I am looking for a role where I can grow my leadership skills.');
-      simulateResponse(8000, 'That is interesting. Can you describe a specific project where you had to make a difficult technical decision? What were the trade-offs involved?');
-      simulateTurn(14000, 'We were migrating our monolithic application to microservices. The biggest trade-off was between development velocity and operational complexity. We chose a phased approach.');
-      simulateResponse(19000, 'A phased migration is a smart approach. How did you measure success at each phase, and were there any unexpected challenges?');
+      // Real provider connected — transcript events will come via handleAIEvent
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start interview');
       updateCtx('error');
@@ -254,6 +242,37 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
     }
   }, [startInterview]);
 
+  // ---- Demo Mode (explicit opt-in, not silent fallback) ----
+  const startDemo = useCallback(async () => {
+    const stream = await requestMic();
+    if (!stream) return;
+
+    updateCtx('start');
+    setStatus('connecting');
+    setError(null);
+
+    // Small delay to show connecting state
+    await new Promise((r) => setTimeout(r, 500));
+    setStatus('connected');
+    updateCtx('connected');
+    setSpeaker('interviewer');
+
+    const intro = 'Hello! Welcome to InterviewPilot AI Demo Mode. This is a simulated ' +
+      ctx.config.type + ' interview. The AI responses are pre-scripted for demonstration purposes. ' +
+      'Tell me about your background and experience.';
+    addTranscription('interviewer', intro, false);
+
+    // Simulated follow-ups
+    setTimeout(() => {
+      setSpeaker('candidate');
+      addTranscription('candidate', 'I have experience building full-stack applications with modern technologies. I have worked on several projects involving distributed systems and cloud architecture.', false);
+    }, 3000);
+    setTimeout(() => {
+      setSpeaker('interviewer');
+      addTranscription('interviewer', 'Interesting. Can you describe a specific project where you had to make a difficult architectural decision? What were the trade-offs you considered?', false);
+    }, 8000);
+  }, [ctx.config.type, ctx.config.targetRole, requestMic, updateCtx, addTranscription]);
+
   return {
     // State
     state: ctx.state,
@@ -271,6 +290,7 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
     // Actions
     requestMic,
     startInterview,
+    startDemoMode: startDemo,
     endInterview,
     handleReconnect,
     addTranscription,

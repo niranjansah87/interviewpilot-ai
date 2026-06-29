@@ -1,6 +1,7 @@
 /**
  * Redis cache provider — production implementation of CacheProvider.
  * Falls back to MemoryCache if Redis is unavailable.
+ * Always tries Redis first, then catches failures → memory.
  */
 
 import Redis from 'ioredis';
@@ -18,7 +19,7 @@ interface RedisCacheConfig {
 }
 
 export class RedisCache implements CacheProvider {
-  private redis: Redis | null = null;
+  private redis: Redis;
   private fallback: MemoryCache;
   private connected = false;
   private readonly prefix: string;
@@ -27,55 +28,45 @@ export class RedisCache implements CacheProvider {
     this.prefix = config.keyPrefix ?? 'ip:';
     this.fallback = new MemoryCache();
 
-    try {
-      this.redis = new Redis(config.url, {
-        maxRetriesPerRequest: config.maxRetries ?? 3,
-        lazyConnect: true,
-        enableReadyCheck: true,
-        retryStrategy(times) {
-          if (times > 5) return null; // stop retrying
-          return Math.min(times * 200, 2000);
-        },
-      });
+    this.redis = new Redis(config.url, {
+      maxRetriesPerRequest: config.maxRetries ?? 3,
+      lazyConnect: true,
+      enableReadyCheck: true,
+      retryStrategy(times) {
+        if (times > 5) return null;
+        return Math.min(times * 200, 2000);
+      },
+    });
 
-      this.redis.on('connect', () => {
-        this.connected = true;
-        cacheLogger.info({ msg: 'Redis connected' });
-      });
+    this.redis.on('connect', () => {
+      this.connected = true;
+      cacheLogger.info({ msg: 'Redis connected' });
+    });
 
-      this.redis.on('error', (err) => {
-        this.connected = false;
-        cacheLogger.warn({ msg: 'Redis error — falling back to memory cache', error: err.message });
-      });
-
-      this.redis.on('close', () => {
-        this.connected = false;
-        cacheLogger.warn({ msg: 'Redis connection closed' });
-      });
-
-      // Connect lazily — first operation will trigger connect
-      this.redis.connect().catch(() => {
-        this.connected = false;
-      });
-    } catch (error) {
-      cacheLogger.warn({ msg: 'Redis unavailable — using memory cache', error: String(error) });
-      this.redis = null;
+    this.redis.on('error', (err) => {
       this.connected = false;
-    }
+      cacheLogger.warn({ msg: 'Redis error — falling back to memory', error: err.message });
+    });
+
+    this.redis.on('close', () => {
+      this.connected = false;
+      cacheLogger.warn({ msg: 'Redis connection closed' });
+    });
+
+    this.redis.connect().then(() => {
+      this.connected = true;
+    }).catch(() => {
+      this.connected = false;
+      cacheLogger.warn({ msg: 'Redis connect failed — using memory fallback' });
+    });
   }
 
   private key(raw: string): string {
     return `${this.prefix}${raw}`;
   }
 
-  private get active(): CacheProvider {
-    return this.connected && this.redis ? this : this.fallback;
-  }
-
   async get<T>(key: string): Promise<T | null> {
     try {
-      if (!this.connected || !this.redis) return this.fallback.get<T>(key);
-
       const raw = await this.redis.get(this.key(key));
       if (!raw) return null;
       return JSON.parse(raw) as T;
@@ -86,13 +77,8 @@ export class RedisCache implements CacheProvider {
 
   async set<T>(key: string, value: T, options?: CacheOptions): Promise<void> {
     try {
-      if (!this.connected || !this.redis) {
-        return this.fallback.set(key, value, options);
-      }
-
       const serialized = JSON.stringify(value);
       const prefixedKey = this.key(key);
-
       if (options?.ttlSeconds != null && options.ttlSeconds > 0) {
         await this.redis.setex(prefixedKey, options.ttlSeconds, serialized);
       } else {
@@ -105,46 +91,38 @@ export class RedisCache implements CacheProvider {
 
   async delete(key: string): Promise<void> {
     try {
-      if (this.connected && this.redis) {
-        await this.redis.del(this.key(key));
-      }
+      await this.redis.del(this.key(key));
     } catch {
-      // Best effort
+      // best effort
     }
     await this.fallback.delete(key);
   }
 
   async deletePattern(pattern: string): Promise<void> {
     try {
-      if (this.connected && this.redis) {
-        const prefixedPattern = this.key(pattern);
-        // SCAN to avoid blocking
-        const stream = this.redis.scanStream({ match: prefixedPattern, count: 100 });
-        const pipeline = this.redis.pipeline();
+      const prefixedPattern = this.key(pattern);
+      const stream = this.redis.scanStream({ match: prefixedPattern, count: 100 });
+      const pipeline = this.redis.pipeline();
 
-        for await (const keys of stream) {
-          if (keys.length > 0) {
-            pipeline.del(...(keys as string[]));
-          }
+      for await (const keys of stream) {
+        if (keys.length > 0) {
+          pipeline.del(...(keys as string[]));
         }
-        await pipeline.exec();
       }
+      await pipeline.exec();
     } catch {
-      // Best effort
+      // best effort
     }
     await this.fallback.deletePattern(pattern);
   }
 
   async exists(key: string): Promise<boolean> {
     try {
-      if (this.connected && this.redis) {
-        const result = await this.redis.exists(this.key(key));
-        return result === 1;
-      }
+      const result = await this.redis.exists(this.key(key));
+      return result === 1;
     } catch {
-      // fall through
+      return this.fallback.exists(key);
     }
-    return this.fallback.exists(key);
   }
 
   async getOrSet<T>(
@@ -160,19 +138,11 @@ export class RedisCache implements CacheProvider {
     return value;
   }
 
-  /**
-   * Get cache health metrics.
-   */
   async getMetrics(): Promise<Record<string, unknown>> {
     try {
-      if (this.connected && this.redis) {
-        const info = await this.redis.info('stats');
+      if (this.connected) {
         const dbsize = await this.redis.dbsize();
-        return {
-          connected: true,
-          dbSize: dbsize,
-          info: info.substring(0, 500), // Truncate for logging
-        };
+        return { connected: true, dbSize: dbsize };
       }
     } catch {
       // fall through
@@ -180,9 +150,6 @@ export class RedisCache implements CacheProvider {
     return { connected: false, fallback: 'memory', memorySize: this.fallback.size };
   }
 
-  /**
-   * Gracefully close Redis connection.
-   */
   async disconnect(): Promise<void> {
     if (this.redis) {
       await this.redis.quit();

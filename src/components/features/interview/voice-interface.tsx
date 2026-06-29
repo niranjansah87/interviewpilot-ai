@@ -28,6 +28,7 @@ interface VoiceInterfaceProps {
   onEnd: () => void;
   onReconnect: () => void;
   onRequestMic: () => Promise<MediaStream | null>;
+  onStartDemo?: () => void;
 }
 
 export function VoiceInterface({
@@ -44,6 +45,7 @@ export function VoiceInterface({
   onEnd,
   onReconnect,
   onRequestMic,
+  onStartDemo,
 }: VoiceInterfaceProps) {
   const transcriptRef = useRef<HTMLDivElement>(null);
 
@@ -256,6 +258,11 @@ export function VoiceInterface({
                 >
                   Retry Connection
                 </Button>
+                {onStartDemo && (
+                  <Button variant="ghost" size="sm" className="mt-3 ml-3" onClick={onStartDemo}>
+                    Try Demo Mode
+                  </Button>
+                )}
               </div>
             </div>
           </Card>

@@ -97,6 +97,7 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
           onEnd={voiceSession.endInterview}
           onReconnect={voiceSession.handleReconnect}
           onRequestMic={voiceSession.requestMic}
+          onStartDemo={voiceSession.startDemoMode}
         />
       </div>
     );

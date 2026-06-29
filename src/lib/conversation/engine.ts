@@ -36,8 +36,8 @@ export type ConversationEvent =
 const TRANSITIONS: Record<ConversationState, Partial<Record<ConversationEvent, ConversationState>>> = {
   idle:          { start: 'initializing' },
   initializing:  { connected: 'listening', error: 'failed' },
-  listening:     { speech_started: 'listening', speech_stopped: 'processing', timeout: 'completing', error: 'failed' },
-  processing:    { response_started: 'responding', error: 'failed' },
+  listening:     { speech_started: 'listening', speech_stopped: 'processing', timeout: 'completing', error: 'failed', connected: 'listening' },
+  processing:    { response_started: 'responding', speech_stopped: 'processing', error: 'failed' },
   responding:    { response_completed: 'listening', speech_started: 'processing', timeout: 'completing', error: 'failed' },
   completing:    { end: 'completed', error: 'failed' },
   completed:     {},
@@ -47,7 +47,9 @@ const TRANSITIONS: Record<ConversationState, Partial<Record<ConversationEvent, C
 export function transition(current: ConversationState, event: ConversationEvent): ConversationState {
   const next = TRANSITIONS[current]?.[event];
   if (!next) {
-    throw new Error(`Invalid transition: ${current} → ${event}`);
+    // Graceful: return current state for unknown transitions
+    // Prevents crashes during race conditions (e.g., speech_stopped during processing)
+    return current;
   }
   return next;
 }

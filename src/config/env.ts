@@ -28,6 +28,14 @@ const envSchema = z.object({
   OPENAI_API_KEY: z.string().min(1),
   OPENAI_REALTIME_MODEL: z.string().min(1),
 
+  // ElevenLabs voice AI
+  ELEVENLABS_API_KEY: z.string().optional(),
+  ELEVENLABS_AGENT_ID: z.string().optional(),
+
+  // Voice provider selection
+  VOICE_PROVIDER: z.enum(['elevenlabs', 'openai', 'mock']).default('elevenlabs'),
+  VOICE_FALLBACK_PROVIDER: z.enum(['elevenlabs', 'openai', 'mock']).default('mock'),
+
   // Cache
   CACHE_PROVIDER: z.enum(['memory', 'redis']).default('memory'),
   REDIS_URL: z.string().url().optional(),
