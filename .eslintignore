@@ -1,0 +1,11 @@
+.next
+node_modules
+dist
+build
+coverage
+.turbo
+.cache
+*.config.js
+*.config.ts
+next-env.d.ts
+vitest.config.ts

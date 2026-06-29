@@ -1,0 +1,10 @@
+{
+  "id": "usr_01HXYZ123EXAMPLE",
+  "email": "alex.johnson@example.com",
+  "name": "Alex Johnson",
+  "role": "Senior Software Engineer",
+  "experienceYears": 5,
+  "targetRoles": ["Staff Engineer", "Tech Lead"],
+  "interviewTypes": ["behavioral", "technical"],
+  "createdAt": "2026-01-15T09:00:00Z"
+}

@@ -26,8 +26,7 @@ EXECUTIVE_SUMMARY.md
 KNOWN_LIMITATIONS.md
 TRADEOFFS.md
 WHY_THIS_ARCHITECTURE.md
-
-
+PRD.md
 
 # --------------------------------------------
 # Local planning artifacts
@@ -48,7 +47,8 @@ CLAUDE.local.md
 .env
 .env.local
 .env.*.local
-.env.example
+.env.production
+.env.staging
 *.pem
 *.key
 
@@ -85,6 +85,9 @@ pnpm-debug.log*
 coverage/
 .nyc_output/
 *.lcov
+playwright-report/
+test-results/
+*.trace
 
 # --------------------------------------------
 # OS artifacts
@@ -101,7 +104,6 @@ ehthumbs.db
 *.swp
 *.swo
 *~
-.vscode/
 .vs/
 *.sublime-*
 
@@ -111,4 +113,12 @@ ehthumbs.db
 *.tsbuildinfo
 *.eslintcache
 .stylelintcache
+
+# --------------------------------------------
+# Local tooling (team-specific, not committed)
+# --------------------------------------------
+.vscode/
+.husky/
+.commitlintrc.json
+lint-staged.config.js
 CLAUDE.md
