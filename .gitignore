@@ -1,0 +1,114 @@
+# ============================================
+# InterviewPilot AI — .gitignore
+# ============================================
+# Organized into sections for clarity.
+# Keep internal planning and Claude artifacts private.
+
+# --------------------------------------------
+# Claude & AI tooling
+# --------------------------------------------
+.claude/
+.code-review-graph/
+
+# --------------------------------------------
+# Internal documentation (private)
+# --------------------------------------------
+docs/internal/
+docs/research/
+docs/meeting-notes/
+docs/screenshots/
+docs/assets/
+
+# Internal planning files (explicit — safeguard if recreated at root)
+ASSUMPTIONS.md
+ENGINEERING_JOURNAL.md
+EXECUTIVE_SUMMARY.md
+KNOWN_LIMITATIONS.md
+TRADEOFFS.md
+WHY_THIS_ARCHITECTURE.md
+
+
+
+# --------------------------------------------
+# Local planning artifacts
+# --------------------------------------------
+TODO.md
+NOTES.md
+MEMORY.md
+PROJECT_PLAN.md
+AGENT.md
+RETROSPECTIVE.md
+TECH_DEBT.md
+LEARNINGS.md
+CLAUDE.local.md
+
+# --------------------------------------------
+# Environment & secrets
+# --------------------------------------------
+.env
+.env.local
+.env.*.local
+.env.example
+*.pem
+*.key
+
+# --------------------------------------------
+# Dependencies
+# --------------------------------------------
+node_modules/
+.pnpm-store/
+.vendor/
+vendor/
+
+# --------------------------------------------
+# Build outputs
+# --------------------------------------------
+.next/
+out/
+dist/
+build/
+.turbo/
+.cache/
+
+# --------------------------------------------
+# Logs
+# --------------------------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --------------------------------------------
+# Testing
+# --------------------------------------------
+coverage/
+.nyc_output/
+*.lcov
+
+# --------------------------------------------
+# OS artifacts
+# --------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# --------------------------------------------
+# IDE
+# --------------------------------------------
+.idea/
+*.swp
+*.swo
+*~
+.vscode/
+.vs/
+*.sublime-*
+
+# --------------------------------------------
+# Misc
+# --------------------------------------------
+*.tsbuildinfo
+*.eslintcache
+.stylelintcache
+CLAUDE.md

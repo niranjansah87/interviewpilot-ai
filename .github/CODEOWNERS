@@ -1,0 +1,21 @@
+# Code Owners
+#
+# This file defines which individuals or teams are responsible for specific parts of the repository.
+# When a pull request modifies a particular path, the corresponding owner(s)
+# will be automatically requested to review the changes.
+
+# Default owner (all files not matched by more specific rules)
+* @NiranjanDevX
+
+# Engineering documentation
+docs/engineering/** @NiranjanDevX
+docs/decisions/** @NiranjanDevX
+
+# Product documentation
+docs/product/** @NiranjanDevX
+
+# GitHub configuration
+.github/** @NiranjanDevX
+
+# Root-level Markdown files
+*.md @NiranjanDevX
