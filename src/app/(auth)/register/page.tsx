@@ -31,7 +31,7 @@ export default function RegisterPage() {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.detail ?? 'Registration failed.'); return; }
-      router.push('/');
+      router.push('/dashboard');
     } catch { setError('Network error.'); }
     finally { setLoading(false); }
   };

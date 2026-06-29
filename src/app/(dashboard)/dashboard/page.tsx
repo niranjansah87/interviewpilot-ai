@@ -23,7 +23,7 @@ export default function DashboardPage() {
           <p className="mt-1 text-muted-foreground">Ready for your next practice session?</p>
         </div>
         <Button asChild size="lg" className="gap-2">
-          <Link href="/interviews/new">Start Interview <ArrowRight className="h-4 w-4" /></Link>
+          <Link href="/dashboard/interviews/new">Start Interview <ArrowRight className="h-4 w-4" /></Link>
         </Button>
       </div>
 
@@ -58,7 +58,7 @@ export default function DashboardPage() {
               <CardDescription>Your latest practice sessions</CardDescription>
             </div>
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/interviews">View all</Link>
+              <Link href="/dashboard/interviews">View all</Link>
             </Button>
           </CardHeader>
           <CardContent>

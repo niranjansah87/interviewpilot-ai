@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useTheme } from '@/providers/theme-provider';
+import { useTheme } from 'next-themes';
 import { Label } from '@/components/ui/label';
 
 export default function SettingsPage() {

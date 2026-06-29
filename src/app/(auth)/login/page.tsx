@@ -30,7 +30,7 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.detail ?? 'Invalid email or password.'); return; }
-      router.push('/');
+      router.push('/dashboard');
     } catch { setError('Network error. Please check your connection.'); }
     finally { setLoading(false); }
   };

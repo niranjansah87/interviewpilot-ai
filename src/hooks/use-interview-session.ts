@@ -117,9 +117,38 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
 
       setStatus('connected');
       updateCtx('connected');
+      setSpeaker('interviewer');
 
-      // For now, simulate with a mock
-      addTranscription('interviewer', 'Hello! Thank you for joining me today.', false);
+      // Demo simulation: realistic interview flow
+      const intro = 'Hello! Thank you for joining me today. This will be a ' +
+        ctx.config.type + ' interview for a ' + ctx.config.targetRole + ' position. ' +
+        'I will ask you a series of questions — please take your time and answer naturally. ' +
+        'Let us begin with an introduction: tell me about your current role and what you are looking for next.';
+      addTranscription('interviewer', intro, false);
+
+      // Simulate a full conversation over time
+      const simulateTurn = (delay: number, text: string) => {
+        setTimeout(() => {
+          setSpeaker('candidate');
+          updateCtx('speech_stopped');
+          addTranscription('candidate', text, false);
+        }, delay);
+      };
+
+      const simulateResponse = (delay: number, text: string) => {
+        setTimeout(() => {
+          setSpeaker('interviewer');
+          setAiSpeaking(true);
+          addTranscription('interviewer', text, false);
+          setTimeout(() => setAiSpeaking(false), 500);
+        }, delay);
+      };
+
+      // Demo responses — simulated candidate answers
+      simulateTurn(3000, 'I am currently a ' + ctx.config.targetRole + ' with experience in building scalable systems. I am looking for a role where I can grow my leadership skills.');
+      simulateResponse(8000, 'That is interesting. Can you describe a specific project where you had to make a difficult technical decision? What were the trade-offs involved?');
+      simulateTurn(14000, 'We were migrating our monolithic application to microservices. The biggest trade-off was between development velocity and operational complexity. We chose a phased approach.');
+      simulateResponse(19000, 'A phased migration is a smart approach. How did you measure success at each phase, and were there any unexpected challenges?');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start interview');
       updateCtx('error');

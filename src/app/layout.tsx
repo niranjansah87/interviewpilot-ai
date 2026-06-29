@@ -18,38 +18,21 @@ export const metadata: Metadata = {
   },
   description:
     'AI-powered voice interview platform that simulates realistic technical and behavioral interviews through dynamic conversations.',
-  keywords: [
-    'interview',
-    'AI',
-    'mock interview',
-    'voice interview',
-    'practice interview',
-    'interview preparation',
-  ],
   authors: [{ name: 'Niranjan Sah' }],
   creator: 'Niranjan Sah',
   openGraph: {
     type: 'website',
     siteName: 'InterviewPilot AI',
     title: 'InterviewPilot AI',
-    description:
-      'AI-powered voice interview platform that simulates realistic interviews.',
+    description: 'AI-powered voice interview platform that simulates realistic interviews.',
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'InterviewPilot AI',
-    description: 'AI-powered voice interview platform.',
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#2563eb' },
-    { media: '(prefers-color-scheme: dark)', color: '#1d4ed8' },
+    { media: '(prefers-color-scheme: light)', color: 'hsl(224 71% 48%)' },
+    { media: '(prefers-color-scheme: dark)', color: 'hsl(224 71% 45%)' },
   ],
 };
 
@@ -61,12 +44,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>
-        <QueryProvider>
-          <ThemeProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <QueryProvider>
             {children}
             <Toaster />
-          </ThemeProvider>
-        </QueryProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

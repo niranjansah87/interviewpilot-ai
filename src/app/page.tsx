@@ -30,10 +30,9 @@ export default function LandingPage() {
       {/* ---- Header ---- */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo_dark.png" alt="InterviewPilot AI" width={32} height={32} className="hidden dark:block" />
-            <Image src="/logo_light.png" alt="InterviewPilot AI" width={32} height={32} className="block dark:hidden" />
-            <span className="text-sm font-semibold tracking-tight">InterviewPilot</span>
+          <Link href="/" className="flex items-center">
+            <Image src="/logo_dark.png" alt="InterviewPilot AI" width={40} height={40} className="hidden dark:block" />
+            <Image src="/logo_light.png" alt="InterviewPilot AI" width={40} height={40} className="block dark:hidden" />
           </Link>
           <nav className="flex items-center gap-3">
             <Link href="/login" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Sign in</Link>

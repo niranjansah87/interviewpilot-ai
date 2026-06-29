@@ -13,7 +13,7 @@ import type { NextRequest } from 'next/server';
  */
 
 const AUTH_PATHS = ['/login', '/register'];
-const PROTECTED_PATHS = ['/interviews', '/profile', '/settings'];
+const PROTECTED_PREFIXES = ['/dashboard'];
 
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -36,10 +36,10 @@ export default function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirect unauthenticated users away from protected paths
   const hasAuth = request.cookies.has('ip_access_token');
 
-  if (!hasAuth && PROTECTED_PATHS.some((p) => pathname.startsWith(p))) {
+  // Redirect unauthenticated users to login for protected paths
+  if (!hasAuth && PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
     loginUrl.searchParams.set('redirect', pathname);
