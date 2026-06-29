@@ -13,12 +13,13 @@ import {
   Menu,
   X,
 } from 'lucide-react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/interviews', label: 'Interviews', icon: History },
   { href: '/interviews/new', label: 'New Interview', icon: Mic },
   { href: '/profile', label: 'Profile', icon: User },
@@ -32,13 +33,14 @@ export function Sidebar() {
   const sidebarContent = (
     <div className="flex h-full flex-col">
       <div className="flex h-14 items-center gap-2 px-6">
-        <Mic className="h-5 w-5 text-primary" />
-        <span className="font-semibold">InterviewPilot</span>
+        <Image src="/logo_dark.png" alt="" width={24} height={24} className="hidden dark:block" />
+        <Image src="/logo_light.png" alt="" width={24} height={24} className="block dark:hidden" />
+        <span className="font-semibold tracking-tight">InterviewPilot</span>
       </div>
       <Separator />
       <nav className="flex-1 space-y-1 px-3 py-4">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
+          const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
           return (
             <Link
               key={href}

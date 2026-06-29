@@ -13,7 +13,7 @@ import type { NextRequest } from 'next/server';
  */
 
 const AUTH_PATHS = ['/login', '/register'];
-const PROTECTED_PATHS = ['/dashboard', '/settings'];
+const PROTECTED_PATHS = ['/interviews', '/profile', '/settings'];
 
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

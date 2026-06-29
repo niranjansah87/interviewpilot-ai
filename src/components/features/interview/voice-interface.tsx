@@ -98,8 +98,15 @@ export function VoiceInterface({
             className="text-center"
           >
             <div className="mb-6 flex items-center justify-center">
-              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
-                <Mic className="h-10 w-10 text-primary" />
+              <div className="relative flex h-24 w-24 items-center justify-center">
+                <motion.div
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0, 0.3] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                  className="absolute inset-0 rounded-full bg-primary/20"
+                />
+                <div className="relative z-10 flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
+                  <Mic className="h-10 w-10 text-primary" />
+                </div>
               </div>
             </div>
             <h2 className="text-2xl font-bold tracking-tight">Ready to interview?</h2>
