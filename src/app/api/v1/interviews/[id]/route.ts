@@ -1,30 +1,32 @@
-/**
- * GET /api/v1/interviews/:id
- * PATCH /api/v1/interviews/:id
- * DELETE /api/v1/interviews/:id
- *
- * TODO: Implement in Phase 3.
- */
+import { NextRequest } from 'next/server';
+import { apiSuccess, apiError } from '@/lib/api/route-helpers';
+import { getSession } from '@/lib/api/get-session';
+import { interviewService } from '@/services/interview.service';
 
-import { NextResponse } from 'next/server';
-
-export async function GET() {
-  return NextResponse.json(
-    { detail: 'Not yet implemented', code: 'NOT_IMPLEMENTED' },
-    { status: 501 },
-  );
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const session = await getSession();
+    const { id } = await params;
+    const interview = await interviewService.getById(id, session.id);
+    return apiSuccess(interview);
+  } catch (error) {
+    return apiError(error);
+  }
 }
 
-export async function PATCH() {
-  return NextResponse.json(
-    { detail: 'Not yet implemented', code: 'NOT_IMPLEMENTED' },
-    { status: 501 },
-  );
-}
-
-export async function DELETE() {
-  return NextResponse.json(
-    { detail: 'Not yet implemented', code: 'NOT_IMPLEMENTED' },
-    { status: 501 },
-  );
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const session = await getSession();
+    const { id } = await params;
+    const result = await interviewService.delete(id, session.id);
+    return apiSuccess(result);
+  } catch (error) {
+    return apiError(error);
+  }
 }

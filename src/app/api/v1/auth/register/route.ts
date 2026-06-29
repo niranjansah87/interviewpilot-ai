@@ -1,18 +1,23 @@
-/**
- * POST /api/v1/auth/register
- *
- * TODO: Implement in Phase 3 (Authentication feature).
- * This is a placeholder that returns 501.
- */
+import { NextRequest } from 'next/server';
+import { authService } from '@/services/auth.service';
+import { registerSchema } from '@/validators/common';
+import { apiSuccess, apiError, ValidationError } from '@/lib/api/route-helpers';
 
-import { NextResponse } from 'next/server';
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const parsed = registerSchema.safeParse(body);
 
-export async function POST() {
-  return NextResponse.json(
-    {
-      detail: 'Not yet implemented',
-      code: 'NOT_IMPLEMENTED',
-    },
-    { status: 501 },
-  );
+    if (!parsed.success) {
+      throw new ValidationError(
+        parsed.error.issues[0]?.message ?? 'Invalid input',
+        parsed.error.issues[0]?.path.join('.'),
+      );
+    }
+
+    const user = await authService.register(parsed.data);
+    return apiSuccess(user, 201);
+  } catch (error) {
+    return apiError(error);
+  }
 }

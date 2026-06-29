@@ -14,13 +14,13 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient(): PrismaClient {
-  const logOptions =
+  const logLevels: Array<'query' | 'info' | 'warn' | 'error'> =
     process.env.NODE_ENV === 'development'
       ? ['query', 'error', 'warn']
       : ['error'];
 
   return new PrismaClient({
-    log: logOptions,
+    log: logLevels,
   });
 }
 

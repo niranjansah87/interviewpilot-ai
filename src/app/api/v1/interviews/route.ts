@@ -1,28 +1,33 @@
-/**
- * GET /api/v1/interviews
- * POST /api/v1/interviews
- *
- * TODO: Implement in Phase 3 (Interview feature).
- */
+import { NextRequest } from 'next/server';
+import { apiSuccess, apiError } from '@/lib/api/route-helpers';
+import { getSession } from '@/lib/api/get-session';
+import { interviewService } from '@/services/interview.service';
 
-import { NextResponse } from 'next/server';
-
-export async function GET() {
-  return NextResponse.json(
-    {
-      detail: 'Not yet implemented',
-      code: 'NOT_IMPLEMENTED',
-    },
-    { status: 501 },
-  );
+export async function POST(req: NextRequest) {
+  try {
+    const session = await getSession();
+    const body = await req.json();
+    const interview = await interviewService.create({
+      userId: session.id,
+      type: body.type ?? 'BEHAVIORAL',
+      targetRole: body.targetRole,
+      experienceLevel: body.experienceLevel,
+    });
+    return apiSuccess(interview, 201);
+  } catch (error) {
+    return apiError(error);
+  }
 }
 
-export async function POST() {
-  return NextResponse.json(
-    {
-      detail: 'Not yet implemented',
-      code: 'NOT_IMPLEMENTED',
-    },
-    { status: 501 },
-  );
+export async function GET(req: NextRequest) {
+  try {
+    const session = await getSession();
+    const url = new URL(req.url);
+    const page = parseInt(url.searchParams.get('page') ?? '1', 10);
+    const limit = parseInt(url.searchParams.get('limit') ?? '10', 10);
+    const result = await interviewService.list(session.id, page, limit);
+    return apiSuccess(result);
+  } catch (error) {
+    return apiError(error);
+  }
 }

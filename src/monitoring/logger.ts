@@ -1,5 +1,5 @@
 /**
- * Structured logger using Pino.
+ * Structured logger using Pino v10.
  * All application logging goes through this module.
  * Never use console.log in application code.
  */
@@ -13,7 +13,6 @@ export { pino };
 
 /**
  * Base logger instance.
- * Child loggers are created per-request with request context.
  */
 export const logger = pino({
   level: process.env.LOG_LEVEL ?? (isTest ? 'silent' : 'info'),
@@ -33,7 +32,6 @@ export const logger = pino({
 
 /**
  * Create a child logger with additional context fields.
- * Use for request-scoped logging.
  */
 export function createRequestLogger(context: Record<string, unknown>) {
   return logger.child(context);
@@ -47,25 +45,15 @@ export function createServiceLogger(service: string) {
 }
 
 /**
- * Log levels:
- * - fatal: system is unusable (not used in app code)
- * - error: errors that need attention
- * - warn:  warnings (rate limits, degraded states)
- * - info:  significant events (user actions, state changes)
- * - debug: detailed diagnostic info (dev only)
- * - trace: very detailed (never in production)
+ * Log helpers using Pino v10 object-first API.
  */
 export const log = {
-  fatal: (msg: string, extra?: Record<string, unknown>) =>
-    logger.fatal({ ...extra, msg }),
+  info: (msg: string, extra?: Record<string, unknown>) =>
+    logger.info({ ...extra, msg }),
   error: (msg: string, extra?: Record<string, unknown>) =>
     logger.error({ ...extra, msg }),
   warn: (msg: string, extra?: Record<string, unknown>) =>
     logger.warn({ ...extra, msg }),
-  info: (msg: string, extra?: Record<string, unknown>) =>
-    logger.info({ ...extra, msg }),
   debug: (msg: string, extra?: Record<string, unknown>) =>
     logger.debug({ ...extra, msg }),
-  trace: (msg: string, extra?: Record<string, unknown>) =>
-    logger.trace({ ...extra, msg }),
 };
