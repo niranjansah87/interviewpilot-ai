@@ -26,11 +26,11 @@ function validate(): Env {
   const result = envSchema.safeParse(process.env);
 
   if (!result.success) {
-    const errors = result.error.errors
+    const issues = result.error.issues
       .map((e) => `  - ${e.path.join('.')}: ${e.message}`)
       .join('\n');
 
-    console.error('❌ Environment validation failed:\n' + errors);
+    console.error('❌ Environment validation failed:\n' + issues);
     process.exit(1);
   }
 

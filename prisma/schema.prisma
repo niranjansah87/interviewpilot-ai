@@ -1,0 +1,142 @@
+// This is your Prisma schema file.
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// Enums
+// ============================================================================
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum InterviewStatus {
+  CREATED
+  READY
+  ACTIVE
+  COMPLETED
+  FAILED
+}
+
+enum InterviewType {
+  BEHAVIORAL
+  TECHNICAL
+  MIXED
+}
+
+enum ExperienceLevel {
+  JUNIOR
+  MID
+  SENIOR
+}
+
+enum TranscriptRole {
+  INTERVIEWER
+  CANDIDATE
+}
+
+// ============================================================================
+// Models
+// ============================================================================
+
+/// User account.
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  name         String?  @db.VarChar(255)
+  role         UserRole @default(USER)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sessions     InterviewSession[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+/// Interview session.
+model InterviewSession {
+  id               String          @id @default(cuid())
+  userId           String          @map("user_id")
+  type             InterviewType    @default(BEHAVIORAL)
+  targetRole       String?         @map("target_role") @db.VarChar(100)
+  experienceLevel  ExperienceLevel? @map("experience_level")
+  status           InterviewStatus  @default(CREATED)
+  startedAt        DateTime?       @map("started_at")
+  endedAt          DateTime?       @map("ended_at")
+  durationSeconds  Int?             @map("duration_seconds")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transcript TranscriptEntry[]
+  feedback  FeedbackReport?
+
+  @@index([userId])
+  @@index([status])
+  @@map("interview_sessions")
+}
+
+/// Individual transcript entry from a conversation turn.
+model TranscriptEntry {
+  id        String       @id @default(cuid())
+  sessionId String       @map("session_id")
+  role      TranscriptRole
+  content   String       @db.Text
+  audioUrl  String?      @map("audio_url") @db.VarChar(500)
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  session InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([sessionId, createdAt])
+  @@map("transcript_entries")
+}
+
+/// AI-generated feedback report for an interview session.
+model FeedbackReport {
+  id                  String   @id @default(cuid())
+  sessionId           String   @unique @map("session_id")
+  overallScore        Int      @map("overall_score") // 0–100
+  communicationScore  Int      @map("communication_score")
+  confidenceScore     Int      @map("confidence_score")
+  technicalReasoning  Int?     @map("technical_reasoning")
+  strengths           Json     @default("[]")
+  weaknesses          Json     @default("[]")
+  improvements        Json     @default("[]")
+  summary             String   @db.Text
+
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  session InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("feedback_reports")
+}
+
+/// Refresh tokens for JWT rotation.
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  tokenHash String   @map("token_hash") @db.VarChar(255)
+  expiresAt DateTime @map("expires_at")
+  revoked   Boolean  @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
