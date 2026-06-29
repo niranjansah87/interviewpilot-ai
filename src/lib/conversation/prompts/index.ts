@@ -3,15 +3,28 @@
  * Each prompt is a named, versioned module for future A/B testing.
  */
 
-export { INTERVIEWER_PERSONA, INTERVIEWER_CLOSING } from './interviewer-persona';
-export { BEHAVIORAL_PROMPT } from './behavioral';
-export { TECHNICAL_PROMPT } from './technical';
-export { SYSTEM_DESIGN_PROMPT } from './system-design';
-export { FRONTEND_PROMPT } from './frontend';
-export { BACKEND_PROMPT } from './backend';
-export { FULLSTACK_PROMPT } from './fullstack';
-export { DEVOPS_PROMPT } from './devops';
-export { FEEDBACK_ANALYSIS_PROMPT } from './feedback';
+import { INTERVIEWER_PERSONA, INTERVIEWER_CLOSING } from './interviewer-persona';
+import { BEHAVIORAL_PROMPT } from './behavioral';
+import { TECHNICAL_PROMPT } from './technical';
+import { SYSTEM_DESIGN_PROMPT } from './system-design';
+import { FRONTEND_PROMPT } from './frontend';
+import { BACKEND_PROMPT } from './backend';
+import { FULLSTACK_PROMPT } from './fullstack';
+import { DEVOPS_PROMPT } from './devops';
+import { FEEDBACK_ANALYSIS_PROMPT } from './feedback';
+
+export {
+  INTERVIEWER_PERSONA,
+  INTERVIEWER_CLOSING,
+  BEHAVIORAL_PROMPT,
+  TECHNICAL_PROMPT,
+  SYSTEM_DESIGN_PROMPT,
+  FRONTEND_PROMPT,
+  BACKEND_PROMPT,
+  FULLSTACK_PROMPT,
+  DEVOPS_PROMPT,
+  FEEDBACK_ANALYSIS_PROMPT,
+};
 
 import type { InterviewConfig } from '../engine';
 
