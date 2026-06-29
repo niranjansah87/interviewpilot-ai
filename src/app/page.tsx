@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Mic, BarChart3, Zap, Shield, Sparkles, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useRef } from 'react';
 
 const features = [
@@ -27,14 +28,16 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background" ref={ref}>
-      {/* ---- Header ---- */}
+{/* ---- Header ---- */}
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center">
-            <Image src="/logo_dark.png" alt="InterviewPilot AI" width={40} height={40} className="hidden dark:block" />
-            <Image src="/logo_light.png" alt="InterviewPilot AI" width={40} height={40} className="block dark:hidden" />
+          <Link href="/" className="group relative flex items-center">
+            <div className="absolute -inset-2 rounded-xl bg-primary/0 transition-all duration-300 group-hover:bg-primary/5" />
+            <Image src="/logo_dark.png" alt="InterviewPilot AI" width={65} height={65} className="relative hidden dark:block transition-transform duration-300 group-hover:scale-110" />
+            <Image src="/logo_light.png" alt="InterviewPilot AI" width={65} height={65} className="relative block dark:hidden transition-transform duration-300 group-hover:scale-110" />
           </Link>
           <nav className="flex items-center gap-3">
+            <ThemeToggle />
             <Link href="/login" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Sign in</Link>
             <Button asChild size="sm" className="gap-1.5">
               <Link href="/register">Get started <ChevronRight className="h-3.5 w-3.5" /></Link>

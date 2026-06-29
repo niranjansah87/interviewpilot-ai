@@ -30,7 +30,7 @@ This document serves as the index and summary of all Architecture Decision Recor
 
 ### ADR-0001: Next.js as Frontend Framework
 
-**Decision:** Use Next.js 15 with App Router and Route Handlers as the API layer.
+**Decision:** Use Next.js 16 with App Router and Route Handlers as the API layer.
 
 **Key Rationale:** Single deployment unit, Server Components for improved performance, Vercel integration, and team's familiarity with Next.js.
 

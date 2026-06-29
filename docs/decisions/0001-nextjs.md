@@ -14,7 +14,7 @@ We evaluated Next.js, Remix, and a plain Vite + React SPA.
 
 ## Decision
 
-**Use Next.js 15** with the App Router, React Server Components, and Route Handlers as the API layer.
+**Use Next.js 16** with the App Router, React Server Components, and Route Handlers as the API layer.
 
 ## Rationale
 

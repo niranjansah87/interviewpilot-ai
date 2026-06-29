@@ -41,9 +41,8 @@ export default function LoginPage() {
       <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-muted/30 p-12 lg:flex">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,hsl(var(--primary)/0.08),transparent_60%)]" />
         <Link href="/" className="relative z-10 flex items-center gap-2">
-          <Image src="/logo_dark.png" alt="" width={36} height={36} className="hidden dark:block" />
-          <Image src="/logo_light.png" alt="" width={36} height={36} className="block dark:hidden" />
-          <span className="text-lg font-bold tracking-tight">InterviewPilot AI</span>
+          <Image src="/logo_dark.png" alt="" width={70} height={70} className="hidden dark:block transition-transform duration-300 hover:scale-110" />
+          <Image src="/logo_light.png" alt="" width={70} height={70} className="block dark:hidden transition-transform duration-300 hover:scale-110" />
         </Link>
 
         <div className="relative z-10">
@@ -72,9 +71,8 @@ export default function LoginPage() {
         >
           <div className="mb-8 lg:hidden">
             <Link href="/" className="flex items-center gap-2">
-              <Image src="/logo_dark.png" alt="" width={28} height={28} className="hidden dark:block" />
-              <Image src="/logo_light.png" alt="" width={28} height={28} className="block dark:hidden" />
-              <span className="font-semibold">InterviewPilot</span>
+              <Image src="/logo_dark.png" alt="" width={40} height={40} className="hidden dark:block transition-transform duration-300 hover:scale-110" />
+              <Image src="/logo_light.png" alt="" width={40} height={40} className="block dark:hidden transition-transform duration-300 hover:scale-110" />
             </Link>
           </div>
 
