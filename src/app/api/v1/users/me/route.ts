@@ -1,17 +1,19 @@
-/**
- * GET /api/v1/users/me
- *
- * TODO: Implement in Phase 3 (Authentication feature).
- */
+import { type NextRequest } from 'next/server';
+import { apiSuccess, apiError } from '@/lib/api/route-helpers';
+import { getSession } from '@/lib/api/get-session';
+import { userRepository } from '@/repositories/user.repository';
 
-import { NextResponse } from 'next/server';
+export async function GET(_req: NextRequest) {
+  try {
+    const session = await getSession();
+    const user = await userRepository.findById(session.id);
 
-export async function GET() {
-  return NextResponse.json(
-    {
-      detail: 'Not yet implemented',
-      code: 'NOT_IMPLEMENTED',
-    },
-    { status: 501 },
-  );
+    return apiSuccess({
+      id: user?.id ?? session.id,
+      email: user?.email ?? session.email,
+      name: user?.name ?? null,
+    });
+  } catch (error) {
+    return apiError(error);
+  }
 }

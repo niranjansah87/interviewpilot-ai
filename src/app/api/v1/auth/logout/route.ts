@@ -1,17 +1,18 @@
-/**
- * POST /api/v1/auth/logout
- *
- * TODO: Implement in Phase 3 (Authentication feature).
- */
+import { type NextRequest } from 'next/server';
+import { authService } from '@/services/auth.service';
+import { apiSuccess, apiError } from '@/lib/api/route-helpers';
+import { clearAuthCookies, getRefreshToken } from '@/lib/auth/cookies';
 
-import { NextResponse } from 'next/server';
-
-export async function POST() {
-  return NextResponse.json(
-    {
-      detail: 'Not yet implemented',
-      code: 'NOT_IMPLEMENTED',
-    },
-    { status: 501 },
-  );
+export async function POST(_req: NextRequest) {
+  try {
+    const token = await getRefreshToken();
+    if (token) {
+      await authService.logout(token);
+    }
+    await clearAuthCookies();
+    return apiSuccess({ message: 'Logged out successfully' });
+  } catch {
+    await clearAuthCookies();
+    return apiSuccess({ message: 'Logged out successfully' });
+  }
 }

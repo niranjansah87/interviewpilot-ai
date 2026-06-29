@@ -1,21 +1,14 @@
-import { Separator } from '@/components/ui/separator';
+import { Sidebar } from '@/components/features/dashboard/sidebar';
+import { Header } from '@/components/features/dashboard/header';
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Minimal dashboard shell — real implementation in Phase 3 */}
-      <header className="border-b border-border px-6 py-4">
-        <div className="mx-flex mx-max-w-5xl mx-flex mx-items-center mx-justify-between">
-          <span className="font-bold">InterviewPilot</span>
-        </div>
-      </header>
-      <main className="flex-1 px-6 py-8">
-        <div className="mx-max-w-5xl">{children}</div>
-      </main>
+    <div className="flex min-h-screen">
+      <Sidebar />
+      <div className="flex flex-1 flex-col">
+        <Header />
+        <main className="flex-1 p-6">{children}</main>
+      </div>
     </div>
   );
 }

@@ -1,95 +1,106 @@
 import Link from 'next/link';
+import { Hero } from '@/components/features/landing/hero';
+import { ArrowRight, Mic, BarChart3, Zap, Shield, MessageSquare } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-export default function HomePage() {
+const FEATURES = [
+  { icon: Mic, title: 'Voice Interviews', desc: 'Natural conversation with an AI that asks real follow-up questions' },
+  { icon: Zap, title: 'Adaptive Difficulty', desc: 'The AI adjusts based on your responses and experience level' },
+  { icon: BarChart3, title: 'Detailed Feedback', desc: 'Get scored on communication, confidence, and technical depth' },
+  { icon: Shield, title: 'Private & Secure', desc: 'Your interviews are encrypted and only visible to you' },
+  { icon: MessageSquare, title: 'Transcripts', desc: 'Review every word. Learn from your exact responses' },
+];
+
+const STEPS = [
+  { step: '1', title: 'Choose your interview', desc: 'Select behavioral, technical, or mixed. Set your role and level.' },
+  { step: '2', title: 'Speak naturally', desc: 'Answer questions just like a real interview. The AI follows up.' },
+  { step: '3', title: 'Get actionable insights', desc: 'Receive a detailed report with strengths and specific improvements.' },
+];
+
+export default function LandingPage() {
   return (
-    <main className="flex min-h-screen flex-col">
+    <div className="min-h-screen">
       {/* Header */}
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-\1 mx-px-6 mx-py-4 mx-flex mx-items-center mx-justify-between">
-          <span className="text-xl font-bold tracking-tight">InterviewPilot AI</span>
-          <nav className="flex items-center gap-6">
-            <Link
-              href="/login"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+          <span className="text-lg font-bold tracking-tight">InterviewPilot AI</span>
+          <nav className="flex items-center gap-4">
+            <Link href="/login" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
               Sign in
             </Link>
-            <Link
-              href="/register"
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
-            >
-              Get Started
-            </Link>
+            <Button asChild size="sm">
+              <Link href="/register">Get started</Link>
+            </Button>
           </nav>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="flex flex-1 flex-col items-center justify-center px-6 py-24 text-center">
-        <div className="mx-max-w-3xl">
-          <h1 className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl">
-            Practice interviews with an AI that{' '}
-            <span className="text-primary">listens</span>
-          </h1>
-          <p className="mt-6 text-lg text-muted-foreground">
-            Realistic voice interviews powered by adaptive AI. Get personalized
-            feedback after every session.
-          </p>
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Link
-              href="/register"
-              className="rounded-lg bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-opacity hover:opacity-90"
-            >
-              Start Free Interview
-            </Link>
-            <Link
-              href="/login"
-              className="rounded-lg border border-border px-8 py-4 text-base font-semibold text-foreground transition-colors hover:bg-accent"
-            >
-              Sign In
-            </Link>
-          </div>
-        </div>
-      </section>
+      <Hero />
 
       {/* Features */}
-      <section className="border-t border-border bg-muted/30 px-6 py-24">
-        <div className="mx-max-w-5xl">
-          <h2 className="text-center text-3xl font-bold tracking-tight">
-            How it works
-          </h2>
-          <div className="mt-12 grid gap-8 sm:grid-cols-3">
-            {[
-              {
-                step: '01',
-                title: 'Choose your interview',
-                desc: 'Select behavioral, technical, or mixed. Set your experience level and target role.',
-              },
-              {
-                step: '02',
-                title: 'Speak with an AI interviewer',
-                desc: 'Answer natural follow-up questions. The AI adapts to your responses in real time.',
-              },
-              {
-                step: '03',
-                title: 'Get actionable feedback',
-                desc: 'Receive detailed scores, strengths, and specific improvement suggestions.',
-              },
-            ].map(({ step, title, desc }) => (
-              <div key={step} className="rounded-xl border border-border bg-card p-8">
-                <span className="text-5xl font-bold text-muted-foreground/30">{step}</span>
-                <h3 className="mt-4 text-lg font-semibold">{title}</h3>
-                <p className="mt-2 text-muted-foreground">{desc}</p>
+      <section className="border-t border-border px-6 py-24">
+        <div className="mx-auto max-w-5xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight">Why InterviewPilot?</h2>
+          <p className="mt-4 text-muted-foreground">
+            Everything you need to prepare for real interviews
+          </p>
+          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURES.map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="group rounded-xl border border-border bg-card p-6 text-left transition-shadow hover:shadow-md">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                  <Icon className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="font-semibold">{title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* How It Works */}
+      <section className="border-t border-border bg-muted/30 px-6 py-24">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-center text-3xl font-bold tracking-tight">How it works</h2>
+          <div className="mt-12 grid gap-12 sm:grid-cols-3">
+            {STEPS.map(({ step, title, desc }) => (
+              <div key={step} className="text-center">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">
+                  {step}
+                </div>
+                <h3 className="mt-4 font-semibold">{title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="border-t border-border px-6 py-24">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight">Ready to ace your next interview?</h2>
+          <p className="mt-4 text-muted-foreground">
+            Start practicing with an AI interviewer that adapts, challenges, and helps you improve.
+          </p>
+          <Button asChild size="lg" className="mt-8 gap-2">
+            <Link href="/register">
+              Start free <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="border-t border-border px-6 py-8 text-center text-sm text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} InterviewPilot AI. MIT License.</p>
+      <footer className="border-t border-border px-6 py-8">
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 text-sm text-muted-foreground sm:flex-row">
+          <p>&copy; {new Date().getFullYear()} InterviewPilot AI</p>
+          <div className="flex gap-6">
+            <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
+            <Link href="/terms" className="hover:text-foreground">Terms</Link>
+          </div>
+        </div>
       </footer>
-    </main>
+    </div>
   );
 }
