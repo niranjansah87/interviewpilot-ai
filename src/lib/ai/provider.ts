@@ -9,9 +9,9 @@
 // Available OpenAI Realtime models
 // See: https://platform.openai.com/docs/models#realtime
 export type RealtimeModel =
+| 'gpt-4o-realtime-preview-2025-06-03'    // Deprecated — use 'gpt-4o-realtime-preview'
+| 'gpt-4o-realtime-preview-2024-12-17'
   | 'gpt-4o-realtime-preview'               // Latest snapshot
-  | 'gpt-4o-realtime-preview-2025-06-03'    // Deprecated — use 'gpt-4o-realtime-preview'
-  | 'gpt-4o-realtime-preview-2024-12-17'
   | 'gpt-4o-realtime-preview-2024-10-01';
 
 export interface RealtimeSessionConfig {
