@@ -97,92 +97,84 @@ export default function FeedbackReportPage({ params }: { params: Promise<{ id: s
   const mainR = 42; const mainSw = 6; const mainCirc = 2 * Math.PI * mainR; const mainOff = mainCirc - (report.overallScore / 100) * mainCirc;
 
   return (
-    <div className="flex h-[calc(100vh-5.5rem)] flex-col gap-3">
-      {/* Header */}
+    <div className="-m-6 flex h-screen flex-col gap-2 overflow-hidden p-6">
+      {/* Header bar */}
       <div className="flex shrink-0 items-center justify-between">
-        <div>
-          <Button variant="ghost" size="sm" asChild className="-ml-2 h-7 text-xs text-muted-foreground">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="sm" asChild className="h-7 text-xs text-muted-foreground -ml-2">
             <Link href={`/dashboard/interviews/${id}`}><ArrowLeft className="h-3 w-3" /> Back</Link>
           </Button>
-          <h1 className="text-lg font-bold">Feedback Report</h1>
-          <p className="text-xs text-muted-foreground capitalize">{interview.type?.toLowerCase()} interview{interview.targetRole ? ` · ${interview.targetRole}` : ''}</p>
+          <div>
+            <h1 className="text-lg font-bold leading-tight">Feedback Report</h1>
+            <p className="text-[10px] text-muted-foreground capitalize">{interview.type?.toLowerCase()} · {interview.targetRole || 'General'}</p>
+          </div>
         </div>
-        <Badge variant={report.overallScore >= 80 ? 'default' : report.overallScore >= 60 ? 'secondary' : 'destructive'} className="text-xs">
+        <Badge variant={report.overallScore >= 80 ? 'default' : report.overallScore >= 60 ? 'secondary' : 'destructive'} className="text-[10px]">
           {report.overallScore >= 85 ? 'Strong Hire' : report.overallScore >= 70 ? 'Hire' : report.overallScore >= 55 ? 'Lean Hire' : 'Not Recommended'}
         </Badge>
       </div>
 
-      {/* Score + Summary row */}
-      <Card className="shrink-0 rounded-xl">
-        <CardContent className="flex items-center gap-5 py-4">
-          {/* Main score circle */}
+      {/* Score row - reduced size */}
+      <Card className="shrink-0 rounded-lg border-border/50">
+        <CardContent className="flex items-center gap-3 py-3 px-4">
           <div className="relative flex shrink-0 items-center justify-center">
-            <svg width="100" height="100" className="-rotate-90">
-              <circle cx="50" cy="50" r={mainR} fill="none" stroke="hsl(var(--muted))" strokeWidth={mainSw} />
-              <circle cx="50" cy="50" r={mainR} fill="none" stroke={scoreColor} strokeWidth={mainSw} strokeLinecap="round"
-                strokeDasharray={mainCirc} strokeDashoffset={mainOff} style={{ transition: 'stroke-dashoffset 1s ease' }} />
+            <svg width="72" height="72" className="-rotate-90">
+              <circle cx="36" cy="36" r="30" fill="none" stroke="hsl(var(--muted))" strokeWidth="5" />
+              <circle cx="36" cy="36" r="30" fill="none" stroke={scoreColor} strokeWidth="5" strokeLinecap="round"
+                strokeDasharray={2*Math.PI*30} strokeDashoffset={(2*Math.PI*30)-(report.overallScore/100)*(2*Math.PI*30)} style={{ transition: 'stroke-dashoffset 1s ease' }} />
             </svg>
-            <div className="absolute flex flex-col items-center">
-              <span className="text-xl font-bold">{report.overallScore}</span>
-              <span className="text-[9px] text-muted-foreground">/100</span>
-            </div>
+            <span className="absolute text-base font-bold">{report.overallScore}</span>
           </div>
-
-          {/* Sub-scores inline */}
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             {[
-              { s: report.communicationScore, l: 'Communication', c: '#10b981' },
-              { s: report.confidenceScore, l: 'Confidence', c: '#3b82f6' },
-              { s: report.technicalReasoning ?? 0, l: 'Technical', c: report.technicalReasoning != null ? '#f59e0b' : '#94a3b8' },
+              { s: report.communicationScore, l: 'Comm', c: '#10b981' },
+              { s: report.confidenceScore, l: 'Conf', c: '#3b82f6' },
+              { s: report.technicalReasoning ?? 0, l: 'Tech', c: report.technicalReasoning != null ? '#f59e0b' : '#94a3b8' },
             ].map(({ s, l, c }) => (
-              <div key={l} className="flex flex-col items-center gap-0.5">
-                <MiniScore score={s} color={c} />
+              <div key={l} className="flex items-center gap-1.5">
+                <span className="text-[11px] font-semibold w-6 text-right" style={{ color: c }}>{s}</span>
                 <span className="text-[9px] text-muted-foreground">{l}</span>
               </div>
             ))}
           </div>
-
-          {/* Summary */}
-          <p className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground">{report.summary}</p>
+          <p className="min-w-0 flex-1 text-[11px] leading-snug text-muted-foreground">{report.summary}</p>
         </CardContent>
       </Card>
 
-      {/* 3-column: Strengths | Weaknesses | Action Plan */}
-      <div className="grid flex-1 grid-cols-3 gap-3 overflow-hidden">
-        <Card className="flex flex-col rounded-xl overflow-hidden">
-          <CardHeader className="shrink-0 pb-2">
-            <CardTitle className="flex items-center gap-1.5 text-xs text-emerald-600"><Star className="h-3 w-3" /> Strengths</CardTitle>
+      {/* 3-column: fills remaining height */}
+      <div className="grid flex-1 grid-cols-3 gap-2 overflow-hidden min-h-0">
+        <Card className="flex flex-col rounded-lg overflow-hidden border-border/50">
+          <CardHeader className="shrink-0 px-3 py-2">
+            <CardTitle className="flex items-center gap-1.5 text-[11px] text-emerald-600"><Star className="h-3 w-3" /> Strengths</CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto pt-0">
-            <ul className="space-y-1.5">
-              {report.strengths?.map((s, i) => (
-                <li key={i} className="flex gap-1.5 text-xs"><span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-emerald-500" />{s}</li>
+          <CardContent className="flex-1 overflow-y-auto px-3 pb-2 pt-0">
+            <ul className="space-y-1">
+              {report.strengths?.slice(0,4).map((s, i) => (
+                <li key={i} className="flex gap-1.5 text-[11px] leading-snug"><span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-emerald-500" />{s}</li>
               ))}
             </ul>
           </CardContent>
         </Card>
-
-        <Card className="flex flex-col rounded-xl overflow-hidden">
-          <CardHeader className="shrink-0 pb-2">
-            <CardTitle className="flex items-center gap-1.5 text-xs text-amber-600"><TrendingUp className="h-3 w-3" /> Improvements</CardTitle>
+        <Card className="flex flex-col rounded-lg overflow-hidden border-border/50">
+          <CardHeader className="shrink-0 px-3 py-2">
+            <CardTitle className="flex items-center gap-1.5 text-[11px] text-amber-600"><TrendingUp className="h-3 w-3" /> To Improve</CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto pt-0">
-            <ul className="space-y-1.5">
+          <CardContent className="flex-1 overflow-y-auto px-3 pb-2 pt-0">
+            <ul className="space-y-1">
               {report.weaknesses?.map((w, i) => (
-                <li key={i} className="flex gap-1.5 text-xs"><span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-amber-500" />{w}</li>
+                <li key={i} className="flex gap-1.5 text-[11px] leading-snug"><span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-amber-500" />{w}</li>
               ))}
             </ul>
           </CardContent>
         </Card>
-
-        <Card className="flex flex-col rounded-xl overflow-hidden">
-          <CardHeader className="shrink-0 pb-2">
-            <CardTitle className="flex items-center gap-1.5 text-xs text-blue-600"><Lightbulb className="h-3 w-3" /> Action Plan</CardTitle>
+        <Card className="flex flex-col rounded-lg overflow-hidden border-border/50">
+          <CardHeader className="shrink-0 px-3 py-2">
+            <CardTitle className="flex items-center gap-1.5 text-[11px] text-blue-600"><Lightbulb className="h-3 w-3" /> Action Plan</CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto pt-0">
-            <ul className="space-y-1.5">
+          <CardContent className="flex-1 overflow-y-auto px-3 pb-2 pt-0">
+            <ul className="space-y-1">
               {report.improvements?.map((tip, i) => (
-                <li key={i} className="flex gap-1.5 text-xs"><span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-blue-500" />{tip}</li>
+                <li key={i} className="flex gap-1.5 text-[11px] leading-snug"><span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-blue-500" />{tip}</li>
               ))}
             </ul>
           </CardContent>

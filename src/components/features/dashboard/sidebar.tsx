@@ -53,7 +53,9 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-3">
         {NAV.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
+          // Profile uses exact match so /profile/resume doesn't light it up
+          const exact = href === '/dashboard/profile';
+          const active = exact ? pathname === href : (pathname === href || (href !== '/dashboard' && pathname.startsWith(href)));
           return (
             <Link
               key={href}
