@@ -5,12 +5,12 @@
  * This is the main hook consumed by the interview runtime UI.
  */
 
-import { useState, useRef, useCallback, useEffect } from 'react';
-import type { ConversationState, InterviewConfig, InterviewContext, ConversationTurn } from '@/lib/conversation/engine';
-import { createInterviewContext, transition, decideFollowUp, selectNextTopic } from '@/lib/conversation/engine';
-import { composeSystemPrompt, composeClosingPrompt, estimatePromptTokens } from '@/lib/conversation/prompt-engine';
-import { logger } from '@/monitoring/logger';
 import { audioRuntime } from '@/lib/audio/runtime';
+import type { InterviewConfig, InterviewContext } from '@/lib/conversation/engine';
+import { createInterviewContext, decideFollowUp, selectNextTopic, transition } from '@/lib/conversation/engine';
+import { estimatePromptTokens } from '@/lib/conversation/prompt-engine';
+import { logger } from '@/monitoring/logger';
+import { useCallback, useEffect, useRef, useState } from 'react';
 const aiLogger = logger.child({ component: 'interview-session' });
 
 export interface InterviewSessionState {
@@ -65,6 +65,9 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const isEndingRef = useRef(false);
   const [muted, setMuted] = useState(false);
+  const mutedRef = useRef(false);
+  // Keep ref in sync with state so audio callback always reads latest value
+  useEffect(() => { mutedRef.current = muted; }, [muted]);
 
   // ---- Barge-in: stop current AI audio when candidate speaks ----
   const stopPlayback = useCallback(() => {
@@ -73,7 +76,7 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
     } catch { /* already stopped */ }
     activeSourceRef.current = null;
     setAiSpeaking(false);
-    console.log('[BargeIn] Stopped current audio source');
+    ////console.log('[BargeIn] Stopped current audio source');
   }, []);
 
   // ---- Duration Timer ----
@@ -218,7 +221,6 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
         processor.onaudioprocess = (e) => {
           if (ws.readyState === WebSocket.OPEN) {
             micChunks++;
-            if (micChunks % 10 === 1) console.log('[Mic] sending chunk #' + micChunks);
             const inputData = e.inputBuffer.getChannelData(0);
             const pcm = new Int16Array(inputData.length);
             for (let i = 0; i < inputData.length; i++) {
@@ -231,7 +233,7 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
               binary += String.fromCharCode(bytes[i]!);
             }
             const base64 = btoa(binary);
-            if (!muted) {
+            if (!mutedRef.current) {
               ws.send(JSON.stringify({ user_audio_chunk: base64 }));
             }
           }
@@ -407,7 +409,7 @@ Address the candidate by name in your first message. Personalize every question 
     captureCtxRef.current?.close();
     audioRuntime.stop().catch(() => {});
     connectionRef.current?.close();
-    console.log('[EndInterview] Stopped playback, closed mic, closed connection');
+    ////console.log('[EndInterview] Stopped playback, closed mic, closed connection');
 
     // Persist interview status
     try {
@@ -423,7 +425,7 @@ Address the candidate by name in your first message. Personalize every question 
       if (!res.ok) {
         console.error('[endInterview] PATCH failed:', res.status, await res.text());
       } else {
-        console.log('[endInterview] Status updated to COMPLETED, duration:', duration);
+        ////console.log('[endInterview] Status updated to COMPLETED, duration:', duration);
       }
     } catch (err) {
       console.error('[endInterview] PATCH error:', err);
@@ -593,21 +595,21 @@ function createWebSocketConnection(
   ws.onmessage = (msg) => {
     msgCount++;
     if (msg.data instanceof ArrayBuffer) {
-      console.log('[WS] recv audio chunk', msg.data.byteLength, 'bytes');
+      ////console.log('[WS] recv audio chunk', msg.data.byteLength, 'bytes');
       playPCM16(msg.data);
       return;
     }
     if (msg.data instanceof Blob) {
-      console.log('[WS] recv audio blob', (msg.data as Blob).size, 'bytes');
+      ////console.log('[WS] recv audio blob', (msg.data as Blob).size, 'bytes');
       (msg.data as Blob).arrayBuffer().then(buf => playPCM16(buf));
       return;
     }
     try {
       const parsed = JSON.parse(msg.data as string);
-      console.log('[WS] event #' + msgCount + ':', parsed.type);
+      ////console.log('[WS] event #' + msgCount + ':', parsed.type);
       switch (parsed.type) {
         case 'conversation_initiation_metadata':
-          console.log('[WS] session init metadata');
+          ////console.log('[WS] session init metadata');
           break;
         case 'audio':
           // Deactivate barge-in when agent starts responding
@@ -615,7 +617,7 @@ function createWebSocketConnection(
             const raw = atob(parsed.audio_event.audio_base_64);
             const bytes = new Uint8Array(raw.length);
             for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
-            console.log('[WS] audio event,', bytes.length, 'bytes PCM');
+            ////console.log('[WS] audio event,', bytes.length, 'bytes PCM');
             playPCM16(bytes.buffer);
           }
           break;
@@ -625,19 +627,19 @@ function createWebSocketConnection(
           const gainNode = audioRuntime.getSpeakerGain();
           if (gainNode) gainNode.gain.setTargetAtTime(1, (audioRuntime.getContext()?.currentTime ?? 0), 0.05);
           if (parsed.agent_response_event?.agent_response) {
-            console.log('[WS] agent:', parsed.agent_response_event.agent_response);
+            ////console.log('[WS] agent:', parsed.agent_response_event.agent_response);
             onEvent({ type: 'response.audio_transcript.done', role: 'interviewer', transcript: parsed.agent_response_event.agent_response });
           }
           break;
         case 'user_transcript':
           if (parsed.user_transcription_event?.user_transcript) {
-            console.log('[WS] user:', parsed.user_transcription_event.user_transcript);
+            ////console.log('[WS] user:', parsed.user_transcription_event.user_transcript);
             onEvent({ type: 'response.audio_transcript.done', role: 'candidate', transcript: parsed.user_transcription_event.user_transcript });
           }
           break;
         case 'agent_transcript':
           if (parsed.agent_transcription_event?.agent_transcript) {
-            console.log('[WS] agent transcript:', parsed.agent_transcription_event.agent_transcript);
+            ////console.log('[WS] agent transcript:', parsed.agent_transcription_event.agent_transcript);
             onEvent({ type: 'response.audio_transcript.done', role: 'interviewer', transcript: parsed.agent_transcription_event.agent_transcript });
           }
           break;
@@ -653,7 +655,7 @@ function createWebSocketConnection(
           try { audioRuntime.getSpeakerGain()?.gain.setTargetAtTime(0, audioRuntime.getContext()?.currentTime ?? 0, 0.05); } catch {}
           break;
         case 'interruption':
-          console.log('[WS] INTERRUPTION from server');
+          ////console.log('[WS] INTERRUPTION from server');
           callbacks.onUserSpeech();
           // Mute speaker gain + stop current source
           try { activeSource?.stop(); } catch {}
@@ -667,15 +669,15 @@ function createWebSocketConnection(
           }
           break;
         case 'session_timeout':
-          console.log('[WS] ElevenLabs session timeout — silence or max duration');
+          ////console.log('[WS] ElevenLabs session timeout — silence or max duration');
           callbacks.onDisconnect('Session timed out — the agent disconnected due to silence or duration limit');
           break;
         case 'conversation_ended':
-          console.log('[WS] ElevenLabs conversation ended by agent');
+          ////console.log('[WS] ElevenLabs conversation ended by agent');
           callbacks.onDisconnect('Conversation ended by the interviewer');
           break;
         case 'agent_disconnected':
-          console.log('[WS] ElevenLabs agent disconnected');
+          ////console.log('[WS] ElevenLabs agent disconnected');
           callbacks.onDisconnect('AI interviewer disconnected');
           break;
       }
@@ -689,7 +691,7 @@ function createWebSocketConnection(
       e.code === 1000 ? 'Session completed normally' :
       `code ${e.code}`
     );
-    console.log('[WS] CLOSED — code:', e.code, 'reason:', e.reason, 'clean:', e.wasClean);
+    ////console.log('[WS] CLOSED — code:', e.code, 'reason:', e.reason, 'clean:', e.wasClean);
     callbacks.onDisconnect(`Connection closed (${reason})`);
   };
   ws.onerror = (e: Event) => {

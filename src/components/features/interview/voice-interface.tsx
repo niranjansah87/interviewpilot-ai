@@ -46,7 +46,7 @@ export function VoiceInterface({
 }: VoiceInterfaceProps) {
   const transcriptRef = useRef<HTMLDivElement>(null);
   const analyzer = useAudioAnalyzer();
-  const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const [transcriptOpen, setTranscriptOpen] = useState(true);
   const muted = isMuted ?? false;
   const [thinkIdx, setThinkIdx] = useState(0);
 
@@ -271,7 +271,7 @@ export function VoiceInterface({
               <Image src="/illustrations/candidate-avatar.svg" alt="Candidate" width={96} height={96}
                 className="h-full w-full rounded-full object-cover" />
             </motion.div>
-            <span className="text-sm font-bold tracking-wide text-white/60">{}</span>
+            <span className="text-sm font-bold tracking-wide text-white/60">{candidateName || 'You'}</span>
             {/* Mic waveform */}
             <div className="flex h-5 items-end justify-center gap-[2px]">
               {Array.from({ length: 16 }).map((_, i) => {
