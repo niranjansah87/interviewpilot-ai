@@ -18,6 +18,10 @@ export async function getSession(): Promise<SessionUser> {
     throw new AuthenticationError('Authentication required');
   }
 
-  const payload = await verifyAccessToken(token);
-  return { id: payload.sub, email: payload.email ?? '' };
+  try {
+    const payload = await verifyAccessToken(token);
+    return { id: payload.sub, email: payload.email ?? '' };
+  } catch {
+    throw new AuthenticationError('Session expired or invalid');
+  }
 }

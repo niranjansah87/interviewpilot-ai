@@ -5,6 +5,7 @@
 import { interviewRepository } from '@/repositories/interview.repository';
 import { NotFoundError, AuthorizationError } from '@/lib/errors';
 import { logger } from '@/monitoring/logger';
+import type { InterviewStatus } from '@prisma/client';
 
 const interviewLogger = logger.child({ service: 'interview' });
 
@@ -14,8 +15,8 @@ export const interviewService = {
     type: 'BEHAVIORAL' | 'TECHNICAL' | 'MIXED';
     targetRole?: string;
     experienceLevel?: 'JUNIOR' | 'MID' | 'SENIOR';
-    status?: string;
-    scheduledAt?: string;
+    status?: InterviewStatus;
+    scheduledAt?: Date;
   }) {
     const session = await interviewRepository.create(data);
     interviewLogger.info({ msg: 'Interview session created',
