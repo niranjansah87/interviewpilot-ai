@@ -63,7 +63,8 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
   const playbackCtxRef = useRef<AudioContext | null>(null); // AI audio playback context
   const activeSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const isEndingRef = useRef(false); // Suppress disconnect errors on intentional end
+  const isEndingRef = useRef(false);
+  const [muted, setMuted] = useState(false);
 
   // ---- Barge-in: stop current AI audio when candidate speaks ----
   const stopPlayback = useCallback(() => {
@@ -175,10 +176,20 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
           onDisconnect: (reason) => {
             if (isEndingRef.current) {
               setStatus('disconnected');
-              return; // Silent — intentional end
+              return;
             }
+            // Auto-complete on unexpected disconnect
             setStatus('disconnected');
-            setError(`Connection lost: ${reason}. Click reconnect to continue.`);
+            setError(`Connection lost: ${reason}. Your progress has been saved.`);
+            // Mark interview as completed
+            fetch(`/api/v1/interviews/${sessionId}`, {
+              method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+              body: JSON.stringify({ status: 'COMPLETED', durationSeconds: duration }),
+            }).catch(() => {});
+            // Generate feedback
+            fetch(`/api/v1/interviews/${sessionId}/report`, {
+              method: 'POST', credentials: 'include',
+            }).catch(() => {});
           },
           onUserSpeech: () => {
             // Just update UI — audio handling is inside createWebSocketConnection
@@ -220,7 +231,9 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
               binary += String.fromCharCode(bytes[i]!);
             }
             const base64 = btoa(binary);
-            ws.send(JSON.stringify({ user_audio_chunk: base64 }));
+            if (!muted) {
+              ws.send(JSON.stringify({ user_audio_chunk: base64 }));
+            }
           }
         };
         source.connect(processor);
@@ -481,6 +494,8 @@ Address the candidate by name in your first message. Personalize every question 
     endInterview,
     handleReconnect,
     addTranscription,
+    muted,
+    toggleMute: () => setMuted(m => !m),
   };
 }
 

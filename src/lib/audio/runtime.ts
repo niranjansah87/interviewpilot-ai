@@ -20,11 +20,11 @@ export interface AudioLevels {
 type LevelCallback = (levels: AudioLevels) => void;
 type VADCallback = (state: VADState) => void;
 
-const SMOOTHING = 0.90; // Heavier smoothing — less jittery
-const SILENCE_THRESHOLD = 0.01; // RMS below this = silence
-const LOW_THRESHOLD = 0.04; // RMS below this = low speech (breathing, keyboard)
-const SPEAK_THRESHOLD = 0.07; // RMS above this = actual speech
-const LOUD_THRESHOLD = 0.20; // RMS above this = loud
+const SMOOTHING = 0.92; // Heavy smoothing
+const SILENCE_THRESHOLD = 0.015; // Ambient noise
+const LOW_THRESHOLD = 0.06;  // Quiet speech / breathing — won't trigger barge-in
+const SPEAK_THRESHOLD = 0.10; // Clear speech required for barge-in
+const LOUD_THRESHOLD = 0.25; // Very loud
 
 export class AudioRuntimeManager {
   private ctx: AudioContext | null = null;

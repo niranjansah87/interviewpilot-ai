@@ -183,6 +183,8 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
           durationSeconds={voiceSession.durationSeconds}
           onStart={voiceSession.startInterview}
           onEnd={handleEnd}
+          onToggleMute={voiceSession.toggleMute}
+          isMuted={voiceSession.muted}
           onReconnect={voiceSession.handleReconnect}
           onRequestMic={voiceSession.requestMic}
           onStartDemo={voiceSession.startDemoMode}

@@ -37,7 +37,7 @@ export default function RegisterPage() {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.detail ?? 'Registration failed.'); return; }
-      window.location.href = '/dashboard';
+      window.location.href = '/login';
     } catch { setError('Network error.'); }
     finally { setLoading(false); }
   };
