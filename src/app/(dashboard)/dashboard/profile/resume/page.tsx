@@ -53,8 +53,8 @@ export default function ResumePage() {
       } else if (file.name.endsWith('.pdf')) {
         const arrayBuffer = await file.arrayBuffer();
         const pdfjsLib = await import('pdfjs-dist');
-        // Disable worker for simple text extraction (works without separate worker file)
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@4.0.379/build/pdf.worker.min.mjs';
+        // Worker served from public/ — self-origin, no CSP violation
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
         const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) });
         const pdf = await loadingTask.promise;
         const pages: string[] = [];
