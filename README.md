@@ -277,6 +277,26 @@ src/
 
 ---
 
+## Diagrams
+
+System architecture, voice pipeline, and interview lifecycle — rendered as Mermaid diagrams on GitHub.
+
+| Diagram | Description |
+|---|---|
+| [System Architecture](docs/architecture/01-system-architecture.md) | Full system overview — browser, Next.js, AI providers, database |
+| [Voice Pipeline](docs/architecture/02-voice-pipeline.md) | Microphone → Web Audio API → VAD → ElevenLabs → Playback |
+| [Interview Lifecycle](docs/architecture/03-interview-lifecycle.md) | State machine: idle → connecting → listening → speaking → completed |
+| [End-to-End Flow](docs/architecture/04-end-to-end-flow.md) | Complete user journey from registration to feedback report |
+| [Database Schema](docs/architecture/05-database-schema.md) | PostgreSQL tables, relationships, indexes, enums |
+| [Auth Flow](docs/architecture/06-auth-flow.md) | JWT login, refresh, CSRF, cookie flow |
+| [Provider Architecture](docs/architecture/07-provider-architecture.md) | AI provider abstraction, agent pool, circuit breaker |
+| [Authentication](docs/engineering/diagrams/authentication.md) | Login sequence, token exchange, cookie flow |
+| [Deployment](docs/engineering/diagrams/deployment.md) | Vercel + Supabase + Redis deployment topology |
+| [Interview Engine](docs/engineering/diagrams/interview-engine.md) | Conversation engine state machine and decision flow |
+| [Voice Flow](docs/engineering/diagrams/voice-flow.md) | WebSocket audio streaming and transcript pipeline |
+
+---
+
 ## Documentation
 
 - [Architecture](docs/engineering/01-ARCHITECTURE.md)
