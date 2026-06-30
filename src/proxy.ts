@@ -14,6 +14,7 @@ export default function proxy(request: NextRequest) {
   // CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
   // are all applied there to avoid header conflicts.
 
+
   // HTTP → HTTPS in production
   if (
     process.env.NODE_ENV === 'production' &&
