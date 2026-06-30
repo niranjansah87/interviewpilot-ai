@@ -180,7 +180,10 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
             setStatus('disconnected');
             setError(`Connection lost: ${reason}. Click reconnect to continue.`);
           },
-          onUserSpeech: () => { stopPlayback(); setSpeaker('candidate'); },
+          onUserSpeech: () => {
+            // Just update UI — audio handling is inside createWebSocketConnection
+            setAiSpeaking(false);
+          },
         });
         (connectionRef as React.MutableRefObject<unknown>).current = conn;
 
@@ -382,6 +385,9 @@ Address the candidate by name in your first message. Personalize every question 
     updateCtx('end');
     setStatus('disconnected');
 
+    // Mark intentional end — suppress disconnect errors
+    isEndingRef.current = true;
+
     // Kill all audio immediately — stop AI speaking + close mic
     stopPlayback();
     processorRef.current?.disconnect();
@@ -498,6 +504,25 @@ function createWebSocketConnection(
   let activeSource: AudioBufferSourceNode | null = null;
   let audioCtx: AudioContext | null = null;
   let nextAudioTime = 0;
+  let bargeInActive = false;
+  let unsubVAD: (() => void) | null = null;
+
+  // Subscribe to local VAD for instant barge-in (faster than ElevenLabs server VAD)
+  unsubVAD = audioRuntime.onVAD((vad) => {
+    // Only barge-in when AI is actually speaking and candidate volume exceeds low threshold
+    if (vad !== 'silence' && vad !== 'low' && !bargeInActive && activeSource !== null) {
+      bargeInActive = true;
+      try { activeSource?.stop(); } catch {}
+      activeSource = null;
+      nextAudioTime = 0;
+      const g = audioRuntime.getSpeakerGain();
+      if (g) g.gain.setTargetAtTime(0, (audioRuntime.getContext()?.currentTime ?? 0), 0.01);
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'interrupt' }));
+      }
+      callbacks.onUserSpeech();
+    }
+  });
 
   function getAudioCtx(): AudioContext {
     // Prefer shared runtime context (enables speaker visualization)
@@ -507,6 +532,8 @@ function createWebSocketConnection(
   }
 
   function playPCM16(buffer: ArrayBuffer) {
+    // Discard audio if barge-in is active (candidate is speaking)
+    if (bargeInActive) return;
     try {
       const ctx = getAudioCtx();
       const pcm = new Int16Array(buffer);
@@ -564,6 +591,8 @@ function createWebSocketConnection(
           console.log('[WS] session init metadata');
           break;
         case 'audio':
+          // Deactivate barge-in when agent starts responding
+          bargeInActive = false;
           if (parsed.audio_event?.audio_base_64) {
             const raw = atob(parsed.audio_event.audio_base_64);
             const bytes = new Uint8Array(raw.length);
@@ -573,6 +602,10 @@ function createWebSocketConnection(
           }
           break;
         case 'agent_response':
+          bargeInActive = false;
+          // Restore speaker gain (unmuted from barge-in)
+          const gainNode = audioRuntime.getSpeakerGain();
+          if (gainNode) gainNode.gain.setTargetAtTime(1, (audioRuntime.getContext()?.currentTime ?? 0), 0.05);
           if (parsed.agent_response_event?.agent_response) {
             console.log('[WS] agent:', parsed.agent_response_event.agent_response);
             onEvent({ type: 'response.audio_transcript.done', role: 'interviewer', transcript: parsed.agent_response_event.agent_response });
@@ -591,8 +624,20 @@ function createWebSocketConnection(
           }
           break;
         case 'user_started_speaking':
-          console.log('[WS] USER STARTED SPEAKING — barge-in!');
+        case 'interruption':
+          // Barge-in: discard queued audio, stop playback, mute speaker
+          bargeInActive = true;
+          try { activeSource?.stop(); } catch {}
+          activeSource = null;
+          nextAudioTime = 0;
+          const g = audioRuntime.getSpeakerGain();
+          if (g) g.gain.setTargetAtTime(0, (audioRuntime.getContext()?.currentTime ?? 0), 0.01);
+          // Tell ElevenLabs to stop current response
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'interrupt' }));
+          }
           callbacks.onUserSpeech();
+          break;
           // Mute speaker gain + stop current source (don't close ctx — mic uses it)
           try { activeSource?.stop(); } catch {}
           activeSource = null;
@@ -630,6 +675,7 @@ function createWebSocketConnection(
   };
 
   ws.onclose = (e: CloseEvent) => {
+    unsubVAD?.(); // Clean up VAD subscription
     const reason = e.reason || (
       e.code === 1005 ? 'Agent ended session (no status)' :
       e.code === 1000 ? 'Session completed normally' :

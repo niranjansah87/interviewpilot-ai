@@ -159,7 +159,7 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
   if (showingWrapUp) {
     return (
       <InterviewWrapUp
-        candidateName={voiceSession.micStream ? (interview as any)?.targetRole ?? '' : ''}
+        candidateName=""
         interviewType={interview?.type ?? 'BEHAVIORAL'}
         interviewId={id}
         onComplete={handleWrapUpComplete}
