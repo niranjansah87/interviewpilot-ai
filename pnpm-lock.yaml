@@ -38,6 +38,12 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.101.2
         version: 5.101.2(react@19.2.7)
+      '@types/node':
+        specifier: ^22.9.0
+        version: 22.20.0
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.17
       autoprefixer:
         specifier: ^10.4.20
         version: 10.5.2(postcss@8.5.16)
@@ -104,6 +110,9 @@ importers:
       tailwindcss:
         specifier: ^3.4.0
         version: 3.4.19(tsx@4.22.4)(yaml@2.9.0)
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -132,12 +141,6 @@ importers:
       '@types/ioredis':
         specifier: ^5.0.0
         version: 5.0.0
-      '@types/node':
-        specifier: ^22.9.0
-        version: 22.20.0
-      '@types/react':
-        specifier: ^19.0.0
-        version: 19.2.17
       '@types/react-dom':
         specifier: ^19.0.0
         version: 19.2.3(@types/react@19.2.17)
@@ -186,9 +189,6 @@ importers:
       tsx:
         specifier: ^4.19.0
         version: 4.22.4
-      typescript:
-        specifier: ^5.6.0
-        version: 5.9.3
       vitest:
         specifier: ^2.1.0
         version: 2.1.9(@types/node@22.20.0)
