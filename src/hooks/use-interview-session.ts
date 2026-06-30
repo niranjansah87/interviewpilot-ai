@@ -10,6 +10,7 @@ import type { ConversationState, InterviewConfig, InterviewContext, Conversation
 import { createInterviewContext, transition, decideFollowUp, selectNextTopic } from '@/lib/conversation/engine';
 import { composeSystemPrompt, composeClosingPrompt, estimatePromptTokens } from '@/lib/conversation/prompt-engine';
 import { logger } from '@/monitoring/logger';
+import { audioRuntime } from '@/lib/audio/runtime';
 const aiLogger = logger.child({ component: 'interview-session' });
 
 export interface InterviewSessionState {
@@ -54,6 +55,7 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
   const [aiSpeaking, setAiSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [duration, setDuration] = useState(0);
+  const [micStream, setMicStream] = useState<MediaStream | null>(null);
 
   const connectionRef = useRef<any>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
@@ -100,6 +102,8 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       setMic('granted');
+      setMicStream(stream);
+      await audioRuntime.start(stream);
       return stream;
     } catch {
       setMic('denied');
@@ -373,9 +377,13 @@ Address the candidate by name in your first message. Personalize every question 
     updateCtx('end');
     setStatus('disconnected');
 
+    // Kill all audio immediately — stop AI speaking + close mic
+    stopPlayback();
     processorRef.current?.disconnect();
-    audioCtxRef.current?.close();
+    captureCtxRef.current?.close();
+    audioRuntime.stop().catch(() => {});
     connectionRef.current?.close();
+    console.log('[EndInterview] Stopped playback, closed mic, closed connection');
 
     // Persist interview status
     try {
@@ -452,6 +460,7 @@ Address the candidate by name in your first message. Personalize every question 
     aiSpeaking,
     error,
     durationSeconds: duration,
+    micStream,
     tokenEstimate: estimatePromptTokens(ctx),
 
     // Actions
@@ -486,6 +495,8 @@ function createWebSocketConnection(
   let nextAudioTime = 0;
 
   function getAudioCtx(): AudioContext {
+    // Prefer shared runtime context (enables speaker visualization)
+    if (audioRuntime.getContext()) return audioRuntime.getContext()!;
     if (!audioCtx) audioCtx = new AudioContext({ sampleRate: 16000 });
     return audioCtx;
   }
@@ -503,7 +514,9 @@ function createWebSocketConnection(
 
       const source = ctx.createBufferSource();
       source.buffer = audioBuffer;
-      source.connect(ctx.destination);
+      // Route through shared runtime so speaker analyser picks it up
+      const gainNode = audioRuntime.getSpeakerGain();
+      source.connect(gainNode ?? ctx.destination);
 
       // Track current source for barge-in
       activeSource = source;

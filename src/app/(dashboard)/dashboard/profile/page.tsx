@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { User, Mail, Lock, Loader2, Check, Shield } from 'lucide-react';
+import { User, Mail, Lock, Loader2, Check, Mic, Star, TrendingUp } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProfilePage() {
   const [name, setName] = useState('');
@@ -14,20 +15,56 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [stats, setStats] = useState({ interviews: 0, avgScore: 0, streak: 0 });
 
   const [currentPw, setCurrentPw] = useState('');
   const [newPw, setNewPw] = useState('');
   const [changingPw, setChangingPw] = useState(false);
 
   useEffect(() => {
-    fetch('/api/v1/users/me', { credentials: 'include' })
-      .then((res) => res.ok ? res.json() : Promise.reject())
-      .then(({ data }) => {
-        setEmail(data.email ?? '');
-        setName(data.name ?? '');
-      })
-      .catch(() => toast.error('Failed to load profile'))
-      .finally(() => setLoading(false));
+    async function load() {
+      try {
+        const [profileRes, interviewsRes] = await Promise.all([
+          fetch('/api/v1/users/me', { credentials: 'include' }),
+          fetch('/api/v1/interviews?limit=100', { credentials: 'include' }),
+        ]);
+        if (profileRes.ok) {
+          const { data } = await profileRes.json();
+          setEmail(data.email ?? '');
+          setName(data.name ?? '');
+        }
+        if (interviewsRes.ok) {
+          const { data } = await interviewsRes.json();
+          const sessions = (data?.data ?? data ?? []) as Array<{ status: string; feedback?: { overallScore: number } | null; startedAt?: string }>;
+          const completed = sessions.filter((s: { status: string }) => s.status === 'COMPLETED');
+          const scores = completed
+            .map((s: { feedback?: { overallScore: number } | null }) => s.feedback?.overallScore ?? null)
+            .filter((s: number | null): s is number => s !== null);
+          const avg = scores.length > 0 ? Math.round(scores.reduce((a: number, b: number) => a + b, 0) / scores.length) : 0;
+
+          // Calculate streak (consecutive days with at least one interview)
+          const dates = sessions
+            .map((s: { startedAt?: string }) => s.startedAt ? new Date(s.startedAt).toDateString() : null)
+            .filter(Boolean) as string[];
+          const uniqueDays = [...new Set(dates)].sort().reverse();
+          let streak = 0;
+          const today = new Date().toDateString();
+          const yesterday = new Date(Date.now() - 86400000).toDateString();
+          if (uniqueDays[0] === today || uniqueDays[0] === yesterday) {
+            streak = 1;
+            for (let i = 1; i < uniqueDays.length; i++) {
+              const prev = new Date(uniqueDays[i - 1]!).getTime();
+              const curr = new Date(uniqueDays[i]!).getTime();
+              if (prev - curr <= 86400000) streak++;
+              else break;
+            }
+          }
+          setStats({ interviews: sessions.length, avgScore: avg, streak });
+        }
+      } catch { /* stats are non-critical */ }
+      finally { setLoading(false); }
+    }
+    load();
   }, []);
 
   async function handleSaveName(e: React.FormEvent) {
@@ -95,6 +132,23 @@ export default function ProfilePage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Profile</h1>
         <p className="mt-1 text-sm text-muted-foreground">Manage your account and password</p>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          { icon: Mic, label: 'Interviews', value: stats.interviews || '—' },
+          { icon: Star, label: 'Avg Score', value: stats.avgScore ? `${stats.avgScore}%` : '—' },
+          { icon: TrendingUp, label: 'Streak', value: stats.streak ? `${stats.streak}d` : '—' },
+        ].map(({ icon: I, label, value }) => (
+          <Card key={label} className="rounded-xl">
+            <CardContent className="flex flex-col items-center py-4">
+              <I className="mb-1 h-4 w-4 text-muted-foreground" />
+              <span className="text-lg font-bold">{value}</span>
+              <span className="text-[10px] text-muted-foreground">{label}</span>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Avatar + Identity card */}

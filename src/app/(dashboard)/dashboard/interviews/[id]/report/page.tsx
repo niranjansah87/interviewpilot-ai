@@ -5,7 +5,12 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { ArrowLeft, Star, Lightbulb, TrendingUp, Loader2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Star, Lightbulb, TrendingUp, Loader2, Sparkles, Trophy, Target, FileText } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { EmptyState } from '@/components/ui/empty-state';
+import { SkeletonCard } from '@/components/ui/skeleton';
+import { useMotionValue, useSpring, motion } from 'framer-motion';
+import { useEffect as useEffectOnce } from 'react';
 
 interface InterviewData {
   id: string;
@@ -82,7 +87,15 @@ export default function FeedbackReportPage({ params }: { params: Promise<{ id: s
   }
 
   if (loading) {
-    return <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
+    return (
+      <div className="mx-auto max-w-3xl space-y-6">
+        <SkeletonCard />
+        <div className="grid grid-cols-3 gap-4">
+          <SkeletonCard /><SkeletonCard /><SkeletonCard />
+        </div>
+        <SkeletonCard /><SkeletonCard />
+      </div>
+    );
   }
 
   if (!interview) {
@@ -116,16 +129,18 @@ export default function FeedbackReportPage({ params }: { params: Promise<{ id: s
       </div>
 
       {!report ? (
-        <div className="flex flex-col items-center rounded-2xl border border-dashed border-border py-20">
-          <Star className="h-10 w-10 text-muted-foreground/30" />
-          <p className="mt-3 text-sm text-muted-foreground">No feedback report yet</p>
-          <p className="text-xs text-muted-foreground">Click "Generate Report" to analyze this interview</p>
-        </div>
+        <EmptyState icon={FileText} title="No feedback report yet" description="Generate a detailed AI analysis of your interview performance including scores, strengths, and actionable improvements."
+          action={generating ? undefined : { label: 'Generate Report', onClick: generateReport }} />
       ) : (
         <>
           <Card className="rounded-2xl">
             <CardContent className="flex flex-col items-center py-8">
               <ScoreCircle score={report.overallScore} label="Overall" />
+              <div className="mt-4">
+                <Badge variant={report.overallScore >= 80 ? 'default' : report.overallScore >= 60 ? 'secondary' : 'destructive'}>
+                  {report.overallScore >= 85 ? 'Strong Hire' : report.overallScore >= 70 ? 'Hire' : report.overallScore >= 55 ? 'Lean Hire' : 'Not Recommended'}
+                </Badge>
+              </div>
               <p className="mt-5 max-w-lg text-center text-sm text-muted-foreground">{report.summary}</p>
             </CardContent>
           </Card>
