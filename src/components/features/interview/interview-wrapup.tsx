@@ -50,7 +50,7 @@ export function InterviewWrapUp({ candidateName, interviewType, interviewId, onC
   }, [onComplete]);
 
   return (
-    <div className="flex h-full flex-col items-center justify-center bg-background px-8">
+    <div className="flex h-full flex-col items-center justify-center px-8">
       <AnimatePresence>
         {showContent && (
           <motion.div

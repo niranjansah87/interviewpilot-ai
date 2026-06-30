@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, Phone, AlertTriangle, Wifi, Clock } from 'lucide-react';
+import { Mic, MicOff, Phone, Clock, ChevronUp, ChevronDown, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAudioAnalyzer } from '@/hooks/use-audio-analyzer';
 import { cn } from '@/lib/cn';
@@ -28,11 +28,11 @@ interface VoiceInterfaceProps {
 
 const THINKING = [
   'Analyzing your response…',
-  'Considering your experience…',
+  'Reviewing your experience…',
   'Preparing a follow-up…',
   'Evaluating technical depth…',
-  'Reviewing your answer…',
-  'Formulating the next question…',
+  'Considering trade-offs…',
+  'Formulating next question…',
 ];
 
 export function VoiceInterface({
@@ -42,12 +42,12 @@ export function VoiceInterface({
 }: VoiceInterfaceProps) {
   const transcriptRef = useRef<HTMLDivElement>(null);
   const analyzer = useAudioAnalyzer();
-  const [thinkMsg, setThinkMsg] = useState(THINKING[0]!);
+  const [transcriptOpen, setTranscriptOpen] = useState(true);
+  const [thinkIdx, setThinkIdx] = useState(0);
 
-  // Rotate thinking messages
   useEffect(() => {
     if (!aiSpeaking && speaker !== 'candidate' && connectionStatus === 'connected') {
-      const i = setInterval(() => setThinkMsg(THINKING[Math.floor(Math.random() * THINKING.length)]!), 3000);
+      const i = setInterval(() => setThinkIdx(n => (n + 1) % THINKING.length), 3000);
       return () => clearInterval(i);
     }
   }, [aiSpeaking, speaker, connectionStatus]);
@@ -60,194 +60,286 @@ export function VoiceInterface({
   const isConnecting = connectionStatus === 'connecting' || connectionStatus === 'reconnecting';
   const mins = Math.floor(durationSeconds / 60);
   const secs = durationSeconds % 60;
-  const isListening = isConnected && speaker === 'candidate' && analyzer.micActive;
-  const isAIThinking = isConnected && !aiSpeaking && speaker !== 'candidate';
   const micLevel = analyzer.micLevel;
-  const micVad = analyzer.vad;
   const micActive = analyzer.micActive;
+  const hasTranscript = transcription.length > 0 || currentPartial.length > 0;
 
-  return (
-    <div className="flex h-full flex-col bg-background">
-      {/* Status Bar */}
-      <div className="flex items-center justify-between border-b border-border/50 px-6 py-2.5">
-        <div className="flex items-center gap-3">
-          {isConnected ? (
-            <span className="flex items-center gap-1.5 text-xs font-medium">
-              <span className={cn('h-1.5 w-1.5 rounded-full', aiSpeaking ? 'bg-primary animate-pulse' : isListening ? 'bg-emerald-500 animate-pulse' : 'bg-emerald-500')} />
-              <span className="text-emerald-600">Connected</span>
-            </span>
-          ) : isConnecting ? (
-            <span className="flex items-center gap-1.5 text-xs font-medium text-amber-500">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />Connecting…
-            </span>
-          ) : null}
-          {isConnected && (
-            <span className="text-[11px] text-muted-foreground">
-              {aiSpeaking ? '🎤 Interviewer' : isListening ? `🎙 ${micVad === 'loud' ? 'Speaking' : 'Listening'}` : isAIThinking ? '🧠 Thinking' : '⏳ Waiting'}
-            </span>
-          )}
+  // ── Idle / Pre-Start ──
+  if (!isConnected && !isConnecting && !error) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+          <motion.div animate={{ scale: [1, 1.04, 1] }} transition={{ repeat: Infinity, duration: 3 }}
+            className="mx-auto mb-10 flex h-32 w-32 items-center justify-center rounded-full bg-white/[0.03] ring-1 ring-white/[0.06]">
+            <Mic className="h-14 w-14 text-white/20" />
+          </motion.div>
+          <h2 className="text-2xl font-light tracking-wide text-white/80">Ready to begin</h2>
+          <p className="mt-3 text-sm text-white/30 max-w-xs mx-auto">
+            {micPermission === 'denied' ? 'Microphone access is required.' : 'Grant microphone access to start your interview.'}
+          </p>
+          <div className="mt-8 flex gap-3 justify-center">
+            <Button size="lg" onClick={onStart} className="gap-2 rounded-xl bg-white text-black hover:bg-white/90 px-8 h-12 text-base">
+              <Mic className="h-4 w-4" /> Start Interview
+            </Button>
+            {onStartDemo && (
+              <Button size="lg" variant="ghost" onClick={onStartDemo} className="rounded-xl text-white/40 hover:text-white/80 h-12">
+                Try Demo
+              </Button>
+            )}
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ── Connecting ──
+  if (isConnecting) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center">
+        <motion.div
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          className="text-center"
+        >
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center">
+            <div className="flex gap-1.5">
+              {[0, 1, 2].map(i => (
+                <motion.div key={i}
+                  animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
+                  transition={{ repeat: Infinity, duration: 1.2, delay: i * 0.2 }}
+                  className="h-2.5 w-2.5 rounded-full bg-white/40"
+                />
+              ))}
+            </div>
+          </div>
+          <p className="text-sm text-white/30">Establishing connection…</p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ── Error ──
+  if (error) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center px-8 text-center">
+        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10">
+          <MicOff className="h-8 w-8 text-red-400" />
         </div>
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1 text-xs tabular-nums text-muted-foreground">
-            <Clock className="h-3 w-3" />{String(mins).padStart(2, '0')}:{String(secs).padStart(2, '0')}
+        <p className="text-sm text-red-400 max-w-md">{error}</p>
+        <div className="mt-6 flex gap-3">
+          <Button variant="outline" size="sm" onClick={onReconnect} className="border-white/10 text-white/60 hover:text-white">Retry</Button>
+          {onStartDemo && <Button variant="ghost" size="sm" onClick={onStartDemo} className="text-white/30">Demo Mode</Button>}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Connected — Immersive Voice Experience ──
+  return (
+    <div className="relative flex h-full flex-col">
+      {/* Subtle background gradient */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.03),transparent_70%)]" />
+
+      {/* Top bar — minimal */}
+      <div className="relative z-10 flex items-center justify-between px-8 py-4">
+        <div className="flex items-center gap-4">
+          <span className={cn(
+            'flex items-center gap-1.5 text-xs',
+            aiSpeaking ? 'text-blue-400' : micActive ? 'text-emerald-400' : 'text-white/25',
+          )}>
+            <span className={cn('h-1.5 w-1.5 rounded-full', aiSpeaking || micActive ? 'animate-pulse' : '')}
+              style={{ backgroundColor: aiSpeaking ? '#60a5fa' : micActive ? '#34d399' : 'currentColor' }} />
+            {aiSpeaking ? 'Speaking' : micActive ? 'Listening' : 'Connected'}
           </span>
-          <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs text-destructive" onClick={onEnd}>
-            <Phone className="h-3 w-3 rotate-[135deg]" /> End
-          </Button>
+          <span className="text-xs tabular-nums text-white/20">
+            <Clock className="mr-1 inline h-3 w-3" />{String(mins).padStart(2, '0')}:{String(secs).padStart(2, '0')}
+          </span>
+        </div>
+        <Button variant="ghost" size="sm" onClick={onEnd}
+          className="h-7 gap-1.5 text-xs text-white/25 hover:text-red-400 hover:bg-red-400/5 rounded-lg">
+          <Phone className="h-3 w-3 rotate-[135deg]" /> End
+        </Button>
+      </div>
+
+      {/* Center Stage */}
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-8">
+        {/* Audio Visualization Row */}
+        <div className="flex items-center gap-24">
+          {/* AI Avatar */}
+          <div className="flex flex-col items-center gap-3">
+            <motion.div
+              animate={aiSpeaking ? { scale: [1, 1.04, 1] } : {}}
+              transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
+              className={cn(
+                'relative flex h-24 w-24 items-center justify-center rounded-full transition-all duration-700',
+                aiSpeaking
+                  ? 'bg-blue-500/10 ring-2 ring-blue-500/20 shadow-[0_0_40px_rgba(59,130,246,0.1)]'
+                  : 'bg-white/[0.02] ring-1 ring-white/[0.04]',
+              )}
+            >
+              {/* Breathing ring */}
+              {aiSpeaking && (
+                <motion.div
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0, 0.2] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                  className="absolute inset-0 rounded-full bg-blue-500/10"
+                />
+              )}
+              {/* AI indicator */}
+              <motion.div
+                animate={aiSpeaking ? { scale: [1, 1.15, 1] } : { scale: 1 }}
+                transition={{ repeat: Infinity, duration: 0.8 }}
+                className={cn(
+                  'flex h-12 w-12 items-center justify-center rounded-full text-lg font-light',
+                  aiSpeaking ? 'bg-blue-500/20 text-blue-300' : 'bg-white/[0.03] text-white/15',
+                )}
+              >
+                AI
+              </motion.div>
+            </motion.div>
+            <span className="text-[11px] font-light tracking-wide text-white/15">Interviewer</span>
+            {/* AI waveform */}
+            <div className="flex h-5 items-end justify-center gap-[2px]">
+              {Array.from({ length: 16 }).map((_, i) => {
+                const freq = analyzer.speakerFrequencies[i * 4] ?? 0;
+                const h = aiSpeaking ? Math.max(1.5, (freq / 255) * 100) : 1.5;
+                return (
+                  <motion.div key={i} className="w-[2px] rounded-full bg-blue-400/40"
+                    animate={{ height: `${h}%` }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 25 }} />
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Center state indicator */}
+          <div className="flex w-32 flex-col items-center gap-1">
+            {aiSpeaking ? (
+              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                className="text-sm font-light text-blue-300/80">Speaking</motion.span>
+            ) : micActive ? (
+              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                className="text-sm font-light text-emerald-300/80">Listening</motion.span>
+            ) : (
+              <motion.span
+                key={thinkIdx}
+                initial={{ opacity: 0, y: 3 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-xs font-light text-white/20 text-center">
+                {THINKING[thinkIdx]}
+              </motion.span>
+            )}
+          </div>
+
+          {/* Candidate Avatar */}
+          <div className="flex flex-col items-center gap-3">
+            <motion.div
+              animate={micActive ? { scale: 1 + micLevel * 0.15 } : { scale: 1 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              className={cn(
+                'relative flex h-24 w-24 items-center justify-center rounded-full transition-all duration-300',
+                micActive
+                  ? 'bg-emerald-500/10 ring-2 ring-emerald-500/20 shadow-[0_0_40px_rgba(52,211,153,0.1)]'
+                  : 'bg-white/[0.02] ring-1 ring-white/[0.04]',
+              )}
+            >
+              {micActive && (
+                <motion.div
+                  animate={{ scale: [1, 1.25, 1], opacity: [0.15, 0, 0.15] }}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                  className="absolute inset-0 rounded-full bg-emerald-500/10"
+                />
+              )}
+              <motion.div
+                animate={micActive ? { scale: 1 + micLevel * 0.2 } : { scale: 1 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className={cn(
+                  'flex h-12 w-12 items-center justify-center rounded-full',
+                  micActive ? 'bg-emerald-500/20' : 'bg-white/[0.03]',
+                )}
+              >
+                {micActive ? (
+                  <div className="h-5 w-5 rounded-sm bg-emerald-400/60" />
+                ) : (
+                  <Mic className="h-6 w-6 text-white/15" />
+                )}
+              </motion.div>
+            </motion.div>
+            <span className="text-[11px] font-light tracking-wide text-white/15">You</span>
+            {/* Mic waveform */}
+            <div className="flex h-5 items-end justify-center gap-[2px]">
+              {Array.from({ length: 16 }).map((_, i) => {
+                const freq = analyzer.micFrequencies[i * 4] ?? 0;
+                const h = micActive ? Math.max(1.5, (freq / 255) * 100) : 1.5;
+                return (
+                  <motion.div key={i} className="w-[2px] rounded-full bg-emerald-400/40"
+                    animate={{ height: `${h}%` }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 25 }} />
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col items-center justify-center p-8">
-        {/* Idle */}
-        {!isConnected && !isConnecting && !error && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-            <motion.div animate={{ scale: [1, 1.04, 1] }} transition={{ repeat: Infinity, duration: 3 }}
-              className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full bg-muted/50">
-              <Mic className="h-12 w-12 text-muted-foreground/60" />
-            </motion.div>
-            <h2 className="text-2xl font-semibold">Ready to begin</h2>
-            <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto">
-              {micPermission === 'denied' ? 'Microphone access required.' : 'Grant microphone access to start.'}
-            </p>
-            <div className="mt-6 flex gap-3 justify-center">
-              <Button size="lg" onClick={onStart} className="gap-2 rounded-xl px-8">Start Interview</Button>
-              {onStartDemo && <Button size="lg" variant="outline" onClick={onStartDemo} className="rounded-xl">Try Demo</Button>}
-            </div>
-          </motion.div>
-        )}
+      {/* Transcript — collapsible bottom panel */}
+      <div className="relative z-10 border-t border-white/[0.04]">
+        {/* Toggle */}
+        <button
+          onClick={() => setTranscriptOpen(!transcriptOpen)}
+          className="flex w-full items-center justify-center gap-2 py-2 text-[10px] text-white/15 hover:text-white/30 transition-colors"
+        >
+          <MessageSquare className="h-3 w-3" />
+          {transcriptOpen ? 'Hide transcript' : hasTranscript ? 'Show transcript' : 'Conversation will appear here'}
+          {transcriptOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronUp className="h-3 w-3" />}
+        </button>
 
-        {/* Connecting */}
-        {isConnecting && (
-          <div className="text-center">
-            <div className="mx-auto mb-4 flex items-center justify-center">
-              <div className="relative flex h-20 w-20 items-center justify-center">
-                <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0, 0.3] }} transition={{ repeat: Infinity, duration: 1.5 }}
-                  className="absolute inset-0 rounded-full bg-primary/10" />
-                <Wifi className="h-8 w-8 text-primary animate-pulse" />
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground">Establishing secure connection…</p>
-          </div>
-        )}
-
-        {/* Connected */}
-        {isConnected && (
-          <div className="flex w-full max-w-2xl flex-1 flex-col">
-            {/* Audio Visualization */}
-            <div className="mb-6 flex items-center justify-center gap-16">
-              {/* AI side */}
-              <div className="flex flex-col items-center gap-2">
-                <motion.div
-                  animate={aiSpeaking ? { scale: [1, 1.03, 1] } : {}}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className={cn('flex h-20 w-20 items-center justify-center rounded-full transition-all duration-500',
-                    aiSpeaking ? 'bg-primary/10 ring-2 ring-primary/20' : 'bg-muted/30')}
-                >
-                  {aiSpeaking ? (
-                    <motion.div className="h-8 w-8 rounded-full bg-primary/30" animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 0.6 }} />
-                  ) : (
-                    <span className="text-[10px] text-muted-foreground">AI</span>
-                  )}
-                </motion.div>
-                <span className="text-[10px] text-muted-foreground">Interviewer</span>
-                {/* Waveform bars for AI */}
-                <div className="flex h-6 items-end justify-center gap-[2px]">
-                  {Array.from({ length: 12 }).map((_, i) => {
-                    const freq = analyzer.speakerFrequencies[i * 4] ?? 0;
-                    const h = aiSpeaking ? Math.max(2, (freq / 255) * 100) : 2;
-                    return (
-                      <motion.div key={i} className="w-[3px] rounded-full bg-primary/60"
-                        animate={{ height: `${h}%` }} transition={{ type: 'spring', stiffness: 300, damping: 20 }} />
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Center state */}
-              <div className="flex flex-col items-center min-w-[100px]">
-                {aiSpeaking ? (
-                  <span className="text-xs font-medium text-primary">Speaking</span>
-                ) : isListening ? (
-                  <span className="text-xs font-medium text-emerald-500">
-                    {micVad === 'loud' || micVad === 'speaking' ? 'Speaking' : 'Listening'}
-                  </span>
-                ) : isAIThinking ? (
-                  <motion.span key={thinkMsg} initial={{ opacity: 0, y: 3 }} animate={{ opacity: 1, y: 0 }}
-                    className="text-xs text-muted-foreground text-center">{thinkMsg}</motion.span>
-                ) : (
-                  <span className="text-xs text-muted-foreground">Waiting</span>
-                )}
-              </div>
-
-              {/* Candidate side */}
-              <div className="flex flex-col items-center gap-2">
-                <motion.div
-                  animate={micActive ? { scale: 1 + micLevel * 0.15 } : { scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  className={cn('flex h-20 w-20 items-center justify-center rounded-full transition-all duration-300',
-                    micActive ? 'bg-emerald-500/15 ring-2 ring-emerald-500/25' : 'bg-muted/30')}
-                >
-                  {micActive ? (
-                    <motion.div className="h-8 w-8 rounded-full bg-emerald-500/40"
-                      animate={{ scale: [1, 1 + micLevel * 0.5, 1] }} transition={{ repeat: Infinity, duration: 0.5, ease: 'easeInOut' }} />
-                  ) : (
-                    <Mic className="h-8 w-8 text-muted-foreground/40" />
-                  )}
-                </motion.div>
-                <span className="text-[10px] text-muted-foreground">You</span>
-                {/* Waveform bars for mic */}
-                <div className="flex h-6 items-end justify-center gap-[2px]">
-                  {Array.from({ length: 12 }).map((_, i) => {
-                    const freq = analyzer.micFrequencies[i * 4] ?? 0;
-                    const h = micActive ? Math.max(2, (freq / 255) * 100) : 2;
-                    return (
-                      <motion.div key={i} className="w-[3px] rounded-full bg-emerald-500/60"
-                        animate={{ height: `${h}%` }} transition={{ type: 'spring', stiffness: 300, damping: 20 }} />
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Transcript */}
-            <div ref={transcriptRef} className="flex-1 space-y-3 overflow-y-auto rounded-2xl bg-muted/20 p-4" style={{ maxHeight: '50vh' }}>
-              <AnimatePresence>
-                {transcription.length === 0 && !currentPartial && (
-                  <div className="flex h-full items-center justify-center text-xs text-muted-foreground/40">
-                    {aiSpeaking ? 'Interviewer is speaking…' : 'Your conversation will appear here'}
-                  </div>
+        <AnimatePresence>
+          {transcriptOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div ref={transcriptRef} className="space-y-3 overflow-y-auto px-8 pb-4" style={{ maxHeight: '30vh' }}>
+                {!hasTranscript && (
+                  <p className="py-8 text-center text-xs text-white/10">
+                    {aiSpeaking ? 'Interviewer is speaking…' : 'Speak to begin the conversation'}
+                  </p>
                 )}
                 {transcription.map((entry) => (
-                  <motion.div key={entry.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                    className={cn('flex', entry.role === 'candidate' ? 'justify-end' : 'justify-start')}>
-                    <div className={cn('max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
-                      entry.role === 'candidate' ? 'rounded-tr-md bg-primary text-primary-foreground' : 'rounded-tl-md bg-card border border-border/50')}>
-                      <span className="text-[10px] font-medium uppercase tracking-wider opacity-50">{entry.role === 'candidate' ? 'You' : 'Interviewer'}</span>
+                  <motion.div
+                    key={entry.id}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={cn('flex', entry.role === 'candidate' ? 'justify-end' : 'justify-start')}
+                  >
+                    <div className={cn(
+                      'max-w-[70%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
+                      entry.role === 'candidate'
+                        ? 'rounded-tr-md bg-white/10 text-white/80'
+                        : 'rounded-tl-md bg-white/[0.03] text-white/50',
+                    )}>
+                      <span className="text-[10px] font-medium uppercase tracking-wider opacity-30">
+                        {entry.role === 'candidate' ? 'You' : 'Interviewer'}
+                      </span>
                       <p className="mt-0.5">{entry.text}</p>
                     </div>
                   </motion.div>
                 ))}
                 {currentPartial && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
-                    <div className="max-w-[80%] rounded-2xl rounded-tl-md bg-card border border-border/50 px-4 py-2.5 text-sm italic text-muted-foreground">{currentPartial}</div>
+                    <div className="max-w-[70%] rounded-2xl rounded-tl-md bg-white/[0.03] px-4 py-2.5 text-sm italic text-white/25">
+                      {currentPartial}
+                    </div>
                   </motion.div>
                 )}
-              </AnimatePresence>
-            </div>
-          </div>
-        )}
-
-        {/* Error */}
-        {error && (
-          <div className="text-center mx-4">
-            <AlertTriangle className="h-10 w-10 text-destructive mx-auto mb-3" />
-            <p className="text-sm text-destructive mb-4">{error}</p>
-            <div className="flex gap-3 justify-center">
-              <Button variant="outline" size="sm" onClick={onReconnect}>Retry Connection</Button>
-              {onStartDemo && <Button size="sm" onClick={onStartDemo}>Try Demo Mode</Button>}
-            </div>
-          </div>
-        )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
