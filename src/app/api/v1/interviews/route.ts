@@ -12,8 +12,8 @@ export async function POST(req: NextRequest) {
       type: body.type ?? 'BEHAVIORAL',
       targetRole: body.targetRole,
       experienceLevel: body.experienceLevel,
-      status: body.scheduledAt ? 'SCHEDULED' : undefined,
-      scheduledAt: body.scheduledAt,
+      status: body.scheduledAt ? ('SCHEDULED' as const) : undefined,
+      scheduledAt: body.scheduledAt ? new Date(body.scheduledAt) : undefined,
     });
     return apiSuccess(interview, 201);
   } catch (error) {

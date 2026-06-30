@@ -17,6 +17,8 @@ export const interviewRepository = {
     type: InterviewType;
     targetRole?: string;
     experienceLevel?: ExperienceLevel;
+    status?: InterviewStatus;
+    scheduledAt?: string | Date;
   }) {
     const session = await prisma.interviewSession.create({ data });
     // Invalidate user's interview list cache
