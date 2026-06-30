@@ -1,14 +1,38 @@
-/**
- * GET /api/v1/interviews/:id/transcript
- *
- * TODO: Implement in Phase 3.
- */
+import { NextRequest } from 'next/server';
+import { apiSuccess, apiError } from '@/lib/api/route-helpers';
+import { getSession } from '@/lib/api/get-session';
+import { prisma } from '@/database/client';
+import { NotFoundError } from '@/lib/errors';
 
-import { NextResponse } from 'next/server';
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const session = await getSession();
+    const { id } = await params;
 
-export async function GET() {
-  return NextResponse.json(
-    { detail: 'Not yet implemented', code: 'NOT_IMPLEMENTED' },
-    { status: 501 },
-  );
+    const interview = await prisma.interviewSession.findFirst({
+      where: { id, userId: session.id },
+    });
+
+    if (!interview) throw new NotFoundError('Interview session', id);
+
+    const entries = await prisma.transcriptEntry.findMany({
+      where: { sessionId: id },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    return apiSuccess({
+      sessionId: id,
+      entries: entries.map((e) => ({
+        id: e.id,
+        role: e.role,
+        content: e.content,
+        createdAt: e.createdAt,
+      })),
+    });
+  } catch (error) {
+    return apiError(error);
+  }
 }

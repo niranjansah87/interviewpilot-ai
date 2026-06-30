@@ -31,6 +31,7 @@ const serverSchema = z.object({
   VOICE_FALLBACK_PROVIDER: z.enum(['elevenlabs', 'openai', 'mock']).default('mock'),
   CACHE_PROVIDER: z.enum(['memory', 'redis']).default('memory'),
   REDIS_URL: z.string().url().optional(),
+  DEEPSEEK_API_KEY: z.string().optional(),
   SENTRY_DSN: z.string().url().optional(),
   SENTRY_ENVIRONMENT: z.string().optional(),
   RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().default(60),

@@ -27,6 +27,8 @@ export async function POST(req: NextRequest) {
     if (body.interview_type) dynamicVars.interview_type = safe(body.interview_type);
     if (body.role) dynamicVars.role = safe(body.role);
     if (body.level) dynamicVars.level = safe(body.level);
+    if (body.candidate_name) dynamicVars.candidate_name = safe(body.candidate_name);
+    if (body.resume_context) dynamicVars.resume_context = body.resume_context.slice(0, 3000);
 
     const requestBody: Record<string, unknown> = {};
     if (Object.keys(dynamicVars).length > 0) {

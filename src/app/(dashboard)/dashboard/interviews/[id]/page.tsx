@@ -23,8 +23,18 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
   const [interview, setInterview] = useState<Interview | null>(null);
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState(false);
+  const [hasResume, setHasResume] = useState<boolean | null>(null);
+  const [skipResume, setSkipResume] = useState(false);
 
   const voiceSession = useInterviewSession(id);
+
+  useEffect(() => {
+    // Check if user has resume
+    fetch('/api/v1/users/me/resume', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => setHasResume(!!d?.data?.text))
+      .catch(() => setHasResume(false));
+  }, []);
 
   useEffect(() => {
     fetch(`/api/v1/interviews/${id}`, { credentials: 'include' })
@@ -110,8 +120,27 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
         <Badge variant={statusVariant as never}>{interview.status}</Badge>
       </div>
 
-      {canStart && (
-        <Card className="border-primary/30 bg-primary/5">
+      {canStart && hasResume === false && !skipResume && (
+        <Card className="rounded-2xl border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+          <CardContent className="flex items-center justify-between py-5">
+            <div>
+              <CardTitle className="text-base text-amber-700 dark:text-amber-300">Add your resume?</CardTitle>
+              <p className="text-sm text-amber-600 dark:text-amber-400">
+                Your resume helps the AI ask personalized questions about your experience. It only takes a minute.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button variant="outline" size="sm" onClick={() => setSkipResume(true)}>Skip</Button>
+              <Button size="sm" asChild>
+                <Link href="/dashboard/profile/resume">Add Resume</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {canStart && (hasResume || skipResume || hasResume === null) && (
+        <Card className="border-primary/30 bg-primary/5 rounded-2xl">
           <CardContent className="flex items-center justify-between py-6">
             <div>
               <CardTitle className="text-lg">Ready to begin</CardTitle>

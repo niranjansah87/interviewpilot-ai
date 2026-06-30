@@ -59,6 +59,7 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  resume       Resume?
   sessions     InterviewSession[]
   refreshTokens RefreshToken[]
 
@@ -122,6 +123,31 @@ model FeedbackReport {
   session InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@map("feedback_reports")
+}
+
+/// Parsed resume / CV data for interview context.
+model Resume {
+  id        String   @id @default(cuid())
+  userId    String   @unique @map("user_id")
+  rawText   String   @map("raw_text") @db.Text
+  fullName  String?  @map("full_name") @db.VarChar(255)
+  email     String?  @db.VarChar(255)
+  phone     String?  @db.VarChar(50)
+  location  String?  @db.VarChar(255)
+  summary   String?  @db.Text
+  skills    Json     @default("[]")
+  experience Json    @default("[]")
+  education Json     @default("[]")
+  projects  Json     @default("[]")
+  linkedin  String?  @db.VarChar(500)
+  github    String?  @db.VarChar(500)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("resumes")
 }
 
 /// Refresh tokens for JWT rotation.

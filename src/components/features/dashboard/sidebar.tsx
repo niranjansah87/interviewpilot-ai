@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { cn } from '@/lib/cn';
-import { LayoutDashboard, Mic, History, Settings, User, LogOut, PanelLeftClose, PanelLeft } from 'lucide-react';
+import { LayoutDashboard, Mic, History, Settings, User, LogOut, PanelLeftClose, PanelLeft, FileText } from 'lucide-react';
 import { useState, useCallback } from 'react';
 
 const NAV = [
@@ -12,6 +12,7 @@ const NAV = [
   { href: '/dashboard/interviews/new', label: 'New Interview', icon: Mic },
   { href: '/dashboard/interviews', label: 'History', icon: History },
   { href: '/dashboard/profile', label: 'Profile', icon: User },
+  { href: '/dashboard/profile/resume', label: 'Resume', icon: FileText },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
