@@ -43,8 +43,8 @@ export function Sidebar() {
       {/* Logo + collapse */}
       <div className="flex h-14 items-center justify-center">
         <Link href="/dashboard" className="group">
-          <Image src="/logo_dark.png" alt="InterviewPilot" width={56} height={56} className="hidden shrink-0 dark:block transition-transform duration-300 group-hover:scale-110" />
-          <Image src="/logo_light.png" alt="InterviewPilot" width={56} height={56} className="block shrink-0 dark:hidden transition-transform duration-300 group-hover:scale-110" />
+          <Image src="/logo_dark.png" alt="InterviewPilot" width={60} height={60} className="hidden shrink-0 dark:block transition-transform duration-300 group-hover:scale-110" />
+          <Image src="/logo_light.png" alt="InterviewPilot" width={60} height={60} className="block shrink-0 dark:hidden transition-transform duration-300 group-hover:scale-110" />
         </Link>
       </div>
 

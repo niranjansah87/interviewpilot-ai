@@ -22,6 +22,26 @@ const aiLogger = logger.child({ provider: 'elevenlabs' });
 
 const ELEVENLABS_WS = 'wss://api.elevenlabs.io/v1/convai/conversation';
 
+/** Sanitize user-supplied values before injecting into agent prompt context. */
+function sanitizeDynamicVar(value: string): string {
+  // Allow only alphanumeric, spaces, and safe punctuation
+  const cleaned = value
+    .replace(/[\x00-\x1f\x7f]/g, '')     // strip control characters
+    .replace(/[^\w .,'\-+#/()&]/g, '')   // allow only safe chars
+    .trim()
+    .slice(0, 100);                       // max 100 chars
+
+  if (cleaned !== value) {
+    aiLogger.warn({
+      msg: 'Dynamic variable sanitized — possible injection attempt',
+      original: value.slice(0, 200),
+      cleaned,
+    });
+  }
+
+  return cleaned;
+}
+
 export const elevenlabsAdapter: AIProvider = {
   name: 'elevenlabs',
 
@@ -47,8 +67,14 @@ export const elevenlabsAdapter: AIProvider = {
   async connectToSession(
     sessionId: string,
     onEvent: RealtimeEventHandler,
+    config?: RealtimeSessionConfig,
   ): Promise<RealtimeConnection> {
-    const conn = new ElevenLabsConnection(sessionId, onEvent);
+    const conn = new ElevenLabsConnection(sessionId, {
+      type: config?.type,
+      role: config?.targetRole,
+      level: config?.experienceLevel,
+      candidateName: config?.candidateName,
+    }, onEvent);
     await conn.initialize();
     return conn;
   },
@@ -62,6 +88,13 @@ export const elevenlabsAdapter: AIProvider = {
 
 // ---- ElevenLabs WebSocket Connection ----
 
+interface DynamicConfig {
+  type?: string;
+  role?: string;
+  level?: string;
+  candidateName?: string;
+}
+
 class ElevenLabsConnection implements RealtimeConnection {
   readonly sessionId: string;
   status: RealtimeSession['status'] = 'connecting';
@@ -72,9 +105,11 @@ class ElevenLabsConnection implements RealtimeConnection {
   private handlers: RealtimeEventHandler[] = [];
   private audioQueue: AudioBuffer[] = [];
   private playing = false;
+  private config: DynamicConfig;
 
-  constructor(sessionId: string, onEvent: RealtimeEventHandler) {
+  constructor(sessionId: string, config: DynamicConfig, onEvent: RealtimeEventHandler) {
     this.sessionId = sessionId;
+    this.config = config;
     this.handlers.push(onEvent);
   }
 
@@ -89,10 +124,32 @@ class ElevenLabsConnection implements RealtimeConnection {
     }
 
     try {
-      // Create signed URL for the conversation
+      // Build dynamic variables — sanitize all user-supplied values
+      const dynamicVars: Record<string, string> = {};
+      if (this.config.type) dynamicVars.interview_type = sanitizeDynamicVar(this.config.type);
+      if (this.config.role) dynamicVars.role = sanitizeDynamicVar(this.config.role);
+      if (this.config.level) dynamicVars.level = sanitizeDynamicVar(this.config.level);
+      if (this.config.candidateName) dynamicVars.candidate_name = sanitizeDynamicVar(this.config.candidateName);
+
+      // Create signed URL with dynamic variables via config override
+      const overrideBody: Record<string, unknown> = {};
+      if (Object.keys(dynamicVars).length > 0) {
+        overrideBody.conversation_config_override = {
+          agent: {
+            dynamic_variables: {
+              dynamic_variable_placeholders: dynamicVars,
+            },
+          },
+        };
+      }
+
       const signRes = await fetch(
         `https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=${agentId}`,
-        { headers: { 'xi-api-key': apiKey } },
+        {
+          method: 'POST',
+          headers: { 'xi-api-key': apiKey, 'Content-Type': 'application/json' },
+          body: Object.keys(overrideBody).length > 0 ? JSON.stringify(overrideBody) : undefined,
+        },
       );
 
       if (!signRes.ok) {

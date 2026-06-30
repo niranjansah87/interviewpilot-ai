@@ -27,6 +27,11 @@ export interface RealtimeSessionConfig {
     prefixPaddingMs?: number;
     silenceDurationMs?: number;
   };
+  /** Dynamic variables passed to ElevenLabs agent for session personalization */
+  type?: string;
+  targetRole?: string;
+  experienceLevel?: string;
+  candidateName?: string;
 }
 
 export interface RealtimeSession {

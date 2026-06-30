@@ -58,3 +58,16 @@ export const cursorSchema = z.object({
   cursor: uuidSchema.optional(),
   limit: z.coerce.number().int().positive().max(50).default(10),
 });
+
+// ---------------------------------------------------------------------------
+// AI-safe text — prevents prompt injection in dynamic variables
+// ---------------------------------------------------------------------------
+
+/** Reject newlines and control characters to prevent prompt breakout. */
+const SAFE_TEXT_PATTERN = /^[a-zA-Z0-9 .,'\-+#/()&]+$/;
+
+export const safeTextField = z
+  .string()
+  .max(100, 'Must be 100 characters or fewer')
+  .regex(SAFE_TEXT_PATTERN, 'Contains invalid characters')
+  .optional();

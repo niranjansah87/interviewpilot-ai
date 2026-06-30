@@ -185,16 +185,23 @@ export function VoiceInterface({
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     className={cn(
-                      'max-w-[85%] rounded-lg px-4 py-3 text-sm',
-                      entry.role === 'interviewer'
-                        ? 'bg-muted mr-auto'
-                        : 'bg-primary/10 ml-auto',
+                      'flex flex-col max-w-[80%]',
+                      entry.role === 'interviewer' ? 'items-start mr-auto' : 'items-end ml-auto',
                     )}
                   >
-                    <p className="mb-1 text-xs font-medium text-muted-foreground">
+                    <span className="mb-0.5 px-1 text-[10px] font-medium text-muted-foreground">
                       {entry.role === 'interviewer' ? 'Interviewer' : 'You'}
-                    </p>
-                    <p>{entry.text}</p>
+                    </span>
+                    <div
+                      className={cn(
+                        'rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
+                        entry.role === 'interviewer'
+                          ? 'rounded-tl-md bg-muted text-foreground'
+                          : 'rounded-tr-md bg-primary text-primary-foreground',
+                      )}
+                    >
+                      {entry.text}
+                    </div>
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -204,10 +211,12 @@ export function VoiceInterface({
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="max-w-[85%] mr-auto rounded-lg bg-muted px-4 py-3 text-sm italic"
+                  className="flex flex-col items-start max-w-[80%] mr-auto"
                 >
-                  <p className="mb-1 text-xs font-medium text-muted-foreground">Interviewer</p>
-                  <p>{currentPartial}</p>
+                  <span className="mb-0.5 px-1 text-[10px] font-medium text-muted-foreground">Interviewer</span>
+                  <div className="rounded-2xl rounded-tl-md bg-muted px-4 py-2.5 text-sm leading-relaxed italic">
+                    {currentPartial}
+                  </div>
                 </motion.div>
               )}
             </div>
