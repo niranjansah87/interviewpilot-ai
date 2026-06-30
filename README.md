@@ -10,7 +10,7 @@ InterviewPilot AI lets candidates practice interviews with an AI interviewer usi
 
 ### Voice Interviews
 
-Natural voice conversations powered by **OpenAI Realtime API** and **ElevenLabs ConvAI** — with automatic provider fallback. Interruptible, low-latency, and context-aware.
+Natural voice conversations powered by **ElevenLabs ConvAI** — the primary voice provider. Features real-time audio visualization using Web Audio API, local Voice Activity Detection (VAD), and instant barge-in support. OpenAI Realtime API available as fallback.
 
 ### Adaptive Conversation Engine
 
@@ -58,7 +58,7 @@ After every completed interview:
 | ORM        | Prisma 6                                |
 | Database   | PostgreSQL (Supabase)                   |
 | Cache      | Redis (ioredis) with in-memory fallback |
-| AI Voice   | OpenAI Realtime API, ElevenLabs ConvAI  |
+| AI Voice   | ElevenLabs ConvAI, OpenAI Realtime (fallback) |
 | AI Text    | GPT-4 / GPT-4.1 (feedback generation)   |
 | Auth       | JWT (jose), bcrypt, SHA-256             |
 | Validation | Zod v4                                  |
@@ -83,8 +83,8 @@ Next.js 16 (App Router)
    ├── Prisma ORM → PostgreSQL (Supabase)
    │
    ├── AI Provider Abstraction
-   │   ├── OpenAI Realtime adapter (WebSocket, STT + TTS)
-   │   └── ElevenLabs ConvAI adapter (WebSocket, TTS)
+   │   ├── ElevenLabs ConvAI adapter (WebSocket, STT + TTS)
+   │   └── OpenAI adapter (feedback generation, fallback)
    │
    ├── Conversation Engine
    │   ├── State machine (7 states, 9 events)
@@ -265,7 +265,7 @@ Authentication, database schema, UI components, caching, error handling, API rou
 
 ### 🚧 Phase 3 — AI Interview Engine (In Progress)
 
-Voice conversation via OpenAI Realtime + ElevenLabs, state machine, prompt library, context engine, transcript storage.
+Voice conversation via ElevenLabs ConvAI, state machine, prompt library, context engine, transcript storage.
 
 ### ⬜ Phase 4 — Feedback System
 
@@ -274,6 +274,14 @@ GPT-4 feedback reports, transcript viewer, score visualizations.
 ### ⬜ Phase 5 — Production Readiness
 
 Rate limiting, E2E tests, Redis production cache, security hardening, bundle optimization.
+
+### ✅ Phase 4 — Feedback System
+
+GPT-4 feedback reports, transcript viewer, score visualizations.
+
+### ✅ Phase 5 — Production Readiness
+
+Rate limiting, CSRF, Redis caching, security hardening.
 
 ### ⬜ Future
 
