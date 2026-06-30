@@ -127,13 +127,13 @@ src/
 │   └── features/                # Header, Sidebar, VoiceInterface
 ├── hooks/                        # useInterviewSession
 ├── lib/
-│   ├── ai/                      # Provider interface + adapters (OpenAI, ElevenLabs)
+│   ├── ai/                      # Provider interface + adapters (ElevenLabs, OpenAI)
 │   ├── auth/                    # JWT, bcrypt, cookies, CSRF, session
 │   ├── conversation/            # Engine, context, prompts, token manager
 │   ├── api/                     # Route helpers, rate limiting, session extraction
 │   ├── errors.ts                # 9-class error hierarchy
 │   ├── startup-health.ts        # Infrastructure health checks
-│   └── ...                      # cn, time, request-id, api-response
+│   └── ...                      # cn, time, request-id, audio/runtime
 ├── services/                     # Auth + interview business logic
 ├── repositories/                 # Prisma data access (user, interview, refresh-token)
 ├── cache/                        # CacheProvider interface, Redis + Memory implementations
@@ -265,15 +265,7 @@ Authentication, database schema, UI components, caching, error handling, API rou
 
 ### 🚧 Phase 3 — AI Interview Engine (In Progress)
 
-Voice conversation via ElevenLabs ConvAI, state machine, prompt library, context engine, transcript storage.
-
-### ⬜ Phase 4 — Feedback System
-
-GPT-4 feedback reports, transcript viewer, score visualizations.
-
-### ⬜ Phase 5 — Production Readiness
-
-Rate limiting, E2E tests, Redis production cache, security hardening, bundle optimization.
+Voice conversation via ElevenLabs ConvAI, audio runtime with real VAD, barge-in support, state machine, prompt library, context engine, transcript storage.
 
 ### ✅ Phase 4 — Feedback System
 
