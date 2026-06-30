@@ -76,7 +76,12 @@ export const authService = {
    * Refresh tokens using a valid refresh token.
    */
   async refresh(token: string) {
-    const payload = await verifyRefreshToken(token);
+    let payload;
+    try {
+      payload = await verifyRefreshToken(token);
+    } catch {
+      throw new AuthenticationError('Invalid or expired refresh token');
+    }
     const tokenHash = hashToken(token);
     const stored = await refreshTokenRepository.findByHash(tokenHash);
 
