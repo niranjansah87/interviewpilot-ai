@@ -1,8 +1,24 @@
+<p align="center"><img src="public/logo_dark.png" alt="InterviewPilot AI" width="64" /></p>
+
 # InterviewPilot AI
 
 > AI-powered voice interview platform that simulates realistic technical and behavioral interviews through dynamic, adaptive conversations.
 
 InterviewPilot AI lets candidates practice interviews with an AI interviewer using natural voice conversations. Unlike platforms that rely on static question banks, InterviewPilot generates contextual follow-up questions, adapts to candidate responses in real time, and delivers detailed feedback reports with scores, strengths, and improvement suggestions.
+
+---
+
+## Screenshots
+
+![Dashboard](screenshots/dashboard.png)
+![New Interview](screenshots/new%20interview.png)
+![Voice Interview](screenshots/interview%20page.png)
+![Feedback Report](screenshots/feedback.png)
+![Settings](screenshots/settings.png)
+![Profile](screenshots/profile.png)
+![History](screenshots/history%20page.png)
+![Resume](screenshots/resume.png)
+![Post-Interview](screenshots/feedback%20after%20interview.png)
 
 ---
 
