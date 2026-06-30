@@ -5,9 +5,8 @@
   "type": "module",
   "packageManager": "pnpm@9.0.0",
   "scripts": {
-    "predev": "npx prisma generate",
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
@@ -26,6 +25,7 @@
     "cleanup": "tsx scripts/cleanup.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "postinstall": "prisma generate || true",
     "prepare": "husky || true"
   },
   "dependencies": {

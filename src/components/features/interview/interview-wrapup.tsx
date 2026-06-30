@@ -64,24 +64,26 @@ export function InterviewWrapUp({ candidateName, interviewType, interviewId, onC
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.3 }}
-              className="mx-auto mb-8 flex h-24 w-24 items-center justify-center"
+              className="mx-auto mb-8"
             >
-              <div className="relative">
+              <div className="relative mx-auto flex h-20 w-20 items-center justify-center">
+                {/* Rotating dashed ring */}
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
-                  className="absolute -inset-8 opacity-20"
+                  transition={{ repeat: Infinity, duration: 6, ease: 'linear' }}
+                  className="absolute inset-0"
                 >
-                  <svg width="96" height="96" viewBox="0 0 96 96">
-                    <circle cx="48" cy="48" r="44" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="8 6" className="text-primary" />
+                  <svg width="80" height="80" viewBox="0 0 80 80" className="text-primary/30">
+                    <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="6 4" />
                   </svg>
                 </motion.div>
+                {/* Pulsing sparkle icon */}
                 <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
+                  animate={{ scale: [1, 1.15, 1] }}
                   transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-                  className="relative z-10 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10"
+                  className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10"
                 >
-                  <Sparkles className="h-8 w-8 text-primary" />
+                  <Sparkles className="h-7 w-7 text-primary" />
                 </motion.div>
               </div>
             </motion.div>
