@@ -123,7 +123,7 @@ export default function ResumePage() {
         <textarea
           value={text}
           onChange={(e) => handleTextChange(e.target.value)}
-          placeholder="Paste your resume here, or upload a .txt file. Include work experience, education, skills, and projects."
+          placeholder="Paste your resume here, or upload PDF/DOCX/TXT. Include work experience, education, skills, and projects."
           className="h-full w-full resize-none rounded-xl border border-border/40 bg-card p-4 text-sm leading-relaxed shadow-sm placeholder:text-muted-foreground/40 focus:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/5"
         />
         <div className="absolute bottom-2 right-3 flex items-center gap-2 text-[11px] text-muted-foreground/50">
