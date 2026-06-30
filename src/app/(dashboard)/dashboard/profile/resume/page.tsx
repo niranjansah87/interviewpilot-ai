@@ -53,7 +53,10 @@ export default function ResumePage() {
       } else if (file.name.endsWith('.pdf')) {
         const arrayBuffer = await file.arrayBuffer();
         const pdfjsLib = await import('pdfjs-dist');
-        const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+        // Disable worker for simple text extraction (works without separate worker file)
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@4.0.379/build/pdf.worker.min.mjs';
+        const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) });
+        const pdf = await loadingTask.promise;
         const pages: string[] = [];
         for (let i = 1; i <= pdf.numPages; i++) {
           const page = await pdf.getPage(i);
@@ -76,7 +79,10 @@ export default function ResumePage() {
       setStats(analyzeResume(extracted));
       autoSave(extracted);
       toast.success(`Parsed — ${extracted.split(/\\s+/).filter(Boolean).length} words`);
-    } catch { toast.error('Failed to parse file. Try pasting as text.'); }
+    } catch (err) {
+      console.error('Resume parse error:', err);
+      toast.error('Failed to parse file. Try pasting as text.');
+    }
     finally { setParsing(false); }
   };
 
