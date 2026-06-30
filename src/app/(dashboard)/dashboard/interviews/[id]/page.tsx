@@ -213,7 +213,7 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
         </div>
         <div className="flex items-center gap-3">
           <Badge variant={statusVariant as never} className="text-xs">{interview.status}</Badge>
-          {(interview.status === 'CREATED' || interview.status === 'READY') && (
+          {(interview.status === 'CREATED' || interview.status === 'READY' || interview.status === 'SCHEDULED') && (
             <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
           )}
         </div>
@@ -275,7 +275,10 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
                 Your {interview.type?.toLowerCase()} interview for {interview.targetRole || 'your role'} is configured.
               </p>
             </div>
-            <Button size="lg" onClick={() => setActive(true)} className="rounded-xl px-8">Begin Interview</Button>
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
+              <Button size="lg" onClick={() => setActive(true)} className="rounded-xl px-8">Begin Interview</Button>
+            </div>
           </div>
         </div>
       )}
@@ -303,6 +306,7 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
                   }
                 }} />
               {isPastScheduled && <Button size="lg" onClick={() => setActive(true)} className="rounded-xl">Start Now</Button>}
+              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => setShowCancelDialog(true)}>Cancel</Button>
             </div>
           </div>
         </div>
