@@ -20,10 +20,11 @@ export interface AudioLevels {
 type LevelCallback = (levels: AudioLevels) => void;
 type VADCallback = (state: VADState) => void;
 
-const SMOOTHING = 0.85; // Exponential moving average factor
-const SILENCE_THRESHOLD = 0.005; // RMS below this = silence
-const LOW_THRESHOLD = 0.02; // RMS below this = low speech
-const LOUD_THRESHOLD = 0.15; // RMS above this = loud
+const SMOOTHING = 0.90; // Heavier smoothing — less jittery
+const SILENCE_THRESHOLD = 0.01; // RMS below this = silence
+const LOW_THRESHOLD = 0.04; // RMS below this = low speech (breathing, keyboard)
+const SPEAK_THRESHOLD = 0.07; // RMS above this = actual speech
+const LOUD_THRESHOLD = 0.20; // RMS above this = loud
 
 export class AudioRuntimeManager {
   private ctx: AudioContext | null = null;
@@ -147,6 +148,7 @@ export class AudioRuntimeManager {
     let vad: VADState;
     if (smoothedMic < SILENCE_THRESHOLD) vad = 'silence';
     else if (smoothedMic < LOW_THRESHOLD) vad = 'low';
+    else if (smoothedMic < SPEAK_THRESHOLD) vad = 'speaking';
     else if (smoothedMic > LOUD_THRESHOLD) vad = 'loud';
     else vad = 'speaking';
 
