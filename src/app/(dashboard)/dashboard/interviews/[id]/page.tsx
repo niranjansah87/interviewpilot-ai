@@ -29,6 +29,7 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
   const [showingWrapUp, setShowingWrapUp] = useState(false);
   const [hasResume, setHasResume] = useState<boolean | null>(null);
   const [skipResume, setSkipResume] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const voiceSession = useInterviewSession(id);
 
@@ -140,8 +141,6 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
     setShowingWrapUp(false);
     router.push(`/dashboard/interviews/${id}/report`);
   };
-
-  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const handleCancel = async () => {
     try {

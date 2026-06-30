@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { Mic, MicOff, Phone, Clock, ChevronUp, ChevronDown, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAudioAnalyzer } from '@/hooks/use-audio-analyzer';
@@ -177,6 +178,18 @@ export function VoiceInterface({
                   : 'bg-white/[0.02] ring-1 ring-white/[0.04]',
               )}
             >
+              {/* Rotating speaking ring */}
+              {aiSpeaking && (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 4, ease: 'linear' }}
+                  className="absolute -inset-3"
+                >
+                  <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                    <circle cx="60" cy="60" r="56" stroke="#60a5fa" strokeWidth="2" strokeDasharray="12 8" opacity="0.4" />
+                  </svg>
+                </motion.div>
+              )}
               {/* Breathing ring */}
               {aiSpeaking && (
                 <motion.div
@@ -185,17 +198,9 @@ export function VoiceInterface({
                   className="absolute inset-0 rounded-full bg-blue-500/10"
                 />
               )}
-              {/* AI indicator */}
-              <motion.div
-                animate={aiSpeaking ? { scale: [1, 1.15, 1] } : { scale: 1 }}
-                transition={{ repeat: Infinity, duration: 0.8 }}
-                className={cn(
-                  'flex h-12 w-12 items-center justify-center rounded-full text-lg font-light',
-                  aiSpeaking ? 'bg-blue-500/20 text-blue-300' : 'bg-white/[0.03] text-white/15',
-                )}
-              >
-                AI
-              </motion.div>
+              {/* AI avatar image */}
+              <Image src="/ai-interviewer.webp" alt="AI Interviewer" width={96} height={96}
+                className="h-full w-full rounded-full object-cover" />
             </motion.div>
             <span className="text-[11px] font-light tracking-wide text-white/15">Interviewer</span>
             {/* AI waveform */}
@@ -243,6 +248,18 @@ export function VoiceInterface({
                   : 'bg-white/[0.02] ring-1 ring-white/[0.04]',
               )}
             >
+              {/* Rotating speaking ring */}
+              {micActive && (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 3, ease: 'linear' }}
+                  className="absolute -inset-3"
+                >
+                  <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                    <circle cx="60" cy="60" r="56" stroke="#34d399" strokeWidth="2" strokeDasharray="10 6" opacity="0.5" />
+                  </svg>
+                </motion.div>
+              )}
               {micActive && (
                 <motion.div
                   animate={{ scale: [1, 1.25, 1], opacity: [0.15, 0, 0.15] }}
@@ -250,20 +267,9 @@ export function VoiceInterface({
                   className="absolute inset-0 rounded-full bg-emerald-500/10"
                 />
               )}
-              <motion.div
-                animate={micActive ? { scale: 1 + micLevel * 0.2 } : { scale: 1 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                className={cn(
-                  'flex h-12 w-12 items-center justify-center rounded-full',
-                  micActive ? 'bg-emerald-500/20' : 'bg-white/[0.03]',
-                )}
-              >
-                {micActive ? (
-                  <div className="h-5 w-5 rounded-sm bg-emerald-400/60" />
-                ) : (
-                  <Mic className="h-6 w-6 text-white/15" />
-                )}
-              </motion.div>
+              {/* Candidate avatar image */}
+              <Image src="/illustrations/candidate-avatar.svg" alt="Candidate" width={96} height={96}
+                className="h-full w-full rounded-full object-cover" />
             </motion.div>
             <span className="text-[11px] font-light tracking-wide text-white/15">You</span>
             {/* Mic waveform */}
