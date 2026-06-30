@@ -3,50 +3,79 @@
 @tailwind utilities;
 
 /* =============================================================================
-   Design Tokens — Premium AI Palette
+   Design Tokens — InterviewPilot AI
    ============================================================================= */
 
 :root {
-  /* Radius */
+  /* ── Radius ── */
+  --radius-sm: 0.375rem;
   --radius: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
 
-  /* Surface */
+  /* ── Surface (Light) ── */
   --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
+  --background-secondary: 240 5% 97%;
+  --foreground: 240 10% 4%;
   --card: 0 0% 100%;
-  --card-foreground: 240 10% 3.9%;
+  --card-foreground: 240 10% 4%;
+  --surface-elevated: 0 0% 100%;
+  --surface-hover: 240 5% 96%;
   --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 3.9%;
+  --popover-foreground: 240 10% 4%;
 
-  /* Primary — Indigo */
+  /* ── Brand ── */
   --primary: 224 71% 48%;
   --primary-foreground: 0 0% 100%;
+  --primary-hover: 224 71% 44%;
+  --primary-subtle: 224 71% 95%;
 
-  /* Secondary — Slate */
-  --secondary: 240 4.8% 95.9%;
-  --secondary-foreground: 240 5.9% 10%;
+  /* ── Secondary ── */
+  --secondary: 240 5% 96%;
+  --secondary-foreground: 240 6% 10%;
 
-  /* Accent */
-  --accent: 240 4.8% 95.9%;
-  --accent-foreground: 240 5.9% 10%;
+  /* ── Accent ── */
+  --accent: 240 5% 96%;
+  --accent-foreground: 240 6% 10%;
 
-  /* Muted */
-  --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3.8% 46.1%;
+  /* ── Muted ── */
+  --muted: 240 5% 96%;
+  --muted-foreground: 240 4% 46%;
 
-  /* Destructive */
-  --destructive: 0 84.2% 60.2%;
+  /* ── Destructive ── */
+  --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  /* Layout */
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
+  /* ── Borders ── */
+  --border: 240 6% 90%;
+  --border-hover: 240 6% 84%;
+  --input: 240 6% 90%;
   --ring: 224 71% 48%;
 
-  /* Semantic */
+  /* ── Semantic ── */
   --success: 142 71% 35%;
+  --success-foreground: 0 0% 100%;
   --warning: 38 92% 50%;
+  --warning-foreground: 0 0% 100%;
   --info: 199 89% 48%;
+  --info-foreground: 0 0% 100%;
+
+  /* ── Elevation ── */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.03);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.04), 0 4px 6px rgba(0,0,0,0.02);
+  --shadow-xl: 0 20px 25px rgba(0,0,0,0.05), 0 8px 10px rgba(0,0,0,0.02);
+
+  /* ── Motion ── */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
+  --ease-spring: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* =============================================================================
@@ -55,34 +84,49 @@
 
 .dark {
   --background: 240 10% 4%;
+  --background-secondary: 240 8% 6%;
   --foreground: 0 0% 98%;
   --card: 240 10% 6%;
   --card-foreground: 0 0% 98%;
-  --popover: 240 10% 6%;
+  --surface-elevated: 240 8% 8%;
+  --surface-hover: 240 8% 10%;
+  --popover: 240 8% 8%;
   --popover-foreground: 0 0% 98%;
 
   --primary: 224 71% 55%;
   --primary-foreground: 0 0% 100%;
+  --primary-hover: 224 71% 60%;
+  --primary-subtle: 224 30% 12%;
 
   --secondary: 240 4% 12%;
   --secondary-foreground: 0 0% 98%;
 
-  --accent: 240 4% 12%;
+  --accent: 240 4% 14%;
   --accent-foreground: 0 0% 98%;
 
   --muted: 240 4% 14%;
-  --muted-foreground: 240 5% 68%;
+  --muted-foreground: 240 5% 65%;
 
   --destructive: 0 70% 50%;
   --destructive-foreground: 0 0% 100%;
 
   --border: 240 4% 16%;
+  --border-hover: 240 4% 22%;
   --input: 240 4% 16%;
   --ring: 224 71% 55%;
 
-  --success: 142 61% 35%;
-  --warning: 38 82% 45%;
-  --info: 199 79% 48%;
+  --success: 142 61% 40%;
+  --success-foreground: 0 0% 100%;
+  --warning: 38 82% 50%;
+  --warning-foreground: 0 0% 100%;
+  --info: 199 79% 52%;
+  --info-foreground: 0 0% 100%;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+  --shadow: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.4);
+  --shadow-xl: 0 20px 25px rgba(0,0,0,0.5);
 }
 
 /* =============================================================================
@@ -90,12 +134,8 @@
    ============================================================================= */
 
 @layer base {
-  * {
-    border-color: hsl(var(--border));
-  }
-  html {
-    scroll-behavior: smooth;
-  }
+  * { border-color: hsl(var(--border)); }
+  html { scroll-behavior: smooth; }
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
@@ -106,6 +146,7 @@
   :focus-visible {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
+    border-radius: var(--radius-sm);
   }
 }
 
@@ -131,11 +172,10 @@
    ============================================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
