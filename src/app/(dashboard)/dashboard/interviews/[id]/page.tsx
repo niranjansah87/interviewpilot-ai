@@ -130,11 +130,12 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
       console.error('[handleEnd] Failed:', err);
     }
     setInterview(prev => prev ? { ...prev, status: 'COMPLETED' } : prev);
-    setActive(false);
     setShowingWrapUp(true);
+    // active stays true until wrap-up completes — prevents flash of idle UI
   };
 
   const handleWrapUpComplete = () => {
+    setActive(false);
     setShowingWrapUp(false);
     router.push(`/dashboard/interviews/${id}/report`);
   };

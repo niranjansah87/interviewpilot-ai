@@ -504,22 +504,26 @@ function createWebSocketConnection(
   let activeSource: AudioBufferSourceNode | null = null;
   let audioCtx: AudioContext | null = null;
   let nextAudioTime = 0;
-  let bargeInActive = false;
+  let bargeInUntil = 0; // Timestamp — discard audio until this time (cooldown)
   let unsubVAD: (() => void) | null = null;
 
-  // Subscribe to local VAD for instant barge-in (faster than ElevenLabs server VAD)
+  function activateBargeIn() {
+    const now = Date.now();
+    bargeInUntil = now + 1000; // 1 second cooldown — flush all in-flight audio
+    try { activeSource?.stop(); } catch {}
+    activeSource = null;
+    nextAudioTime = 0;
+    const g = audioRuntime.getSpeakerGain();
+    if (g) g.gain.setTargetAtTime(0, (audioRuntime.getContext()?.currentTime ?? 0), 0.02);
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'interrupt' }));
+    }
+  }
+
+  // Subscribe to local VAD for instant barge-in
   unsubVAD = audioRuntime.onVAD((vad) => {
-    // Only barge-in when AI is actually speaking and candidate volume exceeds low threshold
-    if (vad !== 'silence' && vad !== 'low' && !bargeInActive && activeSource !== null) {
-      bargeInActive = true;
-      try { activeSource?.stop(); } catch {}
-      activeSource = null;
-      nextAudioTime = 0;
-      const g = audioRuntime.getSpeakerGain();
-      if (g) g.gain.setTargetAtTime(0, (audioRuntime.getContext()?.currentTime ?? 0), 0.01);
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'interrupt' }));
-      }
+    if ((vad === 'speaking' || vad === 'loud') && activeSource !== null && Date.now() > bargeInUntil) {
+      activateBargeIn();
       callbacks.onUserSpeech();
     }
   });
@@ -532,8 +536,8 @@ function createWebSocketConnection(
   }
 
   function playPCM16(buffer: ArrayBuffer) {
-    // Discard audio if barge-in is active (candidate is speaking)
-    if (bargeInActive) return;
+    // Discard audio during barge-in cooldown (1s after candidate interrupts)
+    if (Date.now() < bargeInUntil) return;
     try {
       const ctx = getAudioCtx();
       const pcm = new Int16Array(buffer);
@@ -592,7 +596,6 @@ function createWebSocketConnection(
           break;
         case 'audio':
           // Deactivate barge-in when agent starts responding
-          bargeInActive = false;
           if (parsed.audio_event?.audio_base_64) {
             const raw = atob(parsed.audio_event.audio_base_64);
             const bytes = new Uint8Array(raw.length);
@@ -602,8 +605,8 @@ function createWebSocketConnection(
           }
           break;
         case 'agent_response':
-          bargeInActive = false;
-          // Restore speaker gain (unmuted from barge-in)
+          // New response starting — clear cooldown, restore gain
+          bargeInUntil = 0;
           const gainNode = audioRuntime.getSpeakerGain();
           if (gainNode) gainNode.gain.setTargetAtTime(1, (audioRuntime.getContext()?.currentTime ?? 0), 0.05);
           if (parsed.agent_response_event?.agent_response) {
@@ -625,17 +628,7 @@ function createWebSocketConnection(
           break;
         case 'user_started_speaking':
         case 'interruption':
-          // Barge-in: discard queued audio, stop playback, mute speaker
-          bargeInActive = true;
-          try { activeSource?.stop(); } catch {}
-          activeSource = null;
-          nextAudioTime = 0;
-          const g = audioRuntime.getSpeakerGain();
-          if (g) g.gain.setTargetAtTime(0, (audioRuntime.getContext()?.currentTime ?? 0), 0.01);
-          // Tell ElevenLabs to stop current response
-          if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'interrupt' }));
-          }
+          activateBargeIn();
           callbacks.onUserSpeech();
           break;
           // Mute speaker gain + stop current source (don't close ctx — mic uses it)

@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Mic, Sparkles, Eye, EyeOff } from 'lucide-react';
+import { handleError } from '@/lib/api/error-handler';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,9 +31,13 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.detail ?? 'Invalid email or password.'); return; }
+      if (!res.ok) {
+        const err = handleError({ status: res.status, detail: data.detail });
+        setError(err.message);
+        return;
+      }
       router.push('/dashboard');
-    } catch { setError('Network error. Please check your connection.'); }
+    } catch (err) { setError(handleError(err).message); }
     finally { setLoading(false); }
   };
 

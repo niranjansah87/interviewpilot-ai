@@ -9,7 +9,7 @@ export function Toaster() {
   return (
     <Sonner
       theme={theme === 'system' ? 'system' : (theme as 'light' | 'dark')}
-      position="bottom-right"
+      position="top-right"
       richColors
       closeButton
       duration={4000}
