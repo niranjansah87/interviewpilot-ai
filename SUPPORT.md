@@ -9,6 +9,7 @@ Thank you for using InterviewPilot AI. Here's how you can get help:
 Found a bug? Please open an issue using the [Bug Report template](.github/ISSUE_TEMPLATE/bug_report.md).
 
 When reporting bugs, please include:
+
 - Clear description of the issue
 - Steps to reproduce
 - Expected vs actual behavior
@@ -20,6 +21,7 @@ When reporting bugs, please include:
 Have an idea for a new feature? We'd love to hear it.
 
 Open an issue using the [Feature Request template](.github/ISSUE_TEMPLATE/feature_request.md) and describe:
+
 - The problem you're trying to solve
 - Your proposed solution
 - Any alternatives you've considered
@@ -27,9 +29,10 @@ Open an issue using the [Feature Request template](.github/ISSUE_TEMPLATE/featur
 ### Questions
 
 For general questions about the project:
+
 1. Check if your question is answered in the [documentation](docs/)
-2. Search [existing issues](https://github.com/NiranjanDevX/interviewpilot-ai/issues) to see if someone else has asked the same thing
-3. Start a new discussion in [GitHub Discussions](https://github.com/NiranjanDevX/interviewpilot-ai/discussions)
+2. Search [existing issues](https://github.com/niranjansah87/interviewpilot-ai/issues) to see if someone else has asked the same thing
+3. Start a new discussion in [GitHub Discussions](https://github.com/niranjansah87/interviewpilot-ai/discussions)
 
 ## Contributing
 
@@ -47,8 +50,8 @@ For security vulnerabilities, please read our [Security Policy](SECURITY.md) and
 
 ## Community
 
-- [GitHub Discussions](https://github.com/NiranjanDevX/interviewpilot-ai/discussions) — General discussion, Q&A
-- [GitHub Issues](https://github.com/NiranjanDevX/interviewpilot-ai/issues) — Bug reports and feature requests
+- [GitHub Discussions](https://github.com/niranjansah87/interviewpilot-ai/discussions) — General discussion, Q&A
+- [GitHub Issues](https://github.com/niranjansah87/interviewpilot-ai/issues) — Bug reports and feature requests
 
 ## Additional Resources
 

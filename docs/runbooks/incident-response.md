@@ -6,12 +6,12 @@
 
 ## Severity Levels
 
-| Level | Definition | Response Time | Example |
-|-------|-----------|-------------|---------|
-| **SEV1** | Full outage, data loss, security breach | 15 minutes | API down, database unreachable |
-| **SEV2** | Major feature broken, significant degradation | 30 minutes | Interviews cannot start, feedback not generating |
-| **SEV3** | Minor feature broken, degradation that has workaround | 4 hours | Slow dashboard, occasional error |
-| **SEV4** | Cosmetic issues, no user impact | Next business day | Typo, minor UI bug |
+| Level    | Definition                                            | Response Time     | Example                                          |
+| -------- | ----------------------------------------------------- | ----------------- | ------------------------------------------------ |
+| **SEV1** | Full outage, data loss, security breach               | 15 minutes        | API down, database unreachable                   |
+| **SEV2** | Major feature broken, significant degradation         | 30 minutes        | Interviews cannot start, feedback not generating |
+| **SEV3** | Minor feature broken, degradation that has workaround | 4 hours           | Slow dashboard, occasional error                 |
+| **SEV4** | Cosmetic issues, no user impact                       | Next business day | Typo, minor UI bug                               |
 
 ---
 
@@ -58,12 +58,12 @@
 
 ## Emergency Contacts
 
-| Role | Contact |
-|------|---------|
-| Engineering Lead | @NiranjanDevX |
-| OpenAI Support | https://help.openai.com |
+| Role             | Contact                        |
+| ---------------- | ------------------------------ |
+| Engineering Lead | @niranjansah87                 |
+| OpenAI Support   | https://help.openai.com        |
 | Supabase Support | https://supabase.com/dashboard |
-| Vercel Support | https://vercel.com/dashboard |
+| Vercel Support   | https://vercel.com/dashboard   |
 
 ---
 
@@ -83,6 +83,7 @@
 ### Disable a feature flag
 
 In `.env.local` or Vercel dashboard:
+
 ```
 FEATURE_VOICE_INTERVIEW=false
 ```

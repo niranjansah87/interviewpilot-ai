@@ -9,7 +9,7 @@ Be respectful. Assume good intent. Constructive feedback only.
 ## Getting Started
 
 ```bash
-git clone https://github.com/NiranjanDevX/interviewpilot-ai.git
+git clone https://github.com/niranjansah87/interviewpilot-ai.git
 cd interviewpilot-ai
 pnpm install
 cp .env.example .env.local   # fill in your values
@@ -20,14 +20,14 @@ pnpm dev                      # http://localhost:3000
 
 ### Required environment variables
 
-| Variable | Description |
-|----------|-------------|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `JWT_SECRET` | Access token signing secret (min 32 chars) |
-| `JWT_REFRESH_SECRET` | Refresh token signing secret (min 32 chars) |
-| `OPENAI_API_KEY` | OpenAI API key |
-| `OPENAI_REALTIME_MODEL` | Realtime model name |
-| `NEXT_PUBLIC_APP_URL` | Application URL |
+| Variable                | Description                                 |
+| ----------------------- | ------------------------------------------- |
+| `DATABASE_URL`          | PostgreSQL connection string                |
+| `JWT_SECRET`            | Access token signing secret (min 32 chars)  |
+| `JWT_REFRESH_SECRET`    | Refresh token signing secret (min 32 chars) |
+| `OPENAI_API_KEY`        | OpenAI API key                              |
+| `OPENAI_REALTIME_MODEL` | Realtime model name                         |
+| `NEXT_PUBLIC_APP_URL`   | Application URL                             |
 
 Optional: `REDIS_URL`, `CACHE_PROVIDER`, `ELEVENLABS_API_KEY`, `VOICE_PROVIDER`, `SENTRY_DSN`.
 
@@ -74,18 +74,21 @@ pnpm test          # Vitest — must pass
 See `docs/engineering/11-CODING_STANDARDS.md` for the full guide. Key points:
 
 ### TypeScript
+
 - Strict mode always on — no `any`
 - Explicit return types on public functions
 - `interface` for object shapes, `type` for unions and aliases
 - `PascalCase` for components and types, `camelCase` for variables and functions
 
 ### React / Next.js
+
 - Functional components only — no classes
 - Server Components by default — `'use client'` only when needed
 - One component per file — filename matches component name
 - Explicit prop types via TypeScript interface
 
 ### API Routes
+
 - Always `async`, always return `Response.json()`
 - Validate all inputs with Zod before processing
 - Use `ApplicationError` subclasses for known errors — throw for unexpected ones
@@ -93,6 +96,7 @@ See `docs/engineering/11-CODING_STANDARDS.md` for the full guide. Key points:
 - Use repository functions for data access — never access Prisma directly from services
 
 ### Logging
+
 - Use Pino (`import { logger } from '@/monitoring/logger'`)
 - Never use `console.log` in application code
 

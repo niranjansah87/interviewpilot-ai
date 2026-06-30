@@ -5,17 +5,17 @@
 # will be automatically requested to review the changes.
 
 # Default owner (all files not matched by more specific rules)
-* @NiranjanDevX
+* @niranjansah87
 
 # Engineering documentation
-docs/engineering/** @NiranjanDevX
-docs/decisions/** @NiranjanDevX
+docs/engineering/** @niranjansah87
+docs/decisions/** @niranjansah87
 
 # Product documentation
-docs/product/** @NiranjanDevX
+docs/product/** @niranjansah87
 
 # GitHub configuration
-.github/** @NiranjanDevX
+.github/** @niranjansah87
 
 # Root-level Markdown files
-*.md @NiranjanDevX
+*.md @niranjansah87
