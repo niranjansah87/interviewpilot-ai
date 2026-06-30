@@ -25,6 +25,8 @@ enum InterviewStatus {
   ACTIVE
   COMPLETED
   FAILED
+  SCHEDULED
+  CANCELLED
 }
 
 enum InterviewType {
@@ -74,6 +76,7 @@ model InterviewSession {
   targetRole       String?         @map("target_role") @db.VarChar(100)
   experienceLevel  ExperienceLevel? @map("experience_level")
   status           InterviewStatus  @default(CREATED)
+  scheduledAt      DateTime?       @map("scheduled_at")
   startedAt        DateTime?       @map("started_at")
   endedAt          DateTime?       @map("ended_at")
   durationSeconds  Int?             @map("duration_seconds")

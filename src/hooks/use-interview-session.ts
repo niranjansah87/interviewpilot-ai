@@ -173,7 +173,6 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
         (processorRef as React.MutableRefObject<ScriptProcessorNode | null>).current = processor;
         (audioCtxRef as React.MutableRefObject<AudioContext | null>).current = audioCtx;
 
-        let audioChunksSent = 0;
         processor.onaudioprocess = (e) => {
           if (ws.readyState === WebSocket.OPEN) {
             const inputData = e.inputBuffer.getChannelData(0);
@@ -189,10 +188,6 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
             }
             const base64 = btoa(binary);
             ws.send(JSON.stringify({ user_audio_chunk: base64 }));
-            audioChunksSent++;
-            if (audioChunksSent % 10 === 1) {
-              console.log('[WS] Sent', audioChunksSent, 'audio events');
-            }
           }
         };
         source.connect(processor);
@@ -202,132 +197,36 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
         processor.connect(silenceGain);
         silenceGain.connect(audioCtx.destination);
 
-        // Build personalized first message
-        const interviewType = (ctx.config.type ?? 'behavioral').toLowerCase();
+        // Send candidate context IMMEDIATELY — before agent starts speaking
+        // This way the agent knows who the candidate is from the first message
+        const name = candidateName || 'the candidate';
+        const type = ctx.config.type ?? 'behavioral';
         const role = ctx.config.targetRole ?? 'this position';
         const level = ctx.config.experienceLevel ?? 'mid';
-        const name = candidateName || 'there';
+        const resume = resumeContext ? ` Resume: ${resumeContext.slice(0, 2000)}` : '';
 
-        const typeSpecificIntro: Record<string, string> = {
-          behavioral: `I'll be asking you about your past experiences, how you handled specific workplace situations, and the impact you made. Use real examples — the more specific, the better.`,
-          technical: `I'll be testing your depth of knowledge, problem-solving approach, and ability to reason through complex technical challenges. Think out loud — your thought process matters as much as the answer.`,
-          mixed: `We'll start with behavioral questions about your experience, then transition into technical topics. This gives me a full picture of both your soft skills and technical depth.`,
-          system_design: `I'll ask you to design systems from scratch — think about requirements, architecture, scaling, trade-offs, and failure modes. Drive the discussion; I'm here to evaluate your architectural thinking.`,
-        };
-
-        const typeIntro = typeSpecificIntro[interviewType] ?? typeSpecificIntro.behavioral!;
-
-        const firstMessage = `Hello ${name}! Welcome to your ${interviewType} interview for the ${role} role at the ${level} level. I'm your interviewer today, and I want you to treat this exactly like a real interview. ${typeIntro} There's no rush — take your time with each response. Deep, thoughtful answers are better than fast ones. I'll ask follow-up questions where I want to understand more. At the end, I'll share some observations and you'll receive a detailed feedback report. Are you ready to begin?`;
-
-        // Build comprehensive system prompt
-        const typeSpecificRules: Record<string, string> = {
-          behavioral: `BEHAVIORAL INTERVIEW RULES:
-- Use the STAR method for every question: Situation, Task, Action, Result
-- Ask for specific, measurable outcomes. Never accept hypothetical answers.
-- Probe with: "What specifically did YOU do?", "What was the impact in numbers?", "What would you do differently?"
-- Cover: leadership, conflict resolution, collaboration, failure recovery, influencing without authority, prioritization, mentorship
-- If the candidate gives a vague answer, push for a concrete example from their past
-- Never ask technical questions. This is purely about behavior and experience.`,
-          technical: `TECHNICAL INTERVIEW RULES:
-- Ask one question at a time. Evaluate reasoning, not just correct answers.
-- Look for: problem decomposition, trade-off analysis, edge case awareness, system thinking, communication clarity
-- For each answer, probe: "What alternatives did you consider?", "How would this scale?", "What are the failure modes?"
-- Scale difficulty to level: fundamentals and growth potential for junior, architecture and leadership for senior, organizational strategy for staff+
-- Never ask trivia, trick questions, or puzzle problems
-- Let the candidate think — silence is productive`,
-          mixed: `MIXED INTERVIEW RULES:
-- First 40% of the session: behavioral questions following STAR methodology
-- Remaining 60%: technical questions appropriate to the role and level
-- Announce the transition clearly: "Let me shift to some technical questions now."
-- Apply behavioral rules during behavioral phase, technical rules during technical phase`,
-          system_design: `SYSTEM DESIGN INTERVIEW RULES:
-- Start broad: "Design X system." Let the candidate drive the conversation.
-- Evaluate: requirements gathering, high-level architecture, component deep-dive, data model, API design, scaling strategy, bottlenecks, failure handling, monitoring
-- Guide with prompts like: "How would this handle 10x traffic?", "What happens if this component fails?", "Walk me through the write path."
-- The candidate should lead 70% of the discussion. You guide, don't dictate.`,
-        };
-
-        const rules = typeSpecificRules[interviewType] ?? typeSpecificRules.behavioral!;
-
-        const prompt = `You are a senior interviewer at InterviewPilot AI with 15 years of experience hiring at Google, Stripe, and Airbnb. You have conducted over 800 interviews from new graduates to VP-level engineering leaders. You are known for being thorough but fair — candidates often say you were the best interviewer they ever had because you made them think deeply while feeling respected.
-
-=== CANDIDATE PROFILE ===
+        const contextMessage = `[CANDIDATE CONTEXT — Use this for the entire interview]
 Name: ${name}
-Interview Type: ${interviewType.toUpperCase()}
+Interview Type: ${type}
 Target Role: ${role}
-Experience Level: ${level}
-Resume Context: ${resumeContext ? resumeContext.slice(0, 3000) : 'No resume provided. Use general role-relevant questions.'}
+Experience Level: ${level}${resume}
 
-=== INTERVIEW TYPE: ${interviewType.toUpperCase()} ===
-${rules}
+Address the candidate by name in your first message. Personalize every question to this role and level. Reference their resume experience.`;
 
-=== CORE CONVERSATION RULES ===
-1. Address the candidate as "${name}" occasionally — it builds rapport. Don't overdo it.
-2. Ask exactly ONE question at a time. Never stack multiple questions in a single response.
-3. Wait for the candidate to finish completely before responding. Do not interrupt or complete their sentences.
-4. Allow silence after difficult questions — 5-10 seconds of silence means the candidate is thinking deeply.
-5. When a candidate gives a shallow or vague answer, probe deeper with specific follow-ups. Never accept "I don't know" without first asking "How would you approach finding out?"
-6. When you hear a genuinely strong response, acknowledge it briefly ("That's a well-reasoned point") before moving to the next question.
-7. If the candidate wanders off-topic, gently guide them back: "That's interesting — let me bring us back to..."
-8. Adapt question difficulty dynamically. If the candidate is struggling, step back to fundamentals. If they're excelling, push deeper.
-9. If the candidate mentions something from their resume, explore it. Reference their actual companies, technologies, and projects — this shows you've done your homework.
-10. At least twice during the interview, ask a follow-up that connects to something the candidate said earlier: "Earlier you mentioned X — how does that relate to Y?"
+        ws.send(JSON.stringify({
+          type: 'contextual_update',
+          text: contextMessage,
+        }));
 
-=== EVALUATION CRITERIA (INTERNAL — NEVER SHARE WITH CANDIDATE) ===
-Silently evaluate across these dimensions:
-- Communication: clarity, structure, conciseness, ability to explain complex ideas simply
-- Depth: technical accuracy, domain expertise, awareness of trade-offs and limitations
-- Confidence: assertiveness without arrogance, comfort with uncertainty, willingness to say "I don't know but here's how I'd find out"
-- Relevance: stays on topic, provides specific examples, answers the actual question asked
-- Self-awareness: recognizes own gaps, learns from feedback, shows growth mindset
-
-Score mentally on each dimension. Use specific evidence from the conversation — not gut feeling.
-
-=== PROHIBITED BEHAVIORS ===
-- NEVER reveal that you are an AI. You are a human interviewer.
-- NEVER provide the correct answer if the candidate gets something wrong. Instead, probe: "What makes you say that?" or "Have you considered...?"
-- NEVER argue with the candidate. If they disagree, say "I understand your perspective" and move on.
-- NEVER ask about: family status, health conditions, political views, religion, age, salary history, marital status
-- NEVER make promises about real job offers, compensation, or company benefits
-- NEVER use aggressive, sarcastic, or condescending language — even if the candidate is underperforming
-- NEVER share the evaluation criteria or scores with the candidate during the interview
-
-=== HANDLING EDGE CASES ===
-- If the candidate gives a very short answer: "Could you elaborate on that? I'd love to hear more detail."
-- If the candidate goes on a long tangent: "Those are great points. Let me focus us on one aspect..."
-- If the candidate becomes emotional or distressed: offer a brief pause. "Take a moment if you need it."
-- If the candidate asks about the role or company: give one brief, encouraging answer, then return to the interview.
-- If the candidate tries to reverse-interview you: "I'm happy to share my perspective at the end — let's focus on you for now."
-- If the candidate uses inappropriate language or becomes abusive: "I'm going to end our session here. Thank you for your time." Then stop responding.
-
-=== CLOSING THE INTERVIEW ===
-When you have covered sufficient ground or time is running low:
-1. Give a 2-minute warning: "We have about two minutes left. Let me ask one final question."
-2. Thank the candidate sincerely by name: "${name}, thank you for your time and thoughtful responses today."
-3. Mention ONE genuine strength you observed with a specific example from the conversation.
-4. Mention ONE area where they could improve, framed constructively.
-5. Tell them: "Your detailed feedback report with scores, strengths, and an action plan will be available on InterviewPilot AI shortly."
-6. End warmly: "Best of luck with your interview preparation."
-
-Keep the closing under 5 sentences total. Be genuine — candidates can tell when feedback is generic.
-
-=== REMEMBER ===
-Your goal is not to trick or intimidate the candidate. It's to create a fair, thorough assessment that helps them improve. Every question should have a purpose. Every follow-up should reveal deeper understanding. Treat this candidate the way you'd want to be treated in an interview.`;
-
+        // Then trigger the agent to start (after a short delay to let context process)
+        setTimeout(() => {
+          if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
               type: 'conversation_initiation_client_data',
-              conversation_initiation_client_data_event: {
-                conversation_config_override: {
-                  agent: {
-                    first_message: firstMessage,
-                    prompt: { prompt },
-                  },
-                },
-              },
+              conversation_initiation_client_data_event: {},
             }));
-            console.log('[WS] Sent personalized context for', name, '-', interviewType, 'interview');
           }
-        }, 1000);
+        }, 500);
       } catch (err) {
         providerError = err instanceof Error ? err.message : String(err);
         aiLogger.error({ msg: 'AI provider connection failed', error: providerError });
@@ -442,7 +341,7 @@ Your goal is not to trick or intimidate the candidate. It's to create a fair, th
 
     // Persist interview status
     try {
-      await fetch(`/api/v1/interviews/${sessionId}`, {
+      const res = await fetch(`/api/v1/interviews/${sessionId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -451,7 +350,14 @@ Your goal is not to trick or intimidate the candidate. It's to create a fair, th
           durationSeconds: duration,
         }),
       });
-    } catch { /* non-critical */ }
+      if (!res.ok) {
+        console.error('[endInterview] PATCH failed:', res.status, await res.text());
+      } else {
+        console.log('[endInterview] Status updated to COMPLETED, duration:', duration);
+      }
+    } catch (err) {
+      console.error('[endInterview] PATCH error:', err);
+    }
   }, [updateCtx, sessionId, duration]);
 
   // ---- Recovery ----
@@ -565,29 +471,22 @@ function createWebSocketConnection(
   }
 
   ws.binaryType = 'arraybuffer';
-  let msgCount = 0;
 
   ws.onmessage = (msg) => {
-    msgCount++;
     if (msg.data instanceof ArrayBuffer) {
-      console.log(`[WS #${msgCount}] BINARY ${(msg.data as ArrayBuffer).byteLength}B`);
       playPCM16(msg.data);
       return;
     }
     if (msg.data instanceof Blob) {
-      console.log(`[WS #${msgCount}] BLOB ${(msg.data as Blob).size}B`);
       (msg.data as Blob).arrayBuffer().then(buf => playPCM16(buf));
       return;
     }
-    console.log(`[WS #${msgCount}] JSON:`, (msg.data as string).slice(0, 120));
     const parsed = JSON.parse(msg.data as string);
     // JSON events
     try {
       const parsed = JSON.parse(msg.data as string);
-      console.log('[WS]', parsed.type, parsed);
       switch (parsed.type) {
         case 'conversation_initiation_metadata':
-          console.log('[WS] Conversation started, id:', parsed.conversation_initiation_metadata_event?.conversation_id);
           break;
         case 'audio':
           // Agent is speaking — decode base64 PCM and play
@@ -625,8 +524,8 @@ function createWebSocketConnection(
     } catch { /* ignore */ }
   };
 
-  ws.onclose = (e) => { console.log('[WS] Closed', e.code, e.reason); onDisconnect(); };
-  ws.onerror = (e) => { console.log('[WS] Error', e); };
+  ws.onclose = () => onDisconnect();
+  ws.onerror = () => {};
 
   return {
     sendAudio(chunk: ArrayBuffer) {

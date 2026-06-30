@@ -27,7 +27,7 @@ export const interviewRepository = {
   async findById(id: string) {
     return cache.getOrSet(
       cacheKeys.interview(id),
-      () => prisma.interviewSession.findUnique({ where: { id } }),
+      () => prisma.interviewSession.findUnique({ where: { id }, include: { feedback: true } }),
       { ttlSeconds: INTERVIEW_TTL },
     );
   },
@@ -47,6 +47,7 @@ export const interviewRepository = {
             orderBy: { createdAt: 'desc' },
             skip: (page - 1) * limit,
             take: limit,
+            include: { feedback: true },
           }),
           prisma.interviewSession.count({ where: { userId } }),
         ]);

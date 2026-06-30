@@ -60,13 +60,14 @@ export default function FeedbackReportPage({ params }: { params: Promise<{ id: s
   const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
-    Promise.all([
-      fetch(`/api/v1/interviews/${id}`, { credentials: 'include' }).then(r => r.json()),
-      fetch(`/api/v1/interviews/${id}/report`, { credentials: 'include' }).then(r => r.ok ? r.json() : null),
-    ]).then(([intData, repData]) => {
-      setInterview(intData.data);
-      setReport(repData?.data ?? null);
-    }).catch(() => toast.error('Failed to load'))
+    fetch(`/api/v1/interviews/${id}`, { credentials: 'include' })
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(({ data }) => {
+        setInterview(data);
+        // Feedback is included in interview detail response
+        if (data.feedback) setReport(data.feedback);
+      })
+      .catch(() => toast.error('Failed to load'))
       .finally(() => setLoading(false));
   }, [id]);
 

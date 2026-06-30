@@ -10,6 +10,7 @@ export function Toaster() {
     <Sonner
       className="toaster group"
       theme={theme === 'system' ? 'system' : (theme as 'light' | 'dark')}
+      position="top-right"
       richColors
       closeButton
       toastOptions={{

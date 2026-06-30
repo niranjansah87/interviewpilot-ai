@@ -4,6 +4,7 @@ import { getSession } from '@/lib/api/get-session';
 import { interviewService } from '@/services/interview.service';
 import { prisma } from '@/database/client';
 import { NotFoundError } from '@/lib/errors';
+import { cache } from '@/cache/cache-manager';
 
 export async function GET(
   _req: NextRequest,
@@ -37,13 +38,20 @@ export async function PATCH(
 
     if (body.status) data.status = body.status;
     if (body.durationSeconds != null) data.durationSeconds = body.durationSeconds;
+    if (body.scheduledAt) data.scheduledAt = new Date(body.scheduledAt);
     if (body.status === 'COMPLETED') data.endedAt = new Date();
-    if (body.status === 'ACTIVE') data.startedAt = data.startedAt ?? new Date();
+    if (body.status === 'ACTIVE') data.startedAt = new Date();
+    if (body.status === 'CANCELLED') data.endedAt = new Date();
 
     const updated = await prisma.interviewSession.update({
       where: { id },
       data,
+      include: { feedback: true },
     });
+
+    // Invalidate caches
+    await cache.delete(`ip:interview:${id}`);
+    await cache.deletePattern(`ip:interview:list:${session.id}:*`);
 
     return apiSuccess(updated);
   } catch (error) {
