@@ -10,9 +10,13 @@ export default function proxy(request: NextRequest) {
 
   const response = NextResponse.next();
 
-  // Security headers are set in next.config.ts headers() — the canonical place.
-  // CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
-  // are all applied there to avoid header conflicts.
+  // Security headers
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(self), geolocation=()');
+
 
   // HTTP → HTTPS in production
   if (
