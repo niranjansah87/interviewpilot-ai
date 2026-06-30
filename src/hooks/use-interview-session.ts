@@ -58,7 +58,17 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
   const connectionRef = useRef<any>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const activeSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // ---- Barge-in: stop current AI audio when candidate speaks ----
+  const stopPlayback = useCallback(() => {
+    try {
+      activeSourceRef.current?.stop();
+      activeSourceRef.current = null;
+    } catch { /* already stopped */ }
+    setAiSpeaking(false);
+  }, []);
 
   // ---- Duration Timer ----
 
@@ -264,6 +274,16 @@ Address the candidate by name in your first message. Personalize every question 
         case 'input_audio_buffer.speech_started':
           setSpeaker('candidate');
           updateCtx('speech_started');
+          // Barge-in: stop AI audio immediately + send interrupt to provider
+          stopPlayback();
+          try {
+            const conn = connectionRef.current;
+            if (conn?.ws?.readyState === WebSocket.OPEN || conn?.ws?.readyState === 1) {
+              conn.ws.send(JSON.stringify({ type: 'interrupt' }));
+            } else if (typeof conn?.interrupt === 'function') {
+              conn.interrupt();
+            }
+          } catch { /* best effort */ }
           break;
 
         case 'input_audio_buffer.speech_stopped':
@@ -280,6 +300,13 @@ Address the candidate by name in your first message. Personalize every question 
           if (event.transcript) {
             addTranscription(event.role ?? 'interviewer', event.transcript, false);
             setPartial('');
+            // Save transcript to database
+            fetch(`/api/v1/interviews/${sessionId}/transcript`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ role: event.role ?? 'interviewer', content: event.transcript }),
+            }).catch(() => {});
           }
           updateCtx('response_completed');
           setAiSpeaking(false);

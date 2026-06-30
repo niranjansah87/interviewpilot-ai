@@ -29,21 +29,25 @@ export const feedbackService = {
 
     if (!session) throw new NotFoundError('Interview session', sessionId);
 
-    if (session.transcript.length === 0) {
-      throw Object.assign(new Error('No transcript available for this session'), { statusCode: 422 });
-    }
-
-    // Build transcript text
-    const transcriptText = session.transcript
-      .map((e) => `${e.role === 'INTERVIEWER' ? 'Interviewer' : 'Candidate'}: ${e.content}`)
-      .join('\n\n');
-
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       throw Object.assign(new Error('OPENAI_API_KEY not configured'), { statusCode: 503 });
     }
 
-    log.info({ msg: 'Generating feedback', sessionId, turns: session.transcript.length });
+    const hasTranscript = session.transcript.length > 0;
+    const transcriptText = hasTranscript
+      ? session.transcript.map((e) => `${e.role === 'INTERVIEWER' ? 'Interviewer' : 'Candidate'}: ${e.content}`).join('\n\n')
+      : '';
+
+    log.info({ msg: 'Generating feedback', sessionId, hasTranscript, turns: session.transcript.length });
+
+    const systemPrompt = hasTranscript
+      ? `You are an expert interview coach. Analyze the interview transcript and provide structured feedback. Return ONLY valid JSON (no markdown). Format: {"overallScore":0-100,"communicationScore":0-100,"confidenceScore":0-100,"technicalReasoning":0-100|null,"strengths":["..."],"weaknesses":["..."],"improvements":["..."],"summary":"..."}. Reference specific moments. Be constructive. 4 items max each. Summary under 200 chars.`
+      : `You are an expert interview coach. Based on the interview metadata provided (no transcript available), generate a reasonable feedback report. Return ONLY valid JSON: {"overallScore":0-100,"communicationScore":0-100,"confidenceScore":0-100,"technicalReasoning":0-100|null,"strengths":["general interview strengths"],"weaknesses":["general areas to improve"],"improvements":["actionable tips"],"summary":"brief overall note mentioning that this is estimated feedback"}. Be realistic. 4 items max each.`;
+
+    const userContent = hasTranscript
+      ? `Type: ${session.type}\nRole: ${session.targetRole ?? 'General'}\nLevel: ${session.experienceLevel ?? 'Not specified'}\nDuration: ${session.durationSeconds ?? '?'}s\n\nTranscript:\n${transcriptText.slice(0, 12000)}`
+      : `Type: ${session.type}\nRole: ${session.targetRole ?? 'General'}\nLevel: ${session.experienceLevel ?? 'Not specified'}\nDuration: ${session.durationSeconds ?? '?'}s\n\nNo transcript available. Provide estimated feedback based on interview metadata.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -54,36 +58,11 @@ export const feedbackService = {
       body: JSON.stringify({
         model: 'gpt-4.1-mini',
         messages: [
-          {
-            role: 'system',
-            content: `You are an expert interview coach. Analyze the interview transcript and provide structured feedback.
-Return ONLY a valid JSON object (no markdown, no code fences):
-
-{
-  "overallScore": 0-100,
-  "communicationScore": 0-100,
-  "confidenceScore": 0-100,
-  "technicalReasoning": 0-100 or null (null if behavioral interview),
-  "strengths": ["specific strength with example from transcript", ...],
-  "weaknesses": ["specific weakness with suggestion", ...],
-  "improvements": ["actionable improvement tip", ...],
-  "summary": "2-3 sentence overall assessment"
-}
-
-Rules:
-- Scores must reflect actual performance, not generic numbers
-- Strengths and weaknesses must reference specific moments from the transcript
-- Be constructive but honest — flattery doesn't help candidates improve
-- Limit to 4 items each for strengths, weaknesses, improvements
-- Summary should be under 200 characters`,
-          },
-          {
-            role: 'user',
-            content: `Interview type: ${session.type}\nTarget role: ${session.targetRole ?? 'General'}\nLevel: ${session.experienceLevel ?? 'Not specified'}\n\nTranscript:\n${transcriptText.slice(0, 12000)}`,
-          },
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userContent },
         ],
         temperature: 0.3,
-        max_tokens: 1000,
+        max_tokens: 800,
       }),
     });
 

@@ -17,6 +17,7 @@ export default function NewInterviewPage() {
   const [type, setType] = useState<string>('BEHAVIORAL');
   const [targetRole, setTargetRole] = useState('');
   const [experienceLevel, setExperienceLevel] = useState<string>('MID');
+  const [scheduledAt, setScheduledAt] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -24,11 +25,14 @@ export default function NewInterviewPage() {
     setLoading(true);
 
     try {
+      const body: Record<string, unknown> = { type, targetRole, experienceLevel };
+      if (scheduledAt) body.scheduledAt = scheduledAt;
+
       const res = await fetch('/api/v1/interviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ type, targetRole, experienceLevel }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
@@ -113,8 +117,50 @@ export default function NewInterviewPage() {
           </CardContent>
         </Card>
 
+        {/* Schedule (optional) */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>Schedule (optional)</span>
+              <span className="text-xs font-normal text-muted-foreground">Start now or pick a later time</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="timing"
+                  defaultChecked
+                  onChange={() => setScheduledAt('')}
+                  className="text-primary"
+                />
+                <span className="text-sm">Start now</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="timing"
+                  onChange={() => setScheduledAt(new Date(Date.now() + 3600000).toISOString().slice(0, 16))}
+                  className="text-primary"
+                />
+                <span className="text-sm">Schedule for later</span>
+              </label>
+              {scheduledAt && (
+                <input
+                  type="datetime-local"
+                  value={scheduledAt}
+                  onChange={(e) => setScheduledAt(e.target.value)}
+                  min={new Date().toISOString().slice(0, 16)}
+                  className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                />
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? 'Creating...' : 'Start Interview'}
+          {loading ? 'Creating...' : scheduledAt ? 'Schedule Interview' : 'Start Interview Now'}
         </Button>
       </form>
     </div>

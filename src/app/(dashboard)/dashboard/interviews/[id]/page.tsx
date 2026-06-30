@@ -86,7 +86,17 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
     interview.status === 'FAILED' || interview.status === 'CANCELLED' ? 'destructive' :
     interview.status === 'SCHEDULED' ? 'outline' : 'outline';
 
-  const canStart = interview.status === 'CREATED' || interview.status === 'READY' || interview.status === 'SCHEDULED';
+  const scheduledDate = (interview as any).scheduledAt ? new Date((interview as any).scheduledAt) : null;
+  const isPastScheduled = scheduledDate ? new Date() >= scheduledDate : true;
+  const daysUntil = scheduledDate && !isPastScheduled
+    ? Math.ceil((scheduledDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    : 0;
+  const hoursUntil = scheduledDate && !isPastScheduled
+    ? Math.ceil((scheduledDate.getTime() - Date.now()) / (1000 * 60 * 60))
+    : 0;
+
+  const canStart = interview.status === 'CREATED' || interview.status === 'READY'
+    || (interview.status === 'SCHEDULED' && isPastScheduled);
 
   // Wrapped end handler — closes voice + patches DB + generates feedback + updates UI
   const handleEnd = async () => {
@@ -253,17 +263,24 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
 
       {/* Reschedule button for SCHEDULED interviews */}
       {interview.status === 'SCHEDULED' && (
-        <Card className="rounded-2xl">
+        <Card className={`rounded-2xl ${isPastScheduled ? 'border-primary/30' : 'border-amber-200 dark:border-amber-800'}`}>
           <CardContent className="flex items-center justify-between py-6">
             <div>
-              <CardTitle className="text-lg">Scheduled</CardTitle>
+              <CardTitle className="text-lg">
+                {isPastScheduled ? 'Scheduled — Ready' : `Scheduled — ${daysUntil > 0 ? `${daysUntil} day${daysUntil > 1 ? 's' : ''} left` : `${hoursUntil} hour${hoursUntil > 1 ? 's' : ''} left`}`}
+              </CardTitle>
               <p className="text-sm text-muted-foreground">
-                This interview is scheduled. You can reschedule or start now.
+                {scheduledDate
+                  ? `Scheduled for ${scheduledDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`
+                  : 'Scheduled interview'}
+                {isPastScheduled ? ' — you can start now.' : ' — interview will be available after this time.'}
               </p>
             </div>
             <div className="flex gap-3">
               <input
                 type="datetime-local"
+                defaultValue={scheduledDate?.toISOString().slice(0, 16)}
+                min={new Date().toISOString().slice(0, 16)}
                 className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
                 onChange={(e) => {
                   if (e.target.value) {
@@ -271,12 +288,17 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
                       method: 'PATCH',
                       headers: { 'Content-Type': 'application/json' },
                       credentials: 'include',
-                      body: JSON.stringify({ scheduledAt: e.target.value }),
-                    }).then(() => toast.success('Rescheduled'));
+                      body: JSON.stringify({ status: 'SCHEDULED', scheduledAt: e.target.value }),
+                    }).then(() => {
+                      toast.success('Rescheduled');
+                      window.location.reload();
+                    });
                   }
                 }}
               />
-              <Button size="lg" onClick={() => setActive(true)}>Start Now</Button>
+              {isPastScheduled && (
+                <Button size="lg" onClick={() => setActive(true)}>Start Now</Button>
+              )}
             </div>
           </CardContent>
         </Card>
