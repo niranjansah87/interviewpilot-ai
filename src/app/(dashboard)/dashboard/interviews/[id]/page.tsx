@@ -30,10 +30,16 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
   const [hasResume, setHasResume] = useState<boolean | null>(null);
   const [skipResume, setSkipResume] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [candidateName, setCandidateName] = useState('');
 
   const voiceSession = useInterviewSession(id);
 
   useEffect(() => {
+    // Fetch user name
+    fetch('/api/v1/users/me', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.data?.name) setCandidateName(d.data.name); })
+      .catch(() => {});
     // Check if user has resume
     fetch('/api/v1/users/me/resume', { credentials: 'include' })
       .then(r => r.ok ? r.json() : null)
@@ -183,6 +189,9 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
           durationSeconds={voiceSession.durationSeconds}
           onStart={voiceSession.startInterview}
           onEnd={handleEnd}
+          onToggleMute={voiceSession.toggleMute}
+          isMuted={voiceSession.muted}
+          candidateName={candidateName}
           onReconnect={voiceSession.handleReconnect}
           onRequestMic={voiceSession.requestMic}
           onStartDemo={voiceSession.startDemoMode}

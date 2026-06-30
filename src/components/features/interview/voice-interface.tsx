@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { Mic, MicOff, Phone, Clock, ChevronUp, ChevronDown, MessageSquare } from 'lucide-react';
+import { Mic, MicOff, Phone, Clock, MessageSquare, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAudioAnalyzer } from '@/hooks/use-audio-analyzer';
 import { cn } from '@/lib/cn';
@@ -25,6 +25,9 @@ interface VoiceInterfaceProps {
   onReconnect: () => void;
   onRequestMic: () => Promise<MediaStream | null>;
   onStartDemo?: () => void;
+  onToggleMute?: () => void;
+  isMuted?: boolean;
+  candidateName?: string;
 }
 
 const THINKING = [
@@ -39,11 +42,12 @@ const THINKING = [
 export function VoiceInterface({
   state, connectionStatus, micPermission, transcription, currentPartial,
   speaker, aiSpeaking, error, durationSeconds,
-  onStart, onEnd, onReconnect, onRequestMic, onStartDemo,
+  onStart, onEnd, onReconnect, onRequestMic, onStartDemo, onToggleMute, isMuted, candidateName,
 }: VoiceInterfaceProps) {
   const transcriptRef = useRef<HTMLDivElement>(null);
   const analyzer = useAudioAnalyzer();
   const [transcriptOpen, setTranscriptOpen] = useState(true);
+  const muted = isMuted ?? false;
   const [thinkIdx, setThinkIdx] = useState(0);
 
   useEffect(() => {
@@ -137,37 +141,29 @@ export function VoiceInterface({
 
   // ── Connected — Immersive Voice Experience ──
   return (
-    <div className="relative flex h-full flex-col">
+    <div className="relative flex h-full flex-col bg-[#0a0a0b]">
       {/* Subtle background gradient */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.03),transparent_70%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.04),transparent_70%)]" />
 
-      {/* Top bar — minimal */}
-      <div className="relative z-10 flex items-center justify-between px-8 py-4">
-        <div className="flex items-center gap-4">
-          <span className={cn(
-            'flex items-center gap-1.5 text-xs',
-            aiSpeaking ? 'text-blue-400' : micActive ? 'text-emerald-400' : 'text-white/25',
-          )}>
-            <span className={cn('h-1.5 w-1.5 rounded-full', aiSpeaking || micActive ? 'animate-pulse' : '')}
+      {/* Top bar — minimal Zoom-style */}
+      <div className="relative z-10 flex items-center justify-center px-6 py-3">
+        <div className="flex items-center gap-6">
+          <span className={cn('flex items-center gap-2 text-xs', aiSpeaking ? 'text-blue-400' : micActive ? 'text-emerald-400' : 'text-white/20')}>
+            <span className={cn('h-2 w-2 rounded-full', aiSpeaking || micActive ? 'animate-pulse' : '')}
               style={{ backgroundColor: aiSpeaking ? '#60a5fa' : micActive ? '#34d399' : 'currentColor' }} />
-            {aiSpeaking ? 'Speaking' : micActive ? 'Listening' : 'Connected'}
+            {aiSpeaking ? 'AI Speaking' : micActive ? 'Listening' : 'Connected'}
           </span>
-          <span className="text-xs tabular-nums text-white/20">
+          <span className="text-xs tabular-nums text-white/15">
             <Clock className="mr-1 inline h-3 w-3" />{String(mins).padStart(2, '0')}:{String(secs).padStart(2, '0')}
           </span>
         </div>
-        <Button variant="ghost" size="sm" onClick={onEnd}
-          className="h-7 gap-1.5 text-xs text-white/25 hover:text-red-400 hover:bg-red-400/5 rounded-lg">
-          <Phone className="h-3 w-3 rotate-[135deg]" /> End
-        </Button>
       </div>
 
-      {/* Center Stage */}
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-8">
-        {/* Audio Visualization Row */}
+      {/* Center Stage — Avatars only, never move */}
+      <div className="relative z-10 flex flex-1 items-center justify-center">
         <div className="flex items-center gap-24">
           {/* AI Avatar */}
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-4">
             <motion.div
               animate={aiSpeaking ? { scale: [1, 1.04, 1] } : {}}
               transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
@@ -178,7 +174,9 @@ export function VoiceInterface({
                   : 'bg-white/[0.02] ring-1 ring-white/[0.04]',
               )}
             >
-              {/* Rotating speaking ring */}
+{/* Static outer rings */}
+              <div className="absolute -inset-3 rounded-full ring-2 ring-white/[0.25]" />
+              <div className="absolute -inset-5 rounded-full ring-1 ring-white/[0.15]" />
               {aiSpeaking && (
                 <motion.div
                   animate={{ rotate: 360 }}
@@ -202,7 +200,7 @@ export function VoiceInterface({
               <Image src="/ai-interviewer.webp" alt="AI Interviewer" width={96} height={96}
                 className="h-full w-full rounded-full object-cover" />
             </motion.div>
-            <span className="text-[11px] font-light tracking-wide text-white/15">Interviewer</span>
+            <span className="text-sm font-bold tracking-wide text-white/60">Interviewer</span>
             {/* AI waveform */}
             <div className="flex h-5 items-end justify-center gap-[2px]">
               {Array.from({ length: 16 }).map((_, i) => {
@@ -221,10 +219,10 @@ export function VoiceInterface({
           <div className="flex w-32 flex-col items-center gap-1">
             {aiSpeaking ? (
               <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="text-sm font-light text-blue-300/80">Speaking</motion.span>
+                className="text-base font-bold text-blue-300/90">Speaking</motion.span>
             ) : micActive ? (
               <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="text-sm font-light text-emerald-300/80">Listening</motion.span>
+                className="text-base font-bold text-emerald-300/90">Listening</motion.span>
             ) : (
               <motion.span
                 key={thinkIdx}
@@ -237,7 +235,7 @@ export function VoiceInterface({
           </div>
 
           {/* Candidate Avatar */}
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-4">
             <motion.div
               animate={micActive ? { scale: 1 + micLevel * 0.15 } : { scale: 1 }}
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
@@ -248,7 +246,6 @@ export function VoiceInterface({
                   : 'bg-white/[0.02] ring-1 ring-white/[0.04]',
               )}
             >
-              {/* Rotating speaking ring */}
               {micActive && (
                 <motion.div
                   animate={{ rotate: 360 }}
@@ -260,6 +257,9 @@ export function VoiceInterface({
                   </svg>
                 </motion.div>
               )}
+{/* Static outer rings */}
+              <div className="absolute -inset-3 rounded-full ring-2 ring-emerald-500/[0.25]" />
+              <div className="absolute -inset-5 rounded-full ring-1 ring-emerald-500/[0.15]" />
               {micActive && (
                 <motion.div
                   animate={{ scale: [1, 1.25, 1], opacity: [0.15, 0, 0.15] }}
@@ -271,7 +271,7 @@ export function VoiceInterface({
               <Image src="/illustrations/candidate-avatar.svg" alt="Candidate" width={96} height={96}
                 className="h-full w-full rounded-full object-cover" />
             </motion.div>
-            <span className="text-[11px] font-light tracking-wide text-white/15">You</span>
+            <span className="text-sm font-bold tracking-wide text-white/60">{candidateName || 'You'}</span>
             {/* Mic waveform */}
             <div className="flex h-5 items-end justify-center gap-[2px]">
               {Array.from({ length: 16 }).map((_, i) => {
@@ -288,65 +288,82 @@ export function VoiceInterface({
         </div>
       </div>
 
-      {/* Transcript — collapsible bottom panel */}
-      <div className="relative z-10 border-t border-white/[0.04]">
-        {/* Toggle */}
-        <button
-          onClick={() => setTranscriptOpen(!transcriptOpen)}
-          className="flex w-full items-center justify-center gap-2 py-2 text-[10px] text-white/15 hover:text-white/30 transition-colors"
-        >
-          <MessageSquare className="h-3 w-3" />
-          {transcriptOpen ? 'Hide transcript' : hasTranscript ? 'Show transcript' : 'Conversation will appear here'}
-          {transcriptOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronUp className="h-3 w-3" />}
-        </button>
-
-        <AnimatePresence>
-          {transcriptOpen && (
+      {/* Floating bottom controls — Zoom-style */}
+      <div className="relative z-20 flex items-center justify-center pb-6">
+        <div className="flex items-center gap-3 rounded-2xl bg-white/[0.04] backdrop-blur-xl px-5 py-3 ring-1 ring-white/[0.06]">
+          <button
+            onClick={() => onToggleMute?.()}
+            className={cn('flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300',
+              muted ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30' : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30')}
+            title={muted ? 'Unmute (M)' : 'Mute (M)'}>
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+              animate={muted ? { rotate: [0, -10, 10, 0] } : { scale: [1, 1.1, 1] }}
               transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
-              <div ref={transcriptRef} className="space-y-3 overflow-y-auto px-8 pb-4" style={{ maxHeight: '30vh' }}>
+              key={String(muted)}>
+              {muted ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+            </motion.div>
+          </button>
+          <button
+            onClick={() => setTranscriptOpen(!transcriptOpen)}
+            className={cn('flex h-11 w-11 items-center justify-center rounded-full transition-all',
+              transcriptOpen ? 'bg-primary/20 text-primary' : 'bg-white/[0.06] text-white/30 hover:bg-white/[0.10]')}
+            title="Transcript (T)">
+            <MessageSquare className="h-5 w-5" />
+          </button>
+          <button onClick={onEnd} className="flex h-11 w-11 items-center justify-center rounded-full bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all" title="End (Esc)">
+            <Phone className="h-5 w-5 rotate-[135deg]" />
+          </button>
+        </div>
+      </div>
+
+      {/* Transcript — right side overlay panel */}
+      <AnimatePresence>
+        {transcriptOpen && (
+          <motion.div
+            initial={{ x: 340, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 340, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="absolute right-0 top-0 z-30 h-full w-[340px] border-l border-white/[0.06] bg-[#0a0a0b]/95 backdrop-blur-xl"
+          >
+            <div className="flex h-full flex-col">
+              <div className="flex items-center justify-between border-b border-white/[0.04] px-5 py-3.5">
+                <span className="text-sm font-medium text-white/60">Transcript</span>
+                <button onClick={() => setTranscriptOpen(false)} className="rounded-lg p-1 text-white/30 hover:text-white/60 hover:bg-white/[0.06] transition-all">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div ref={transcriptRef} className="flex-1 space-y-3 overflow-y-auto p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 {!hasTranscript && (
-                  <p className="py-8 text-center text-xs text-white/10">
+                  <p className="py-12 text-center text-sm text-white/10">
                     {aiSpeaking ? 'Interviewer is speaking…' : 'Speak to begin the conversation'}
                   </p>
                 )}
                 {transcription.map((entry) => (
-                  <motion.div
-                    key={entry.id}
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={cn('flex', entry.role === 'candidate' ? 'justify-end' : 'justify-start')}
-                  >
+                  <motion.div key={entry.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
                     <div className={cn(
-                      'max-w-[70%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
+                      'rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
                       entry.role === 'candidate'
-                        ? 'rounded-tr-md bg-white/10 text-white/80'
-                        : 'rounded-tl-md bg-white/[0.03] text-white/50',
+                        ? 'rounded-tr-md bg-primary/25 text-white font-medium ml-6'
+                        : 'rounded-tl-md bg-white/[0.06] text-white/85 mr-6',
                     )}>
-                      <span className="text-[10px] font-medium uppercase tracking-wider opacity-30">
-                        {entry.role === 'candidate' ? 'You' : 'Interviewer'}
+                      <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">
+                        {entry.role === 'candidate' ? (candidateName || 'You') : 'Interviewer'}
                       </span>
                       <p className="mt-0.5">{entry.text}</p>
                     </div>
                   </motion.div>
                 ))}
                 {currentPartial && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
-                    <div className="max-w-[70%] rounded-2xl rounded-tl-md bg-white/[0.03] px-4 py-2.5 text-sm italic text-white/25">
-                      {currentPartial}
-                    </div>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    <div className="rounded-2xl rounded-tl-md bg-white/[0.04] px-4 py-2.5 text-sm text-white/40 mr-6">{currentPartial}</div>
                   </motion.div>
                 )}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
