@@ -27,9 +27,11 @@ interface InterviewItem {
 export default function FeedbackPage() {
   const [interviews, setInterviews] = useState<InterviewItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const PER_PAGE = 5;
 
   useEffect(() => {
-    fetch('/api/v1/interviews?limit=50', { credentials: 'include' })
+    fetch('/api/v1/interviews?limit=100', { credentials: 'include' })
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(d => {
         const all = (d.data?.data ?? []) as InterviewItem[];
@@ -38,6 +40,8 @@ export default function FeedbackPage() {
       .catch(() => toast.error('Failed to load'))
       .finally(() => setLoading(false));
   }, []);
+  const paginated = interviews.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const totalPages = Math.ceil(interviews.length / PER_PAGE);
 
   const withReport = interviews.filter(i => i.feedback?.overallScore != null);
   const avgScore = withReport.length > 0
@@ -90,7 +94,7 @@ export default function FeedbackPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {interviews.map((i) => (
+          {paginated.map((i) => (
             <Link
               key={i.id}
               href={i.feedback ? `/dashboard/interviews/${i.id}/report` : `/dashboard/interviews/${i.id}`}
@@ -121,6 +125,14 @@ export default function FeedbackPage() {
               </div>
             </Link>
           ))}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-4">
+          <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-lg text-xs">Previous</Button>
+          <span className="text-xs text-muted-foreground px-2">Page {page} of {totalPages}</span>
+          <Button variant="outline" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="rounded-lg text-xs">Next</Button>
         </div>
       )}
     </div>

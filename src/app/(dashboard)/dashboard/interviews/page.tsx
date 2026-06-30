@@ -60,10 +60,14 @@ function formatDuration(seconds: number | null) {
 export default function InterviewsPage() {
   const [interviews, setInterviews] = useState<Interview[]>([]);
   const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const PER_PAGE = 5;
 
   useEffect(() => {
-    fetch('/api/v1/interviews?limit=50', { credentials: 'include' })
+    setLoading(true);
+    fetch(`/api/v1/interviews?page=${page}&limit=${PER_PAGE}`, { credentials: 'include' })
       .then((res) => {
         if (!res.ok) throw new Error('Failed to load interviews');
         return res.json();
@@ -71,10 +75,11 @@ export default function InterviewsPage() {
       .then(({ data }: { data: InterviewList }) => {
         setInterviews(data.data ?? []);
         setTotal(data.pagination?.total ?? 0);
+        setTotalPages(data.pagination?.totalPages ?? 1);
       })
       .catch((err) => toast.error(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [page]);
 
   if (loading) {
     return (
@@ -192,6 +197,21 @@ export default function InterviewsPage() {
           );
         })}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-lg text-xs">
+            Previous
+          </Button>
+          <span className="text-xs text-muted-foreground px-2">
+            Page {page} of {totalPages}
+          </span>
+          <Button variant="outline" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="rounded-lg text-xs">
+            Next
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
