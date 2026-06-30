@@ -18,7 +18,7 @@ export default function proxy(request: NextRequest) {
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(self), geolocation=()');
   response.headers.set(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https: wss:; font-src 'self'",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' 'inline-speculation-rules'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https: wss:; font-src 'self' data:;",
   );
 
   // HTTP → HTTPS in production
