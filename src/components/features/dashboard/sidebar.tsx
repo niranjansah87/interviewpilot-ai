@@ -53,8 +53,8 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-3">
         {NAV.map(({ href, label, icon: Icon }) => {
-          // Profile uses exact match so /profile/resume doesn't light it up
-          const exact = href === '/dashboard/profile';
+          // Exact match for parent routes that have sub-routes
+          const exact = href === '/dashboard/profile' || href === '/dashboard/interviews';
           const active = exact ? pathname === href : (pathname === href || (href !== '/dashboard' && pathname.startsWith(href)));
           return (
             <Link
