@@ -102,10 +102,12 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
 
   // Wrapped end handler — closes voice + patches DB + generates feedback + updates UI
   const handleEnd = async () => {
-    console.log('[handleEnd] Ending interview...');
+    // Show wrap-up IMMEDIATELY — before any async work
+    setShowingWrapUp(true);
+
+    // Background cleanup — doesn't block UI
     voiceSession.endInterview();
     try {
-      // Mark as completed
       const res = await fetch(`/api/v1/interviews/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -130,8 +132,7 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
       console.error('[handleEnd] Failed:', err);
     }
     setInterview(prev => prev ? { ...prev, status: 'COMPLETED' } : prev);
-    setShowingWrapUp(true);
-    // active stays true until wrap-up completes — prevents flash of idle UI
+    // active stays true until wrap-up completes
   };
 
   const handleWrapUpComplete = () => {
@@ -159,26 +160,21 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
 
   if (showingWrapUp) {
     return (
+      <div className="fixed inset-0 z-50 bg-[#0a0a0b]">
       <InterviewWrapUp
         candidateName=""
         interviewType={interview?.type ?? 'BEHAVIORAL'}
         interviewId={id}
         onComplete={handleWrapUpComplete}
       />
+      </div>
     );
   }
 
   if (active) {
     return (
-      <div className="-m-6 flex h-[calc(100vh-3.5rem)] flex-col">
-        <div className="flex items-center justify-between border-b border-border px-6 py-3">
-          <div>
-            <span className="text-sm font-medium">{interview.type?.charAt(0) + interview.type?.slice(1).toLowerCase()} Interview</span>
-            <span className="mx-2 text-muted-foreground">·</span>
-            <span className="text-sm text-muted-foreground">{interview.targetRole || 'General'}</span>
-          </div>
-          <Button variant="ghost" size="sm" onClick={handleEnd}>End</Button>
-        </div>
+      // Full-screen immersive overlay — hides dashboard chrome
+      <div className="fixed inset-0 z-50 bg-[#0a0a0b]">
         <VoiceInterface
           state={voiceSession.state}
           connectionStatus={voiceSession.connectionStatus}
