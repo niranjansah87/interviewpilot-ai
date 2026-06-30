@@ -517,6 +517,8 @@ function createWebSocketConnection(
       // Route through shared runtime so speaker analyser picks it up
       const gainNode = audioRuntime.getSpeakerGain();
       source.connect(gainNode ?? ctx.destination);
+      // Restore speaker gain (may have been muted by barge-in)
+      if (gainNode) gainNode.gain.setTargetAtTime(1, ctx.currentTime, 0.05);
 
       // Track current source for barge-in
       activeSource = source;
@@ -586,12 +588,20 @@ function createWebSocketConnection(
         case 'user_started_speaking':
           console.log('[WS] USER STARTED SPEAKING — barge-in!');
           callbacks.onUserSpeech();
+          // Mute speaker gain + stop current source (don't close ctx — mic uses it)
+          try { activeSource?.stop(); } catch {}
+          activeSource = null;
           nextAudioTime = 0;
+          try { audioRuntime.getSpeakerGain()?.gain.setTargetAtTime(0, audioRuntime.getContext()?.currentTime ?? 0, 0.05); } catch {}
           break;
         case 'interruption':
           console.log('[WS] INTERRUPTION from server');
           callbacks.onUserSpeech();
+          // Mute speaker gain + stop current source
+          try { activeSource?.stop(); } catch {}
+          activeSource = null;
           nextAudioTime = 0;
+          try { audioRuntime.getSpeakerGain()?.gain.setTargetAtTime(0, audioRuntime.getContext()?.currentTime ?? 0, 0.05); } catch {}
           break;
         case 'ping':
           if (parsed.ping_event?.event_id) {
@@ -599,16 +609,33 @@ function createWebSocketConnection(
           }
           break;
         case 'session_timeout':
+          console.log('[WS] ElevenLabs session timeout — silence or max duration');
+          callbacks.onDisconnect('Session timed out — the agent disconnected due to silence or duration limit');
+          break;
         case 'conversation_ended':
+          console.log('[WS] ElevenLabs conversation ended by agent');
+          callbacks.onDisconnect('Conversation ended by the interviewer');
+          break;
         case 'agent_disconnected':
-          callbacks.onDisconnect('Interview session ended — perhaps due to extended silence');
+          console.log('[WS] ElevenLabs agent disconnected');
+          callbacks.onDisconnect('AI interviewer disconnected');
           break;
       }
     } catch { /* ignore */ }
   };
 
-  ws.onclose = () => callbacks.onDisconnect('Connection closed');
-  ws.onerror = () => {};
+  ws.onclose = (e: CloseEvent) => {
+    const reason = e.reason || (
+      e.code === 1005 ? 'Agent ended session (no status)' :
+      e.code === 1000 ? 'Session completed normally' :
+      `code ${e.code}`
+    );
+    console.log('[WS] CLOSED — code:', e.code, 'reason:', e.reason, 'clean:', e.wasClean);
+    callbacks.onDisconnect(`Connection closed (${reason})`);
+  };
+  ws.onerror = (e: Event) => {
+    console.error('[WS] ERROR:', e);
+  };
 
   return {
     sendAudio(chunk: ArrayBuffer) {

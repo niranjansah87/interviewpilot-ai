@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { VoiceInterface } from '@/components/features/interview/voice-interface';
+import { InterviewWrapUp } from '@/components/features/interview/interview-wrapup';
 import { useInterviewSession } from '@/hooks/use-interview-session';
 
 interface Interview {
@@ -25,6 +26,7 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
   const [interview, setInterview] = useState<Interview | null>(null);
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState(false);
+  const [showingWrapUp, setShowingWrapUp] = useState(false);
   const [hasResume, setHasResume] = useState<boolean | null>(null);
   const [skipResume, setSkipResume] = useState(false);
 
@@ -129,6 +131,12 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
     }
     setInterview(prev => prev ? { ...prev, status: 'COMPLETED' } : prev);
     setActive(false);
+    setShowingWrapUp(true);
+  };
+
+  const handleWrapUpComplete = () => {
+    setShowingWrapUp(false);
+    router.push(`/dashboard/interviews/${id}/report`);
   };
 
   // Cancel handler
@@ -147,6 +155,17 @@ export default function InterviewDetailPage({ params }: { params: Promise<{ id: 
       toast.error('Failed to cancel');
     }
   };
+
+  if (showingWrapUp) {
+    return (
+      <InterviewWrapUp
+        candidateName={voiceSession.micStream ? (interview as any)?.targetRole ?? '' : ''}
+        interviewType={interview?.type ?? 'BEHAVIORAL'}
+        interviewId={id}
+        onComplete={handleWrapUpComplete}
+      />
+    );
+  }
 
   if (active) {
     return (
