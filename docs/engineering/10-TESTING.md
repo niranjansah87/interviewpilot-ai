@@ -27,7 +27,7 @@ We do not pursue 100% coverage as a vanity metric. Coverage is a guide, not a go
 
 Test individual functions and modules in isolation, mocking all dependencies.
 
-**Tools:** Vitest + React Testing Library (frontend), pytest (backend)
+**Tools:** Vitest + React Testing Library (frontend), Vitest (unit + integration)
 
 **Coverage target:** Business logic, utility functions, prompt builders
 

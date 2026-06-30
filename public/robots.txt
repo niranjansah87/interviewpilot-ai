@@ -1,0 +1,10 @@
+# https://interviewpilot.ai
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /settings/
+Disallow: /interviews/
+
+Sitemap: https://interviewpilot.ai/sitemap.xml

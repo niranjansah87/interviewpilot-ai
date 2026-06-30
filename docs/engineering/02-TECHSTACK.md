@@ -28,7 +28,7 @@ The stack intentionally minimizes operational complexity while remaining suitabl
 
 ## Framework
 
-Next.js 15
+Next.js 16
 
 Reason
 

@@ -4,9 +4,11 @@ import { apiSuccess, apiError } from '@/lib/api/route-helpers';
 import { getRefreshToken } from '@/lib/auth/cookies';
 import { setAccessTokenCookie, setRefreshTokenCookie } from '@/lib/auth/cookies';
 import { AuthenticationError } from '@/lib/errors';
+import { authRateLimit, getClientIP } from '@/lib/api/rate-limit';
 
-export async function POST(_req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
+    authRateLimit(getClientIP(req));
     const token = await getRefreshToken();
     if (!token) {
       throw new AuthenticationError('No refresh token provided');

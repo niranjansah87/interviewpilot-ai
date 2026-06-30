@@ -9,7 +9,7 @@
  * Usage: tsx scripts/healthcheck.ts
  */
 
-import { prisma } from '../src/database/prisma';
+import { prisma } from '../src/database/client';
 
 async function checkDatabase(): Promise<void> {
   try {

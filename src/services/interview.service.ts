@@ -14,6 +14,8 @@ export const interviewService = {
     type: 'BEHAVIORAL' | 'TECHNICAL' | 'MIXED';
     targetRole?: string;
     experienceLevel?: 'JUNIOR' | 'MID' | 'SENIOR';
+    status?: string;
+    scheduledAt?: string;
   }) {
     const session = await interviewRepository.create(data);
     interviewLogger.info({ msg: 'Interview session created',

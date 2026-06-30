@@ -5,107 +5,87 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<!--
-Types: Added, Changed, Deprecated, Removed, Fixed, Security
--->
-
 ## [Unreleased]
 
-### Added
+### Phase 3 — AI Interview Engine (In Progress)
 
-- Comprehensive project documentation structure
-- Architecture Decision Records (ADRs) for major technical choices
-- Mermaid diagrams for authentication, deployment, interview engine, and voice flows
-- GitHub CI/CD workflows
-- GitHub community files (CODEOWNERS, CODE_OF_CONDUCT, SUPPORT)
-- Pull request and issue templates
+#### Added
+- AI Provider abstraction layer (`src/lib/ai/provider.ts`) with runtime registry
+- OpenAI Realtime API adapter (WebSocket voice + GPT-4.1 feedback)
+- ElevenLabs ConvAI adapter (WebSocket voice conversation)
+- ElevenLabs TTS adapter (text-to-speech)
+- Voice provider fallback chain: elevenlabs → openai → mock
+- Conversation engine with 7-state machine (`src/lib/conversation/engine.ts`)
+- Context engine with resume, job description, and history support
+- Prompt engine with modular block composition (`src/lib/conversation/prompt-engine.ts`)
+- 8 role-specific system prompts (behavioral, technical, frontend, backend, fullstack, devops, system-design, feedback)
+- Token manager with 100k budget per session and cost estimation
+- `VoiceInterface` component with real-time transcription panel
+- `useInterviewSession` hook with full lifecycle (start, speak, listen, end, demo mode)
+- `Header` and `Sidebar` dashboard components with collapsible layout
+- Rate limiting on auth and API routes (`src/lib/api/rate-limit.ts`)
 
-### Engineering Docs Added
+### Phase 2 — Core Architecture
 
-- `01-ARCHITECTURE.md` — System architecture overview
-- `02-TECHSTACK.md` — Technology choices and rationale
-- `03-DATABASE.md` — Database schema and design
-- `04-AI_ENGINE.md` — AI interview engine architecture
-- `05-API.md` — REST API specification
-- `06-DESIGN_SYSTEM.md` — Visual design language
-- `06-PROMPT_ENGINEERING.md` — Prompt design strategy
-- `07-SECURITY.md` — Security requirements
-- `08-DEPLOYMENT.md` — Deployment and CI/CD guide
-- `09-PERFORMANCE.md` — Performance targets
-- `10-TESTING.md` — Testing strategy
-- `11-CODING_STANDARDS.md` — Code conventions
-- `12-OBSERVABILITY.md` — Logging, metrics, alerting
-- `13-FOLDER_STRUCTURE.md` — Project layout
-- `14-ERROR_HANDLING.md` — Error strategy
-- `15-DECISIONS.md` — ADR index
-- `UI_ARCHITECTURE.md` — UI component architecture
-- `UX_CASE_STUDY.md` — UX decision rationale
+#### Added
+- Next.js 16 App Router with (auth) and (dashboard) route groups
+- 14 API endpoints: auth (5), users (3), interviews (5), health (1)
+- JWT authentication with jose — access (15 min) + refresh (7 days) tokens
+- bcrypt password hashing (cost factor 12)
+- SHA-256 refresh token hashing with revocation support
+- CSRF double-submit cookie protection (AES-256-GCM)
+- httpOnly cookie helpers for access, refresh, and CSRF tokens
+- Prisma schema with 5 models: User, InterviewSession, TranscriptEntry, FeedbackReport, RefreshToken
+- Repository layer: user, interview, refresh-token with Redis cache-aside
+- Service layer: auth (register, login, refresh, logout), interview (CRUD)
+- 9-class error hierarchy: ApplicationError through RateLimitError
+- API route helpers: `apiSuccess()`, `apiError()`, `apiEmpty()`
+- Standardized API response envelope with request IDs
+- CacheProvider interface with MemoryCache (LRU) and RedisCache implementations
+- Redis cache with automatic memory fallback on connection failure
+- SCAN-based pattern deletion for cache invalidation
+- Type-safe cache key factory (`src/cache/cache-keys.ts`)
+- Zod v4 environment validation (20+ variables)
+- Pino v10 structured logger with pretty-print in development
+- Startup infrastructure health checks (PostgreSQL, Redis, OpenAI, ElevenLabs)
+- Next.js instrumentation hook for health checks on server boot
+- 10 shadcn/ui components: Button, Card, Input, Label, Badge, Separator, Skeleton, Sonner, Tooltip
+- ThemeProvider (dark/light/system), QueryProvider (TanStack React Query), ToastProvider (Sonner)
+- Landing page with hero, features, CTA, and JSON-LD structured data
+- Dashboard home, interview history, interview detail, profile, and settings pages
+- Login and registration pages with form validation
+- 404, error, and loading page states
+- Proxy middleware: security headers, HTTP→HTTPS redirect, auth redirects
+- Prisma seed data: 2 users, 4 interview sessions, 10 transcript entries, 2 feedback reports
+- Zod validation schemas: email, password, name, pagination, UUID
+- Shared TypeScript types: auth, database models, API contracts
+- Constants: routes, cookies, limits, roles, headers
+- Time utilities: Duration class, UTC helpers, timestamp formatting
+- Request/trace ID generation via `node:crypto`
+- Engineering docs: caching strategy (ADM), updated architecture, API spec
 
-### Product Docs Added
+#### Changed
+- ESLint config simplified (removed perfectionist plugin)
+- tsconfig adjusted for Turbopack path resolution
+- globals.css rewritten with shadcn/ui design tokens (light + dark)
+- `middleware.ts` renamed to `proxy.ts` per Next.js 16 conventions
+- Separator and Tooltip components simplified (no Radix dependency)
 
-- `01-product-overview.md` — Product introduction
-- `02-problem-statement.md` — Problem definition
-- `03-goals-and-non-goals.md` — Scope boundaries
-- `04-user-personas.md` — User profiles
-- `05-user-journeys.md` — User flows
-- `06-functional-requirements.md` — Feature requirements
-- `07-non-functional-requirements.md` — Quality attributes
-- `08-success-metrics.md` — Measurable outcomes
-- `09-mvp-scope.md` — MVP definition
-- `10-future-roadmap.md` — Post-MVP vision
-- `11-edge-cases.md` — Edge case handling
-- `12-release-plan.md` — Release strategy
+#### Fixed
+- Zod v4 API migration (`.errors` → `.issues`, `.startsWith()` → `.min()`)
+- JWT type naming (jwtPayload → TokenPayload)
+- Duration `.toMillis` getter access
+- `noImplicitOverride` errors on error class `toJSON()` methods
+- Cache provider type safety for `getOrSet` parameters
 
----
+### Phase 1 — Foundation
 
-## [1.0.0] — MVP Release
-
-### Added
-
-- User authentication (email + password, JWT)
-- Dashboard with interview history
-- Voice interview with OpenAI Realtime API
-- Adaptive AI interviewer (follow-up questions, context awareness)
-- AI-generated feedback reports
-- Interview transcript viewer
-- Responsive web interface
-- Prisma ORM with PostgreSQL
-- Next.js 15 with App Router
-- TypeScript throughout
-
-### Security
-
-- bcrypt password hashing
-- JWT access + refresh token strategy
-- httpOnly cookie transport
-- CSRF protection
-- Rate limiting on auth endpoints
-- Input validation with Zod
-
----
-
-## [0.1.0] — Initial Setup
-
-### Added
-
-- Project scaffolding
-- Next.js 15 with TypeScript
-- TailwindCSS + shadcn/ui
-- Prisma schema (initial)
-- Environment configuration
-- README and LICENSE
-
----
-
-<!--
-Release line format:
-## [MAJOR.MINOR.PATCH] — YYYY-MM-DD
-
-Types:
-- Added     — new features
-- Changed   — changes in existing functionality
-- Deprecated — soon-to-be removed features
-- Removed   — features now removed
-- Fixed     — bug fixes
-- Security  — vulnerability fixes
--->
+#### Added
+- Project scaffolding with Next.js, TypeScript, TailwindCSS
+- Full documentation structure: product/, engineering/, decisions/, runbooks/, templates/
+- 5 Architecture Decision Records (ADRs)
+- Mermaid diagrams: authentication, deployment, interview engine, voice flow
+- GitHub CI/CD workflows, issue templates, PR template
+- Community files: CODEOWNERS, CODE_OF_CONDUCT, SUPPORT, SECURITY
+- Product requirements, personas, user journeys, functional requirements
+- MVP scope definition, roadmap, release plan

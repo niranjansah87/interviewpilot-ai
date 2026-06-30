@@ -10,7 +10,7 @@
 
 ## 1. Overview
 
-The InterviewPilot AI frontend is built with Next.js 15, React 19, and TypeScript. This document describes how UI components are organized, how state flows, and how the routing structure maps to the visual layout.
+The InterviewPilot AI frontend is built with Next.js 16, React 19, and TypeScript. This document describes how UI components are organized, how state flows, and how the routing structure maps to the visual layout.
 
 ---
 

@@ -2,33 +2,140 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =============================================================================
+   Design Tokens — Premium AI Palette
+   ============================================================================= */
+
 :root {
+  /* Radius */
   --radius: 0.5rem;
+
+  /* Surface */
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+
+  /* Primary — Indigo */
+  --primary: 224 71% 48%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Secondary — Slate */
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+
+  /* Accent */
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+
+  /* Muted */
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+
+  /* Destructive */
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Layout */
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 224 71% 48%;
+
+  /* Semantic */
+  --success: 142 71% 35%;
+  --warning: 38 92% 50%;
+  --info: 199 89% 48%;
 }
+
+/* =============================================================================
+   Dark Mode
+   ============================================================================= */
+
+.dark {
+  --background: 240 10% 4%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 6%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 6%;
+  --popover-foreground: 0 0% 98%;
+
+  --primary: 224 71% 55%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 240 4% 12%;
+  --secondary-foreground: 0 0% 98%;
+
+  --accent: 240 4% 12%;
+  --accent-foreground: 0 0% 98%;
+
+  --muted: 240 4% 14%;
+  --muted-foreground: 240 5% 68%;
+
+  --destructive: 0 70% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 240 4% 16%;
+  --input: 240 4% 16%;
+  --ring: 224 71% 55%;
+
+  --success: 142 61% 35%;
+  --warning: 38 82% 45%;
+  --info: 199 79% 48%;
+}
+
+/* =============================================================================
+   Base Styles
+   ============================================================================= */
 
 @layer base {
   * {
-    border-color: hsl(214.3 31.8% 91.4%);
+    border-color: hsl(var(--border));
   }
   html {
     scroll-behavior: smooth;
   }
   body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     font-family: var(--font-sans), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   :focus-visible {
-    outline: 2px solid hsl(221.2 83.2% 53.1%);
+    outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
   }
 }
 
+/* =============================================================================
+   Utilities
+   ============================================================================= */
+
+@layer utilities {
+  .glass {
+    background: hsl(var(--card) / 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .glass-dark {
+    background: hsl(var(--card) / 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* =============================================================================
+   Reduced Motion
+   ============================================================================= */
+
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }

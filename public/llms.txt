@@ -1,0 +1,64 @@
+# InterviewPilot AI
+> AI-powered voice interview platform that simulates realistic technical and behavioral interviews through dynamic conversations.
+
+## What is InterviewPilot AI?
+InterviewPilot AI enables candidates to practice interviews with an AI interviewer through natural voice conversations. Unlike traditional mock interview platforms that rely on static question banks, InterviewPilot generates contextual follow-up questions, adapts to candidate responses, and provides personalized feedback after each session.
+
+## Key Features
+- Real-time voice interviews powered by AI
+- Adaptive follow-up questions based on responses
+- Detailed feedback reports with scores and improvement suggestions
+- Multiple interview types: Behavioral, Technical, System Design, Frontend, Backend, Full-Stack, DevOps
+- Dark/light theme support
+- PostgreSQL persistence with Prisma ORM
+- Redis caching layer
+- JWT authentication with httpOnly cookies
+
+## Tech Stack
+- **Frontend**: Next.js 16, React 19, TypeScript, TailwindCSS, shadcn/ui, Framer Motion
+- **Backend**: Next.js Route Handlers, Zod validation
+- **Database**: PostgreSQL (Supabase) with Prisma ORM
+- **Cache**: Redis with in-memory fallback
+- **AI**: OpenAI Realtime API + ElevenLabs Conversational AI
+- **Auth**: JWT (jose) + bcrypt + CSRF protection
+- **Deployment**: Vercel
+
+## Architecture
+- Layered architecture: Route Handlers → Services → Repositories → Prisma → PostgreSQL
+- Feature-first organization with shared UI component library
+- AI Provider abstraction supporting OpenAI + ElevenLabs with fallback
+- Conversation Engine with 8-state machine and deterministic follow-up decisions
+- Modular prompt engine with versioned, composable prompt blocks
+- Repository pattern with Redis cache-aside caching
+
+## Documentation
+- Full product documentation: docs/product/
+- Engineering documentation: docs/engineering/
+- Architecture Decision Records: docs/decisions/
+- Operational runbooks: docs/runbooks/
+- Document templates: docs/templates/
+
+## Getting Started
+```bash
+git clone https://github.com/NiranjanDevX/interviewpilot-ai.git
+cd interviewpilot-ai
+pnpm install
+cp .env.example .env.local
+# Fill in DATABASE_URL, JWT_SECRET, OPENAI_API_KEY, etc.
+pnpm dev
+```
+
+## Environment Variables
+- DATABASE_URL — Supabase PostgreSQL connection
+- JWT_SECRET — Access token signing (min 32 chars)
+- JWT_REFRESH_SECRET — Refresh token signing (min 32 chars)
+- OPENAI_API_KEY — OpenAI API key
+- OPENAI_REALTIME_MODEL — Realtime model identifier
+- ELEVENLABS_API_KEY — ElevenLabs API key
+- ELEVENLABS_AGENT_ID — ConvAI agent ID
+- REDIS_URL — Redis connection (optional, falls back to memory)
+- VOICE_PROVIDER — elevenlabs | openai | mock
+- NEXT_PUBLIC_APP_URL — Application URL
+
+## License
+MIT License — see LICENSE.md

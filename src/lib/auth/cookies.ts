@@ -18,6 +18,20 @@ export const REFRESH_TOKEN_COOKIE = 'ip_refresh_token';
 export const CSRF_TOKEN_COOKIE = 'ip_csrf';
 
 /**
+ * Set CSRF token cookie. Not httpOnly so JS can read it for the header.
+ */
+export async function setCsrfCookie(token: string): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.set(CSRF_TOKEN_COOKIE, token, {
+    sameSite: 'lax',
+    path: '/',
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: false, // Must be readable by client JS to send in header
+    maxAge: 60 * 60 * 24, // 24 hours
+  });
+}
+
+/**
  * Set access token cookie.
  * 15 minute expiry.
  */

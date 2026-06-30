@@ -1,107 +1,102 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { cn } from '@/lib/cn';
-import {
-  LayoutDashboard,
-  Mic,
-  History,
-  Settings,
-  User,
-  LogOut,
-  Menu,
-  X,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { useState } from 'react';
+import { LayoutDashboard, Mic, History, Settings, User, LogOut, PanelLeftClose, PanelLeft, FileText, ClipboardCheck } from 'lucide-react';
+import { useState, useCallback } from 'react';
 
-const NAV_ITEMS = [
+const NAV = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/interviews', label: 'Interviews', icon: History },
-  { href: '/interviews/new', label: 'New Interview', icon: Mic },
-  { href: '/profile', label: 'Profile', icon: User },
-  { href: '/settings', label: 'Settings', icon: Settings },
-] as const;
+  { href: '/dashboard/interviews/new', label: 'New Interview', icon: Mic },
+  { href: '/dashboard/interviews', label: 'History', icon: History },
+  { href: '/dashboard/profile', label: 'Profile', icon: User },
+  { href: '/dashboard/feedback', label: 'Feedback', icon: ClipboardCheck },
+  { href: '/dashboard/profile/resume', label: 'Resume', icon: FileText },
+  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+];
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const router = useRouter();
+  const [collapsed, setCollapsed] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
-  const sidebarContent = (
-    <div className="flex h-full flex-col">
-      <div className="flex h-14 items-center gap-2 px-6">
-        <Mic className="h-5 w-5 text-primary" />
-        <span className="font-semibold">InterviewPilot</span>
+  const handleLogout = useCallback(async () => {
+    setLoggingOut(true);
+    try {
+      await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'include' });
+      router.push('/login');
+    } catch {
+      // silently fail
+    } finally {
+      setLoggingOut(false);
+    }
+  }, [router]);
+
+  return (
+    <aside
+      className={cn(
+        'flex h-screen shrink-0 flex-col border-r border-border bg-card transition-all duration-200',
+        collapsed ? 'w-[68px]' : 'w-[240px]',
+      )}
+    >
+      {/* Logo + collapse */}
+      <div className="flex h-14 items-center justify-center">
+        <Link href="/dashboard" className="group">
+          <Image src="/logo_dark.png" alt="InterviewPilot" width={60} height={60} className="hidden shrink-0 dark:block transition-transform duration-300 group-hover:scale-110" />
+          <Image src="/logo_light.png" alt="InterviewPilot" width={60} height={60} className="block shrink-0 dark:hidden transition-transform duration-300 group-hover:scale-110" />
+        </Link>
       </div>
-      <Separator />
-      <nav className="flex-1 space-y-1 px-3 py-4">
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
+
+      {/* Navigation */}
+      <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-3">
+        {NAV.map(({ href, label, icon: Icon }) => {
+          const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
           return (
             <Link
               key={href}
               href={href}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors',
+                collapsed && 'justify-center px-0 py-2.5',
+                active
+                  ? 'bg-accent text-foreground font-medium'
+                  : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
               )}
-              onClick={() => setMobileOpen(false)}
             >
-              <Icon className="h-4 w-4" />
-              {label}
+              <Icon className="h-[18px] w-[18px] shrink-0" />
+              {!collapsed && <span className="truncate">{label}</span>}
             </Link>
           );
         })}
       </nav>
-      <Separator />
-      <div className="px-3 py-4">
-        <Button
-          variant="ghost"
-          className="w-full justify-start gap-3 text-muted-foreground"
-          asChild
+
+      {/* Bottom actions */}
+      <div className="border-t border-border px-2 py-2 space-y-0.5">
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className={cn(
+            'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground',
+            collapsed && 'justify-center px-0',
+          )}
         >
-          <Link href="/api/v1/auth/logout">
-            <LogOut className="h-4 w-4" />
-            Sign out
-          </Link>
-        </Button>
+          {collapsed ? <PanelLeft className="h-[18px] w-[18px] shrink-0" /> : <PanelLeftClose className="h-[18px] w-[18px] shrink-0" />}
+          {!collapsed && <span>Collapse</span>}
+        </button>
+        <button
+          onClick={handleLogout}
+          disabled={loggingOut}
+          className={cn(
+            'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground',
+            collapsed && 'justify-center px-0',
+          )}
+        >
+          <LogOut className="h-[18px] w-[18px] shrink-0" />
+          {!collapsed && <span>{loggingOut ? 'Signing out...' : 'Sign out'}</span>}
+        </button>
       </div>
-    </div>
-  );
-
-  return (
-    <>
-      {/* Mobile toggle */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="fixed left-4 top-3 z-50 md:hidden"
-        onClick={() => setMobileOpen(!mobileOpen)}
-      >
-        {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-      </Button>
-
-      {/* Mobile overlay */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          'fixed left-0 top-0 z-50 h-full w-64 border-r border-border bg-background transition-transform duration-200 md:relative md:translate-x-0',
-          mobileOpen ? 'translate-x-0' : '-translate-x-full',
-        )}
-      >
-        {sidebarContent}
-      </aside>
-    </>
+    </aside>
   );
 }

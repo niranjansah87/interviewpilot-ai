@@ -27,7 +27,7 @@ These originate from invalid user input or unauthorized access. They return `4xx
 | 403 | `FORBIDDEN` | Valid token but insufficient permissions |
 | 404 | `NOT_FOUND` | Resource does not exist |
 | 409 | `CONFLICT` | Email already exists, duplicate resource |
-| 422 | `VALIDATION_ERROR` | Zod/Pydantic validation failed |
+| 422 | `VALIDATION_ERROR` | Zod validation failed |
 | 429 | `RATE_LIMITED` | Too many requests |
 
 ### Server Errors (5xx)
@@ -126,7 +126,7 @@ export async function POST(req: Request) {
 
 ### Global Error Handler
 
-Next.js 15 Route Handlers do not have a global error handler like Express. Error handling is done per-route. For unhandled errors, the Vercel error boundary in `app/error.tsx` catches React tree errors.
+Next.js 16 Route Handlers do not have a global error handler like Express. Error handling is done per-route. For unhandled errors, the Vercel error boundary in `app/error.tsx` catches React tree errors.
 
 ---
 

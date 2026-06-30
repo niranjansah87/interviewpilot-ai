@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authService } from '@/services/auth.service';
 import { loginSchema } from '@/validators/common';
 import { apiSuccess, apiError, ValidationError } from '@/lib/api/route-helpers';
-import { setAccessTokenCookie, setRefreshTokenCookie } from '@/lib/auth/cookies';
+import { setAccessTokenCookie, setRefreshTokenCookie, setCsrfCookie } from '@/lib/auth/cookies';
+import { generateCsrfToken } from '@/lib/auth/csrf';
+import { authRateLimit, getClientIP } from '@/lib/api/rate-limit';
 
 export async function POST(req: NextRequest) {
   try {
+    authRateLimit(getClientIP(req));
     const body = await req.json();
     const parsed = loginSchema.safeParse(body);
 
@@ -25,6 +28,7 @@ export async function POST(req: NextRequest) {
 
     await setAccessTokenCookie(result.accessToken);
     await setRefreshTokenCookie(result.refreshToken);
+    await setCsrfCookie(generateCsrfToken().token);
 
     return response;
   } catch (error) {

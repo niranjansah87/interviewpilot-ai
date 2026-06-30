@@ -1,103 +1,229 @@
-import Link from 'next/link';
-import { Hero } from '@/components/features/landing/hero';
-import { ArrowRight, Mic, BarChart3, Zap, Shield, MessageSquare } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+'use client';
 
-const FEATURES = [
-  { icon: Mic, title: 'Voice Interviews', desc: 'Natural conversation with an AI that asks real follow-up questions' },
-  { icon: Zap, title: 'Adaptive Difficulty', desc: 'The AI adjusts based on your responses and experience level' },
-  { icon: BarChart3, title: 'Detailed Feedback', desc: 'Get scored on communication, confidence, and technical depth' },
-  { icon: Shield, title: 'Private & Secure', desc: 'Your interviews are encrypted and only visible to you' },
-  { icon: MessageSquare, title: 'Transcripts', desc: 'Review every word. Learn from your exact responses' },
+import Link from 'next/link';
+import Image from 'next/image';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { ArrowRight, Mic, BarChart3, Zap, Shield, Sparkles, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { useRef } from 'react';
+
+const features = [
+  { icon: Mic, title: 'Real Voice Interviews', desc: 'Speak naturally. Our AI listens, adapts, and responds — just like a human interviewer.' },
+  { icon: Zap, title: 'Adaptive Intelligence', desc: 'Questions evolve based on your answers. No two interviews are ever the same.' },
+  { icon: BarChart3, title: 'Deep Feedback', desc: 'Get scored on communication, confidence, and technical depth with specific improvements.' },
+  { icon: Shield, title: 'Private & Secure', desc: 'End-to-end encrypted. Your practice data stays private and accessible only to you.' },
 ];
 
-const STEPS = [
-  { step: '1', title: 'Choose your interview', desc: 'Select behavioral, technical, or mixed. Set your role and level.' },
-  { step: '2', title: 'Speak naturally', desc: 'Answer questions just like a real interview. The AI follows up.' },
-  { step: '3', title: 'Get actionable insights', desc: 'Receive a detailed report with strengths and specific improvements.' },
+const steps = [
+  { step: '01', title: 'Configure', desc: 'Choose interview type, role, and experience level in seconds.' },
+  { step: '02', title: 'Speak', desc: 'Answer questions naturally. The AI challenges, probes, and adapts in real time.' },
+  { step: '03', title: 'Improve', desc: 'Get a detailed report with strengths, weaknesses, and a personalized improvement plan.' },
 ];
 
 export default function LandingPage() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
+  const y = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <span className="text-lg font-bold tracking-tight">InterviewPilot AI</span>
-          <nav className="flex items-center gap-4">
-            <Link href="/login" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-              Sign in
-            </Link>
-            <Button asChild size="sm">
-              <Link href="/register">Get started</Link>
+    <div className="min-h-screen bg-background" ref={ref}>
+{/* ---- Header ---- */}
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+          <Link href="/" className="group relative flex items-center">
+            <div className="absolute -inset-2 rounded-xl bg-primary/0 transition-all duration-300 group-hover:bg-primary/5" />
+            <Image src="/logo_dark.png" alt="InterviewPilot AI" width={65} height={65} className="relative hidden dark:block transition-transform duration-300 group-hover:scale-110" />
+            <Image src="/logo_light.png" alt="InterviewPilot AI" width={65} height={65} className="relative block dark:hidden transition-transform duration-300 group-hover:scale-110" />
+          </Link>
+          <nav className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link href="/login" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Sign in</Link>
+            <Button asChild size="sm" className="gap-1.5">
+              <Link href="/register">Get started <ChevronRight className="h-3.5 w-3.5" /></Link>
             </Button>
           </nav>
         </div>
       </header>
 
-      <Hero />
+      {/* ---- Hero ---- */}
+      <section className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-32">
+        {/* Background effects */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute left-1/2 top-1/4 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
+          <div className="absolute left-1/4 top-1/2 h-[400px] w-[400px] rounded-full bg-violet-500/5 blur-3xl" />
+          <motion.div
+            style={{ y }}
+            className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,hsl(var(--primary)/0.06),transparent_60%)]"
+          />
+        </div>
 
-      {/* Features */}
-      <section className="border-t border-border px-6 py-24">
-        <div className="mx-auto max-w-5xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight">Why InterviewPilot?</h2>
-          <p className="mt-4 text-muted-foreground">
-            Everything you need to prepare for real interviews
-          </p>
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="group rounded-xl border border-border bg-card p-6 text-left transition-shadow hover:shadow-md">
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                  <Icon className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="font-semibold">{title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
-              </div>
-            ))}
-          </div>
+        <div className="mx-auto max-w-5xl px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary">
+              <Sparkles className="h-3.5 w-3.5" />
+              AI-Powered Voice Interviews
+            </span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="mt-8 text-balance text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl"
+          >
+            Practice interviews with
+            <br />
+            <span className="bg-gradient-to-r from-primary via-violet-500 to-primary bg-clip-text text-transparent">
+              AI that listens
+            </span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mx-auto mt-6 max-w-2xl text-balance text-lg text-muted-foreground"
+          >
+            Speak naturally. Get challenged with real follow-up questions.
+            Receive detailed feedback after every session. No scripted question lists.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
+          >
+            <Button asChild size="lg" className="gap-2 px-8 py-6 text-base">
+              <Link href="/register">Start practicing free <ArrowRight className="h-4 w-4" /></Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="px-8 py-6 text-base">
+              <Link href="/login">Sign in</Link>
+            </Button>
+          </motion.div>
+
+          {/* Social proof */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="mt-8 text-sm text-muted-foreground"
+          >
+            Trusted by engineers preparing for roles at top tech companies
+          </motion.p>
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="border-t border-border bg-muted/30 px-6 py-24">
+      {/* ---- Features Grid ---- */}
+      <section className="border-t border-border/50 px-6 py-24">
         <div className="mx-auto max-w-5xl">
-          <h2 className="text-center text-3xl font-bold tracking-tight">How it works</h2>
-          <div className="mt-12 grid gap-12 sm:grid-cols-3">
-            {STEPS.map(({ step, title, desc }) => (
-              <div key={step} className="text-center">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">
-                  {step}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Why InterviewPilot?
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Everything you need to practice, improve, and ace your interviews
+            </p>
+          </motion.div>
+
+          <div className="mt-16 grid gap-6 sm:grid-cols-2">
+            {features.map(({ icon: Icon, title, desc }, i) => (
+              <motion.div
+                key={title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ scale: 1.01 }}
+                className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card/50 p-8 backdrop-blur-sm transition-shadow hover:shadow-lg"
+              >
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/15">
+                  <Icon className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="mt-4 font-semibold">{title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
-              </div>
+                <h3 className="text-lg font-semibold">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="border-t border-border px-6 py-24">
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight">Ready to ace your next interview?</h2>
+      {/* ---- How It Works ---- */}
+      <section className="border-t border-border/50 bg-muted/20 px-6 py-24">
+        <div className="mx-auto max-w-5xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              How it works
+            </h2>
+          </motion.div>
+
+          <div className="mt-16 grid gap-8 sm:grid-cols-3">
+            {steps.map(({ step, title, desc }, i) => (
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15 }}
+                className="text-center"
+              >
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+                  <span className="text-lg font-bold text-primary">{step}</span>
+                </div>
+                <h3 className="mt-5 font-semibold">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---- CTA ---- */}
+      <section className="border-t border-border/50 px-6 py-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mx-auto max-w-3xl text-center"
+        >
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Ready to ace your next interview?
+          </h2>
           <p className="mt-4 text-muted-foreground">
             Start practicing with an AI interviewer that adapts, challenges, and helps you improve.
           </p>
-          <Button asChild size="lg" className="mt-8 gap-2">
-            <Link href="/register">
-              Start free <ArrowRight className="h-4 w-4" />
-            </Link>
+          <Button asChild size="lg" className="mt-8 gap-2 px-8 py-6 text-base">
+            <Link href="/register">Start free <ArrowRight className="h-4 w-4" /></Link>
           </Button>
-        </div>
+        </motion.div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border px-6 py-8">
+      {/* ---- Footer ---- */}
+      <footer className="border-t border-border/50 px-6 py-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 text-sm text-muted-foreground sm:flex-row">
-          <p>&copy; {new Date().getFullYear()} InterviewPilot AI</p>
+          <div className="flex items-center gap-2">
+            <Image src="/logo_dark.png" alt="" width={20} height={20} className="hidden dark:block" />
+            <Image src="/logo_light.png" alt="" width={20} height={20} className="block dark:hidden" />
+            <span>&copy; {new Date().getFullYear()} InterviewPilot AI</span>
+          </div>
           <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
-            <Link href="/terms" className="hover:text-foreground">Terms</Link>
+            <a href="#" className="transition-colors hover:text-foreground">Privacy</a>
+            <a href="#" className="transition-colors hover:text-foreground">Terms</a>
           </div>
         </div>
       </footer>
