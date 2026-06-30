@@ -1,9 +1,9 @@
+import { Toaster } from '@/components/ui/sonner';
+import { QueryProvider } from '@/providers/query-provider';
+import { ThemeProvider } from '@/providers/theme-provider';
+import '@/styles/globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
-import '@/styles/globals.css';
-import { ThemeProvider } from '@/providers/theme-provider';
-import { QueryProvider } from '@/providers/query-provider';
-import { Toaster } from '@/components/ui/sonner';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     'interview preparation platform',
     'AI career preparation',
   ],
-  authors: [{ name: 'Niranjan Sah', url: 'https://github.com/NiranjanDevX' }],
+  authors: [{ name: 'Niranjan Sah', url: 'https://github.com/niranjansah87' }],
   creator: 'Niranjan Sah',
   publisher: 'InterviewPilot AI',
   applicationName: 'InterviewPilot AI',

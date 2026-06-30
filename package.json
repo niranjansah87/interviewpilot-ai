@@ -26,7 +26,7 @@
     "cleanup": "tsx scripts/cleanup.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",

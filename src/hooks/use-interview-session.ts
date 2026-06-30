@@ -63,6 +63,7 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
   const playbackCtxRef = useRef<AudioContext | null>(null); // AI audio playback context
   const activeSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const isEndingRef = useRef(false); // Suppress disconnect errors on intentional end
 
   // ---- Barge-in: stop current AI audio when candidate speaks ----
   const stopPlayback = useCallback(() => {
@@ -172,8 +173,12 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
         const ws = new WebSocket(signedUrl);
         const conn = createWebSocketConnection(ws, handleAIEvent, {
           onDisconnect: (reason) => {
+            if (isEndingRef.current) {
+              setStatus('disconnected');
+              return; // Silent — intentional end
+            }
             setStatus('disconnected');
-            setError(`Interview paused: ${reason}. Click reconnect to continue.`);
+            setError(`Connection lost: ${reason}. Click reconnect to continue.`);
           },
           onUserSpeech: () => { stopPlayback(); setSpeaker('candidate'); },
         });

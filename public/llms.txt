@@ -40,7 +40,7 @@ InterviewPilot AI enables candidates to practice interviews with an AI interview
 
 ## Getting Started
 ```bash
-git clone https://github.com/NiranjanDevX/interviewpilot-ai.git
+git clone https://github.com/niranjansah87/interviewpilot-ai.git
 cd interviewpilot-ai
 pnpm install
 cp .env.example .env.local

@@ -9,23 +9,29 @@ InterviewPilot AI lets candidates practice interviews with an AI interviewer usi
 ## Features
 
 ### Voice Interviews
+
 Natural voice conversations powered by **OpenAI Realtime API** and **ElevenLabs ConvAI** — with automatic provider fallback. Interruptible, low-latency, and context-aware.
 
 ### Adaptive Conversation Engine
+
 A deterministic state machine orchestrates every interview. The AI interviewer adapts based on:
+
 - Candidate responses and experience level
 - Interview type (Behavioral, Technical, System Design, Frontend, Backend, Full-Stack, DevOps)
 - Resume data and job descriptions (when provided)
 - Full conversation history with context compression for long sessions
 
 ### AI Feedback Reports
+
 After every completed interview:
+
 - Overall score (0–100) plus breakdowns: Communication, Confidence, Technical Reasoning
 - Strengths and weaknesses with specific examples from the transcript
 - Actionable improvement suggestions
 - Full searchable transcript
 
 ### Authentication & Security
+
 - JWT access tokens (15 min) + refresh tokens (7 days) in httpOnly cookies
 - bcrypt password hashing (cost factor 12)
 - CSRF double-submit cookie protection
@@ -33,6 +39,7 @@ After every completed interview:
 - Rate limiting on auth and AI endpoints
 
 ### Infrastructure
+
 - **PostgreSQL** via Prisma ORM with migrations and seed data
 - **Redis** caching with automatic memory fallback
 - **Startup health checks** for Database, Redis, OpenAI, and ElevenLabs
@@ -42,22 +49,22 @@ After every completed interview:
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Framework | Next.js 16, React 19, TypeScript |
-| Styling | TailwindCSS, shadcn/ui, Framer Motion |
-| State | TanStack React Query, Zustand |
-| Backend | Next.js Route Handlers (API routes) |
-| ORM | Prisma 6 |
-| Database | PostgreSQL (Supabase) |
-| Cache | Redis (ioredis) with in-memory fallback |
-| AI Voice | OpenAI Realtime API, ElevenLabs ConvAI |
-| AI Text | GPT-4 / GPT-4.1 (feedback generation) |
-| Auth | JWT (jose), bcrypt, SHA-256 |
-| Validation | Zod v4 |
-| Logging | Pino v10 |
-| Testing | Vitest, Playwright |
-| Deployment | Vercel |
+| Layer      | Technology                              |
+| ---------- | --------------------------------------- |
+| Framework  | Next.js 16, React 19, TypeScript        |
+| Styling    | TailwindCSS, shadcn/ui, Framer Motion   |
+| State      | TanStack React Query, Zustand           |
+| Backend    | Next.js Route Handlers (API routes)     |
+| ORM        | Prisma 6                                |
+| Database   | PostgreSQL (Supabase)                   |
+| Cache      | Redis (ioredis) with in-memory fallback |
+| AI Voice   | OpenAI Realtime API, ElevenLabs ConvAI  |
+| AI Text    | GPT-4 / GPT-4.1 (feedback generation)   |
+| Auth       | JWT (jose), bcrypt, SHA-256             |
+| Validation | Zod v4                                  |
+| Logging    | Pino v10                                |
+| Testing    | Vitest, Playwright                      |
+| Deployment | Vercel                                  |
 
 ---
 
@@ -149,7 +156,7 @@ src/
 
 ```bash
 # Clone
-git clone https://github.com/NiranjanDevX/interviewpilot-ai.git
+git clone https://github.com/niranjansah87/interviewpilot-ai.git
 cd interviewpilot-ai
 
 # Install dependencies
@@ -171,46 +178,46 @@ pnpm dev
 
 ### Required Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `JWT_SECRET` | Access token signing secret (min 32 chars) |
-| `JWT_REFRESH_SECRET` | Refresh token signing secret (min 32 chars) |
-| `OPENAI_API_KEY` | OpenAI API key |
+| Variable                | Description                                     |
+| ----------------------- | ----------------------------------------------- |
+| `DATABASE_URL`          | PostgreSQL connection string                    |
+| `JWT_SECRET`            | Access token signing secret (min 32 chars)      |
+| `JWT_REFRESH_SECRET`    | Refresh token signing secret (min 32 chars)     |
+| `OPENAI_API_KEY`        | OpenAI API key                                  |
 | `OPENAI_REALTIME_MODEL` | Realtime model (e.g. `gpt-4o-realtime-preview`) |
-| `NEXT_PUBLIC_APP_URL` | Application URL |
+| `NEXT_PUBLIC_APP_URL`   | Application URL                                 |
 
 ### Optional
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `CACHE_PROVIDER` | `memory` | Set to `redis` to enable Redis caching |
-| `REDIS_URL` | — | Redis connection string |
-| `ELEVENLABS_API_KEY` | — | ElevenLabs voice API key |
-| `VOICE_PROVIDER` | `elevenlabs` | `elevenlabs` / `openai` / `mock` |
-| `LOG_LEVEL` | `info` | Pino log level |
-| `SENTRY_DSN` | — | Sentry error tracking |
+| Variable             | Default      | Description                            |
+| -------------------- | ------------ | -------------------------------------- |
+| `CACHE_PROVIDER`     | `memory`     | Set to `redis` to enable Redis caching |
+| `REDIS_URL`          | —            | Redis connection string                |
+| `ELEVENLABS_API_KEY` | —            | ElevenLabs voice API key               |
+| `VOICE_PROVIDER`     | `elevenlabs` | `elevenlabs` / `openai` / `mock`       |
+| `LOG_LEVEL`          | `info`       | Pino log level                         |
+| `SENTRY_DSN`         | —            | Sentry error tracking                  |
 
 ---
 
 ## API Endpoints
 
-| Method | Route | Auth | Status |
-|--------|-------|------|--------|
-| `GET` | `/api/v1/health` | Public | ✅ |
-| `POST` | `/api/v1/auth/register` | Public | ✅ |
-| `POST` | `/api/v1/auth/login` | Public | ✅ |
-| `POST` | `/api/v1/auth/logout` | Public | ✅ |
-| `POST` | `/api/v1/auth/refresh` | Public | ✅ |
-| `GET` | `/api/v1/users/me` | Required | ✅ |
-| `PATCH` | `/api/v1/users/me/name` | Required | ✅ |
-| `POST` | `/api/v1/users/me/password` | Required | ✅ |
-| `POST` | `/api/v1/interviews` | Required | ✅ |
-| `GET` | `/api/v1/interviews` | Required | ✅ |
-| `GET` | `/api/v1/interviews/[id]` | Required | ✅ |
-| `DELETE` | `/api/v1/interviews/[id]` | Required | ✅ |
-| `GET` | `/api/v1/interviews/[id]/transcript` | Required | 🚧 Phase 3 |
-| `GET` | `/api/v1/interviews/[id]/report` | Required | 🚧 Phase 3 |
+| Method   | Route                                | Auth     | Status     |
+| -------- | ------------------------------------ | -------- | ---------- |
+| `GET`    | `/api/v1/health`                     | Public   | ✅         |
+| `POST`   | `/api/v1/auth/register`              | Public   | ✅         |
+| `POST`   | `/api/v1/auth/login`                 | Public   | ✅         |
+| `POST`   | `/api/v1/auth/logout`                | Public   | ✅         |
+| `POST`   | `/api/v1/auth/refresh`               | Public   | ✅         |
+| `GET`    | `/api/v1/users/me`                   | Required | ✅         |
+| `PATCH`  | `/api/v1/users/me/name`              | Required | ✅         |
+| `POST`   | `/api/v1/users/me/password`          | Required | ✅         |
+| `POST`   | `/api/v1/interviews`                 | Required | ✅         |
+| `GET`    | `/api/v1/interviews`                 | Required | ✅         |
+| `GET`    | `/api/v1/interviews/[id]`            | Required | ✅         |
+| `DELETE` | `/api/v1/interviews/[id]`            | Required | ✅         |
+| `GET`    | `/api/v1/interviews/[id]/transcript` | Required | 🚧 Phase 3 |
+| `GET`    | `/api/v1/interviews/[id]/report`     | Required | 🚧 Phase 3 |
 
 ---
 
@@ -236,34 +243,40 @@ Login → Configure (type, role, level) → AI introduces → Voice conversation
 
 ## Documentation
 
-| Section | Contents |
-|---------|----------|
-| [docs/product/](docs/product/) | Product definition, personas, requirements, roadmap |
+| Section                                | Contents                                                                |
+| -------------------------------------- | ----------------------------------------------------------------------- |
+| [docs/product/](docs/product/)         | Product definition, personas, requirements, roadmap                     |
 | [docs/engineering/](docs/engineering/) | Architecture, tech stack, AI engine, API, database, caching, deployment |
-| [docs/decisions/](docs/decisions/) | Architecture Decision Records (5 ADRs) |
-| [docs/runbooks/](docs/runbooks/) | Database migrations, incident response |
-| [docs/templates/](docs/templates/) | ADR, runbook, research, postmortem, feature spec templates |
+| [docs/decisions/](docs/decisions/)     | Architecture Decision Records (5 ADRs)                                  |
+| [docs/runbooks/](docs/runbooks/)       | Database migrations, incident response                                  |
+| [docs/templates/](docs/templates/)     | ADR, runbook, research, postmortem, feature spec templates              |
 
 ---
 
 ## Roadmap
 
 ### ✅ Phase 1 — Foundation
+
 Project scaffolding, documentation, CI/CD, ADRs.
 
 ### ✅ Phase 2 — Core Architecture
+
 Authentication, database schema, UI components, caching, error handling, API routes, proxy middleware.
 
 ### 🚧 Phase 3 — AI Interview Engine (In Progress)
+
 Voice conversation via OpenAI Realtime + ElevenLabs, state machine, prompt library, context engine, transcript storage.
 
 ### ⬜ Phase 4 — Feedback System
+
 GPT-4 feedback reports, transcript viewer, score visualizations.
 
 ### ⬜ Phase 5 — Production Readiness
+
 Rate limiting, E2E tests, Redis production cache, security hardening, bundle optimization.
 
 ### ⬜ Future
+
 Resume-aware interviews, coding workspace, system design, multiple personas, recruiter dashboard.
 
 ---
