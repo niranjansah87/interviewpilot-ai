@@ -1,169 +1,165 @@
-<p align="center"><img src="public/logo_dark.png" alt="InterviewPilot AI" width="64" /></p>
+<p align="center">
+  <img src="public/logo_dark.png" alt="InterviewPilot AI" width="72" />
+</p>
+<h1 align="center">InterviewPilot AI</h1>
+<p align="center"><strong>AI-powered voice interviews that actually prepare you for the real thing.</strong></p>
+<p align="center">
+  <a href="https://interviewpilot.niranjansah87.com.np"><strong>Live Demo</strong></a> ·
+  <a href="https://github.com/niranjansah87/interviewpilot-ai"><strong>GitHub</strong></a>
+</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/next.js-16-000?logo=nextdotjs" />
+  <img src="https://img.shields.io/badge/typescript-5.9-3178C6?logo=typescript" />
+  <img src="https://img.shields.io/badge/postgres-supabase-4169E1?logo=postgresql" />
+  <img src="https://img.shields.io/badge/prisma-6-2D3748?logo=prisma" />
+  <img src="https://img.shields.io/badge/redis-7-DC382D?logo=redis" />
+  <img src="https://img.shields.io/badge/elevenlabs-convai-7C3AED" />
+  <img src="https://img.shields.io/badge/MIT-license-blue" />
+</p>
 
-# InterviewPilot AI
+---
 
-> AI-powered voice interview platform that simulates realistic technical and behavioral interviews through dynamic, adaptive conversations.
+## Overview
 
-InterviewPilot AI lets candidates practice interviews with an AI interviewer using natural voice conversations. Unlike platforms that rely on static question banks, InterviewPilot generates contextual follow-up questions, adapts to candidate responses in real time, and delivers detailed feedback reports with scores, strengths, and improvement suggestions.
+InterviewPilot AI is a production-grade voice interview platform. It simulates realistic technical and behavioral interviews using **ElevenLabs ConvAI** for natural speech, a **deterministic conversation engine** for adaptive follow-ups, and **GPT-4** for detailed feedback — backed by PostgreSQL, Redis, and a clean layered architecture.
+
+Unlike static question banks, InterviewPilot:
+
+- **Listens** to your actual spoken answers
+- **Adapts** with contextual follow-up questions
+- **Remembers** your resume, job description, and previous answers
+- **Challenges** weak reasoning and probes trade-off decisions
+- **Evaluates** with recruiter-quality feedback and scores
 
 ---
 
 ## Screenshots
 
-![Dashboard](screenshots/dashboard.png)
-![New Interview](screenshots/new%20interview.png)
-![Voice Interview](screenshots/interview%20page.png)
-![Feedback Report](screenshots/feedback.png)
-![Settings](screenshots/settings.png)
-![Profile](screenshots/profile.png)
-![History](screenshots/history%20page.png)
-![Resume](screenshots/resume.png)
-![Post-Interview](screenshots/feedback%20after%20interview.png)
+### Dashboard & Setup
+
+<p align="center">
+  <img src="screenshots/dashboard.png" width="48%" alt="Dashboard" />
+  <img src="screenshots/new%20interview.png" width="48%" alt="New Interview" />
+</p>
+
+### Interview Experience
+
+<p align="center">
+  <img src="screenshots/interview%20page.png" width="48%" alt="Voice Interview" />
+  <img src="screenshots/feedback.png" width="48%" alt="Feedback Report" />
+</p>
+
+### Platform
+
+<p align="center">
+  <img src="screenshots/settings.png" width="32%" alt="Settings" />
+  <img src="screenshots/profile.png" width="32%" alt="Profile" />
+  <img src="screenshots/history%20page.png" width="32%" alt="History" />
+</p>
+
+<p align="center">
+  <img src="screenshots/resume.png" width="48%" alt="Resume" />
+  <img src="screenshots/feedback%20after%20interview.png" width="48%" alt="Post-Interview" />
+</p>
 
 ---
 
-## Features
+## Key Features
 
-### Voice Interviews
+### Voice AI
+- **ElevenLabs ConvAI** (primary) with OpenAI Realtime fallback
+- Real-time **Web Audio API** waveform visualization
+- Voice Activity Detection with silence/speaking/loud states
+- **Barge-in** — interrupt the AI mid-response
+- Streaming transcript with speaker identification
 
-Natural voice conversations powered by **ElevenLabs ConvAI** — the primary voice provider. Features real-time audio visualization using Web Audio API, local Voice Activity Detection (VAD), and instant barge-in support. OpenAI Realtime API available as fallback.
+### Conversation Engine
+- **12-state deterministic machine** — no LLM owns the interview flow
+- **8 interview types** — Behavioral, Technical, System Design, Frontend, Backend, Full-Stack, DevOps, Mixed
+- **Adaptive difficulty** — scales from foundational to principal based on response quality
+- **30+ follow-up styles** — never repeats phrasing
+- **Context-aware** — uses resume, job description, and conversation history
 
-### Adaptive Conversation Engine
+### Feedback
+- Overall score with Communication, Confidence, and Technical Reasoning breakdowns
+- **Hiring recommendation** — Strong Hire / Hire / Lean Hire / No Hire
+- Strengths, weaknesses, and actionable improvement plan
+- GPT-4 powered analysis with transcript citations
 
-A deterministic state machine orchestrates every interview. The AI interviewer adapts based on:
-
-- Candidate responses and experience level
-- Interview type (Behavioral, Technical, System Design, Frontend, Backend, Full-Stack, DevOps)
-- Resume data and job descriptions (when provided)
-- Full conversation history with context compression for long sessions
-
-### AI Feedback Reports
-
-After every completed interview:
-
-- Overall score (0–100) plus breakdowns: Communication, Confidence, Technical Reasoning
-- Strengths and weaknesses with specific examples from the transcript
-- Actionable improvement suggestions
-- Full searchable transcript
-
-### Authentication & Security
-
-- JWT access tokens (15 min) + refresh tokens (7 days) in httpOnly cookies
-- bcrypt password hashing (cost factor 12)
-- CSRF double-submit cookie protection
-- SHA-256 hashed refresh tokens with rotation and reuse detection
-- Rate limiting on auth and AI endpoints
-
-### Infrastructure
-
-- **PostgreSQL** via Prisma ORM with migrations and seed data
-- **Redis** caching with automatic memory fallback
-- **Startup health checks** for Database, Redis, OpenAI, and ElevenLabs
-- Structured JSON logging via Pino
-
----
-
-## Tech Stack
-
-| Layer      | Technology                              |
-| ---------- | --------------------------------------- |
-| Framework  | Next.js 16, React 19, TypeScript        |
-| Styling    | TailwindCSS, shadcn/ui, Framer Motion   |
-| State      | TanStack React Query, Zustand           |
-| Backend    | Next.js Route Handlers (API routes)     |
-| ORM        | Prisma 6                                |
-| Database   | PostgreSQL (Supabase)                   |
-| Cache      | Redis (ioredis) with in-memory fallback |
-| AI Voice   | ElevenLabs ConvAI, OpenAI Realtime (fallback) |
-| AI Text    | GPT-4 / GPT-4.1 (feedback generation)   |
-| Auth       | JWT (jose), bcrypt, SHA-256             |
-| Validation | Zod v4                                  |
-| Logging    | Pino v10                                |
-| Testing    | Vitest, Playwright                      |
-| Deployment | Vercel                                  |
+### Platform
+- JWT auth (15min access + 7d refresh) in httpOnly cookies
+- bcrypt (cost 12) + CSRF + rate limiting
+- PostgreSQL via Prisma ORM with Redis cache-aside
+- Startup health checks for DB, Redis, OpenAI, and every ElevenLabs agent
+- Dark mode, responsive, accessible
 
 ---
 
 ## Architecture
 
 ```
-Browser (MediaRecorder / Web Audio)
+Browser (Web Audio API + WebSocket)
+   │
+   ├── getUserMedia → Shared AudioContext (16kHz)
+   │   ├── AnalyserNode → VAD → Waveform
+   │   └── ScriptProcessor → PCM16 → WebSocket
    │
    ▼
-Next.js 16 (App Router)
+Next.js 16 App Router
    │
-   ├── proxy.ts (security headers, auth redirects)
-   ├── Route Handlers (/api/v1/*)
-   ├── Service Layer (auth, interview)
-   ├── Repository Layer (user, interview, refresh-token)
-   ├── Prisma ORM → PostgreSQL (Supabase)
+   ├── proxy.ts — Security headers, auth redirects
+   ├── Route Handlers (/api/v1/*) — Zod validation
+   ├── Service Layer — Auth + Interview
+   ├── Repository Layer — Prisma with cache-aside
    │
    ├── AI Provider Abstraction
-   │   ├── ElevenLabs ConvAI adapter (WebSocket, STT + TTS)
-   │   └── OpenAI adapter (feedback generation, fallback)
+   │   ├── ElevenLabs ConvAI (primary)
+   │   ├── OpenAI (fallback + feedback)
+   │   └── Agent Pool — weighted random + circuit breaker
    │
    ├── Conversation Engine
-   │   ├── State machine (7 states, 9 events)
+   │   ├── State machine (12 states)
    │   ├── Context engine (profile, resume, JD, history)
-   │   ├── Prompt engine (modular, 8 role-specific templates)
-   │   └── Token manager (100k budget per session)
+   │   ├── Prompt engine (modular, 8 templates)
+   │   └── Token manager (100K budget)
    │
-   ├── Cache Layer
-   │   ├── RedisCache (production)
-   │   └── MemoryCache (development / fallback)
-   │
-   └── Monitoring
-       ├── Pino structured logger
-       └── Startup infrastructure health checks
+   └── Monitoring — Pino + Startup health checks
 ```
-
-See [docs/engineering/01-ARCHITECTURE.md](docs/engineering/01-ARCHITECTURE.md) for the full architecture.
 
 ---
 
-## Project Structure
+## Tech Stack
+
+| Category | Technology |
+|---|---|
+| Framework | Next.js 16, React 19, TypeScript |
+| Styling | TailwindCSS, shadcn/ui, Framer Motion |
+| Backend | Next.js Route Handlers |
+| Database | PostgreSQL (Supabase) |
+| ORM | Prisma 6 |
+| Cache | Redis (ioredis) + Memory fallback |
+| Voice AI | ElevenLabs ConvAI, OpenAI Realtime |
+| Text AI | GPT-4 / GPT-4.1 |
+| Auth | JWT (jose), bcrypt, SHA-256 |
+| Validation | Zod v4 |
+| Logging | Pino v10 |
+| Deployment | Vercel |
+
+---
+
+## Interview Flow
 
 ```
-src/
-├── app/                          # Next.js App Router
-│   ├── (auth)/                   # Login, register
-│   ├── (dashboard)/              # Protected dashboard routes
-│   │   └── dashboard/
-│   │       ├── page.tsx          # Dashboard home
-│   │       ├── interviews/       # History, new, detail
-│   │       ├── profile/          # User profile + password
-│   │       └── settings/         # Theme + preferences
-│   └── api/v1/                   # REST API route handlers
-│       ├── auth/                 # register, login, logout, refresh
-│       ├── users/me/             # profile, name, password
-│       ├── interviews/           # CRUD + transcript + report
-│       └── health/               # Public health endpoint
-├── components/
-│   ├── ui/                      # shadcn/ui base components
-│   └── features/                # Header, Sidebar, VoiceInterface
-├── hooks/                        # useInterviewSession
-├── lib/
-│   ├── ai/                      # Provider interface + adapters (ElevenLabs, OpenAI)
-│   ├── auth/                    # JWT, bcrypt, cookies, CSRF, session
-│   ├── conversation/            # Engine, context, prompts, token manager
-│   ├── api/                     # Route helpers, rate limiting, session extraction
-│   ├── errors.ts                # 9-class error hierarchy
-│   ├── startup-health.ts        # Infrastructure health checks
-│   └── ...                      # cn, time, request-id, audio/runtime
-├── services/                     # Auth + interview business logic
-├── repositories/                 # Prisma data access (user, interview, refresh-token)
-├── cache/                        # CacheProvider interface, Redis + Memory implementations
-├── config/                       # Zod-validated environment
-├── constants/                    # Routes, cookies, limits, roles, headers
-├── types/                        # Shared TypeScript types
-├── validators/                   # Zod validation schemas
-├── monitoring/                   # Pino logger
-├── providers/                    # Theme, Query, Toast
-├── features/                     # Feature module placeholders
-├── database/                     # Prisma client singleton
-├── proxy.ts                      # Security headers + auth redirects
-├── instrumentation.ts            # Startup health check hook
-└── styles/                       # globals.css with design tokens
+Candidate → Setup → Resume Upload → Voice Session
+    │
+    ├── AI greets by name, references experience
+    ├── Adaptive questions based on type, level, JD
+    ├── Follow-ups probe depth, challenge reasoning
+    ├── Barge-in for natural turn-taking
+    ├── Live transcript streaming
+    │
+    ▼
+Interview Ends → GPT-4 Feedback → Report → Dashboard
 ```
 
 ---
@@ -171,140 +167,130 @@ src/
 ## Getting Started
 
 ```bash
-# Clone
 git clone https://github.com/niranjansah87/interviewpilot-ai.git
 cd interviewpilot-ai
-
-# Install dependencies
 pnpm install
-
-# Set up environment
 cp .env.example .env.local
-# Edit .env.local with your values
-
-# Run database migrations
 pnpm prisma migrate dev
-
-# Seed development data
-pnpm prisma db seed
-
-# Start development server
 pnpm dev
 ```
 
-### Required Environment Variables
+---
 
-| Variable                | Description                                     |
-| ----------------------- | ----------------------------------------------- |
-| `DATABASE_URL`          | PostgreSQL connection string                    |
-| `JWT_SECRET`            | Access token signing secret (min 32 chars)      |
-| `JWT_REFRESH_SECRET`    | Refresh token signing secret (min 32 chars)     |
-| `OPENAI_API_KEY`        | OpenAI API key                                  |
-| `OPENAI_REALTIME_MODEL` | Realtime model (e.g. `gpt-4o-realtime-preview`) |
-| `NEXT_PUBLIC_APP_URL`   | Application URL                                 |
+## Environment Variables
 
-### Optional
+| Variable | Required | Description |
+|---|---|---|
+| `DATABASE_URL` | Yes | PostgreSQL connection (Supabase) |
+| `JWT_SECRET` | Yes | Access token signing (min 32 chars) |
+| `JWT_REFRESH_SECRET` | Yes | Refresh token signing (min 32 chars) |
+| `OPENAI_API_KEY` | Yes | OpenAI API key |
+| `NEXT_PUBLIC_APP_URL` | Yes | Application URL |
+| `ELEVENLABS_API_KEY` | Voice | Primary ElevenLabs key |
+| `ELEVENLABS_AGENT_ID` | Voice | Primary ConvAI agent |
+| `ELEVENLABS_BACKUP_API_KEY` | Optional | Backup agent key |
+| `ELEVENLABS_BACKUP_AGENT_ID` | Optional | Backup agent ID |
+| `ELEVENLABS_EXTRA_API_KEY` | Optional | Extra agent key |
+| `ELEVENLABS_EXTRA_AGENT_ID` | Optional | Extra agent ID |
+| `REDIS_URL` | Optional | Redis connection |
+| `CACHE_PROVIDER` | Optional | `redis` or `memory` (default) |
 
-| Variable             | Default      | Description                            |
-| -------------------- | ------------ | -------------------------------------- |
-| `CACHE_PROVIDER`     | `memory`     | Set to `redis` to enable Redis caching |
-| `REDIS_URL`          | —            | Redis connection string                |
-| `ELEVENLABS_API_KEY` | —            | ElevenLabs voice API key               |
-| `VOICE_PROVIDER`     | `elevenlabs` | `elevenlabs` / `openai` / `mock`       |
-| `LOG_LEVEL`          | `info`       | Pino log level                         |
-| `SENTRY_DSN`         | —            | Sentry error tracking                  |
+---
+
+## Project Structure
+
+```
+src/
+├── app/                     # Next.js App Router
+│   ├── (auth)/              # Login, register
+│   ├── (dashboard)/         # Protected routes
+│   └── api/v1/              # REST API (auth, users, interviews, voice)
+├── components/
+│   ├── ui/                  # shadcn/ui components
+│   └── features/            # Header, Sidebar, VoiceInterface
+├── hooks/                   # useInterviewSession
+├── lib/
+│   ├── ai/                  # Provider abstraction, agent pool, adapters
+│   ├── auth/                # JWT, bcrypt, cookies, CSRF
+│   ├── conversation/        # Engine, context, prompts, token manager
+│   ├── api/                 # Route helpers, rate limiting
+│   └── audio/               # Shared AudioContext runtime
+├── services/                # Auth + interview business logic
+├── repositories/            # Prisma data access with cache-aside
+├── cache/                   # CacheProvider, Redis, Memory
+├── config/                  # Zod-validated environment
+├── proxy.ts                 # Security headers + auth redirects
+└── styles/                  # Design tokens (light + dark)
+```
+
+---
+
+## Design Decisions
+
+| Decision | Rationale |
+|---|---|
+| **Next.js App Router** | Server Components, Route Handlers, single deployment |
+| **ElevenLabs ConvAI** | Production voice quality, WebSocket streaming, VAD built-in |
+| **Provider abstraction** | Swap voice providers without touching application code |
+| **Agent pool with circuit breaker** | Load-balance across 3 agents, auto-skip failed ones |
+| **Shared AudioContext** | Single source for mic, VAD, and visualization — zero latency |
+| **Prisma + PostgreSQL** | Type-safe queries, migrations, Supabase managed hosting |
+| **Redis cache-aside** | Automatic memory fallback, no single point of failure |
+| **Deterministic conversation engine** | LLM generates language, engine owns the interview flow |
 
 ---
 
 ## API Endpoints
 
-| Method   | Route                                | Auth     | Status     |
-| -------- | ------------------------------------ | -------- | ---------- |
-| `GET`    | `/api/v1/health`                     | Public   | ✅         |
-| `POST`   | `/api/v1/auth/register`              | Public   | ✅         |
-| `POST`   | `/api/v1/auth/login`                 | Public   | ✅         |
-| `POST`   | `/api/v1/auth/logout`                | Public   | ✅         |
-| `POST`   | `/api/v1/auth/refresh`               | Public   | ✅         |
-| `GET`    | `/api/v1/users/me`                   | Required | ✅         |
-| `PATCH`  | `/api/v1/users/me/name`              | Required | ✅         |
-| `POST`   | `/api/v1/users/me/password`          | Required | ✅         |
-| `POST`   | `/api/v1/interviews`                 | Required | ✅         |
-| `GET`    | `/api/v1/interviews`                 | Required | ✅         |
-| `GET`    | `/api/v1/interviews/[id]`            | Required | ✅         |
-| `DELETE` | `/api/v1/interviews/[id]`            | Required | ✅         |
-| `GET`    | `/api/v1/interviews/[id]/transcript` | Required | 🚧 Phase 3 |
-| `GET`    | `/api/v1/interviews/[id]/report`     | Required | 🚧 Phase 3 |
+| Method | Route | Description |
+|---|---|---|
+| `POST` | `/api/v1/auth/register` | Create account |
+| `POST` | `/api/v1/auth/login` | Sign in |
+| `POST` | `/api/v1/auth/logout` | Sign out |
+| `POST` | `/api/v1/auth/refresh` | Refresh tokens |
+| `GET` | `/api/v1/users/me` | Get profile |
+| `PATCH` | `/api/v1/users/me/name` | Update name |
+| `POST` | `/api/v1/users/me/password` | Change password |
+| `POST` | `/api/v1/users/me/resume` | Upload resume |
+| `GET` | `/api/v1/interviews` | List interviews |
+| `POST` | `/api/v1/interviews` | Create interview |
+| `GET` | `/api/v1/interviews/[id]` | Get interview |
+| `PATCH` | `/api/v1/interviews/[id]` | Update status |
+| `DELETE` | `/api/v1/interviews/[id]` | Delete interview |
+| `POST` | `/api/v1/interviews/[id]/report` | Generate feedback |
+| `POST` | `/api/v1/interviews/[id]/transcript` | Save transcript |
+| `POST` | `/api/v1/voice/connect` | Get signed ElevenLabs URL |
+| `GET` | `/api/v1/health` | Health check |
 
 ---
 
-## Interview Flow
+## Security
 
-```
-Login → Configure (type, role, level) → AI introduces → Voice conversation
-                                                              ↓
-                                              Real-time transcription
-                                              Dynamic follow-up questions
-                                              Context compression
-                                                              ↓
-                                                      End session
-                                                              ↓
-                                                  Transcript saved
-                                                              ↓
-                                              GPT-4 feedback generated
-                                                              ↓
-                                              Report on Dashboard
-```
+- **JWT** access tokens (15 min) + refresh tokens (7 days) in httpOnly, SameSite cookies
+- **bcrypt** password hashing at cost 12
+- **CSRF** double-submit cookie with AES-256-GCM signatures
+- **Rate limiting** on auth endpoints (10 req / 15 min per IP)
+- **Zod v4** validation on every API input
+- **Security headers** — CSP, X-Frame-Options, X-Content-Type-Options, Permissions-Policy
+- **Prisma** parameterized queries prevent SQL injection
+- **API keys** never reach the browser — signed URLs generated server-side
 
 ---
 
 ## Documentation
 
-| Section                                | Contents                                                                |
-| -------------------------------------- | ----------------------------------------------------------------------- |
-| [docs/product/](docs/product/)         | Product definition, personas, requirements, roadmap                     |
-| [docs/engineering/](docs/engineering/) | Architecture, tech stack, AI engine, API, database, caching, deployment |
-| [docs/decisions/](docs/decisions/)     | Architecture Decision Records (5 ADRs)                                  |
-| [docs/runbooks/](docs/runbooks/)       | Database migrations, incident response                                  |
-| [docs/templates/](docs/templates/)     | ADR, runbook, research, postmortem, feature spec templates              |
+- [Architecture](docs/engineering/01-ARCHITECTURE.md)
+- [Tech Stack](docs/engineering/02-TECHSTACK.md)
+- [AI Engine](docs/engineering/04-AI_ENGINE.md)
+- [Conversation Engine](docs/engineering/07-CONVERSATION_ENGINE.md)
+- [Database](docs/engineering/05-DATABASE_ARCHITECTURE.md)
+- [API](docs/engineering/05-API.md)
+- [Security](docs/engineering/07-SECURITY.md)
+- [Caching](docs/engineering/22-CACHING_STRATEGY.md)
+- [ADR Documents](docs/decisions/)
 
 ---
-
-## Roadmap
-
-### ✅ Phase 1 — Foundation
-
-Project scaffolding, documentation, CI/CD, ADRs.
-
-### ✅ Phase 2 — Core Architecture
-
-Authentication, database schema, UI components, caching, error handling, API routes, proxy middleware.
-
-### 🚧 Phase 3 — AI Interview Engine (In Progress)
-
-Voice conversation via ElevenLabs ConvAI, audio runtime with real VAD, barge-in support, state machine, prompt library, context engine, transcript storage.
-
-### ✅ Phase 4 — Feedback System
-
-GPT-4 feedback reports, transcript viewer, score visualizations.
-
-### ✅ Phase 5 — Production Readiness
-
-Rate limiting, CSRF, Redis caching, security hardening.
-
-### ⬜ Future
-
-Resume-aware interviews, coding workspace, system design, multiple personas, recruiter dashboard.
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/engineering/11-CODING_STANDARDS.md](docs/engineering/11-CODING_STANDARDS.md).
-
-## Security
-
-Report vulnerabilities privately — see [SECURITY.md](SECURITY.md).
 
 ## License
 
-MIT. See [LICENSE.md](LICENSE.md).
+MIT © [Niranjan Sah](https://github.com/niranjansah87)
