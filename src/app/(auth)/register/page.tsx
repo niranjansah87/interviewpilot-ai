@@ -142,8 +142,14 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="confirm" className="mb-1.5 block text-sm font-medium">Confirm password</label>
-              <input id="confirm" type="password" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)}
-                required placeholder="Re-enter your password" className={inputClass} />
+              <div className="relative">
+                <input id="confirm" type={showPw ? 'text' : 'password'} value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)}
+                  required placeholder="Re-enter your password" className={`${inputClass} pr-10`} />
+                <button type="button" onClick={() => setShowPw(!showPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
 
             <AnimatePresence>
