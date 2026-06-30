@@ -46,6 +46,33 @@ export function checkRateLimit(
 }
 
 /**
+ * Safely extract client IP from request headers.
+ * Takes the leftmost IP from x-forwarded-for (set by Vercel's trusted edge proxy).
+ * Direct client connections cannot spoof the leftmost entry behind a trusted proxy.
+ * In development (no proxy), falls back to a connection-derived key.
+ */
+export function getClientIP(req: { headers: Headers }): string {
+  const forwarded = req.headers.get('x-forwarded-for');
+  if (forwarded) {
+    // x-forwarded-for: "clientIP, proxy1IP, proxy2IP"
+    // Take only the leftmost (original client) IP
+    const clientIP = forwarded.split(',')[0]?.trim();
+    if (clientIP && isValidIP(clientIP)) return clientIP;
+  }
+  // Fallback: x-real-ip (set by nginx) or local
+  const realIP = req.headers.get('x-real-ip');
+  if (realIP && isValidIP(realIP)) return realIP;
+  return '127.0.0.1';
+}
+
+function isValidIP(ip: string): boolean {
+  // Reject obviously invalid/spoofed values
+  if (ip.length > 45 || ip.length < 7) return false;
+  // Must be IPv4 or IPv6-looking
+  return /^[\d.:a-fA-F]+$/.test(ip);
+}
+
+/**
  * Rate limit by IP for auth endpoints.
  */
 export function authRateLimit(ip: string): void {

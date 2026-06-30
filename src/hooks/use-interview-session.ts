@@ -57,7 +57,8 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
 
   const connectionRef = useRef<any>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
+  const captureCtxRef = useRef<AudioContext | null>(null); // Mic capture context
+  const playbackCtxRef = useRef<AudioContext | null>(null); // AI audio playback context
   const activeSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -65,9 +66,10 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
   const stopPlayback = useCallback(() => {
     try {
       activeSourceRef.current?.stop();
-      activeSourceRef.current = null;
     } catch { /* already stopped */ }
+    activeSourceRef.current = null;
     setAiSpeaking(false);
+    console.log('[BargeIn] Stopped current audio source');
   }, []);
 
   // ---- Duration Timer ----
@@ -164,7 +166,13 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
 
         // Connect WebSocket direct to ElevenLabs (browser-to-ElevenLabs, low latency)
         const ws = new WebSocket(signedUrl);
-        const conn = createWebSocketConnection(ws, handleAIEvent, () => setStatus('disconnected'));
+        const conn = createWebSocketConnection(ws, handleAIEvent, {
+          onDisconnect: (reason) => {
+            setStatus('disconnected');
+            setError(`Interview paused: ${reason}. Click reconnect to continue.`);
+          },
+          onUserSpeech: () => { stopPlayback(); setSpeaker('candidate'); },
+        });
         (connectionRef as React.MutableRefObject<unknown>).current = conn;
 
         // Wait for WebSocket to open
@@ -178,13 +186,16 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
 
         // Capture PCM 16kHz mono audio (ElevenLabs expects this format)
         const audioCtx = new AudioContext({ sampleRate: 16000 });
+        (captureCtxRef as React.MutableRefObject<AudioContext | null>).current = audioCtx;
         const source = audioCtx.createMediaStreamSource(stream);
         const processor = audioCtx.createScriptProcessor(4096, 1, 1);
         (processorRef as React.MutableRefObject<ScriptProcessorNode | null>).current = processor;
-        (audioCtxRef as React.MutableRefObject<AudioContext | null>).current = audioCtx;
 
+        let micChunks = 0;
         processor.onaudioprocess = (e) => {
           if (ws.readyState === WebSocket.OPEN) {
+            micChunks++;
+            if (micChunks % 10 === 1) console.log('[Mic] sending chunk #' + micChunks);
             const inputData = e.inputBuffer.getChannelData(0);
             const pcm = new Int16Array(inputData.length);
             for (let i = 0; i < inputData.length; i++) {
@@ -465,8 +476,12 @@ interface WSConnection {
 function createWebSocketConnection(
   ws: WebSocket,
   onEvent: (event: Record<string, unknown>) => void,
-  onDisconnect: () => void,
+  callbacks: {
+    onDisconnect: (reason: string) => void;
+    onUserSpeech: () => void;
+  },
 ): WSConnection {
+  let activeSource: AudioBufferSourceNode | null = null;
   let audioCtx: AudioContext | null = null;
   let nextAudioTime = 0;
 
@@ -490,6 +505,14 @@ function createWebSocketConnection(
       source.buffer = audioBuffer;
       source.connect(ctx.destination);
 
+      // Track current source for barge-in
+      activeSource = source;
+      source.onended = () => {
+        if (activeSource === source) {
+          activeSource = null;
+        }
+      };
+
       const now = ctx.currentTime;
       if (nextAudioTime < now) nextAudioTime = now;
       source.start(nextAudioTime);
@@ -499,47 +522,62 @@ function createWebSocketConnection(
 
   ws.binaryType = 'arraybuffer';
 
+  let msgCount = 0;
+
   ws.onmessage = (msg) => {
+    msgCount++;
     if (msg.data instanceof ArrayBuffer) {
+      console.log('[WS] recv audio chunk', msg.data.byteLength, 'bytes');
       playPCM16(msg.data);
       return;
     }
     if (msg.data instanceof Blob) {
+      console.log('[WS] recv audio blob', (msg.data as Blob).size, 'bytes');
       (msg.data as Blob).arrayBuffer().then(buf => playPCM16(buf));
       return;
     }
-    const parsed = JSON.parse(msg.data as string);
-    // JSON events
     try {
       const parsed = JSON.parse(msg.data as string);
+      console.log('[WS] event #' + msgCount + ':', parsed.type);
       switch (parsed.type) {
         case 'conversation_initiation_metadata':
+          console.log('[WS] session init metadata');
           break;
         case 'audio':
-          // Agent is speaking — decode base64 PCM and play
           if (parsed.audio_event?.audio_base_64) {
             const raw = atob(parsed.audio_event.audio_base_64);
             const bytes = new Uint8Array(raw.length);
             for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+            console.log('[WS] audio event,', bytes.length, 'bytes PCM');
             playPCM16(bytes.buffer);
           }
           break;
         case 'agent_response':
           if (parsed.agent_response_event?.agent_response) {
+            console.log('[WS] agent:', parsed.agent_response_event.agent_response);
             onEvent({ type: 'response.audio_transcript.done', role: 'interviewer', transcript: parsed.agent_response_event.agent_response });
           }
           break;
         case 'user_transcript':
           if (parsed.user_transcription_event?.user_transcript) {
+            console.log('[WS] user:', parsed.user_transcription_event.user_transcript);
             onEvent({ type: 'response.audio_transcript.done', role: 'candidate', transcript: parsed.user_transcription_event.user_transcript });
           }
           break;
         case 'agent_transcript':
           if (parsed.agent_transcription_event?.agent_transcript) {
+            console.log('[WS] agent transcript:', parsed.agent_transcription_event.agent_transcript);
             onEvent({ type: 'response.audio_transcript.done', role: 'interviewer', transcript: parsed.agent_transcription_event.agent_transcript });
           }
           break;
+        case 'user_started_speaking':
+          console.log('[WS] USER STARTED SPEAKING — barge-in!');
+          callbacks.onUserSpeech();
+          nextAudioTime = 0;
+          break;
         case 'interruption':
+          console.log('[WS] INTERRUPTION from server');
+          callbacks.onUserSpeech();
           nextAudioTime = 0;
           break;
         case 'ping':
@@ -547,11 +585,16 @@ function createWebSocketConnection(
             ws.send(JSON.stringify({ type: 'pong', event_id: parsed.ping_event.event_id }));
           }
           break;
+        case 'session_timeout':
+        case 'conversation_ended':
+        case 'agent_disconnected':
+          callbacks.onDisconnect('Interview session ended — perhaps due to extended silence');
+          break;
       }
     } catch { /* ignore */ }
   };
 
-  ws.onclose = () => onDisconnect();
+  ws.onclose = () => callbacks.onDisconnect('Connection closed');
   ws.onerror = () => {};
 
   return {

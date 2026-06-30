@@ -2,9 +2,11 @@ import { NextRequest } from 'next/server';
 import { authService } from '@/services/auth.service';
 import { registerSchema } from '@/validators/common';
 import { apiSuccess, apiError, ValidationError } from '@/lib/api/route-helpers';
+import { authRateLimit, getClientIP } from '@/lib/api/rate-limit';
 
 export async function POST(req: NextRequest) {
   try {
+    authRateLimit(getClientIP(req));
     const body = await req.json();
     const parsed = registerSchema.safeParse(body);
 

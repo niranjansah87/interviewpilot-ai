@@ -1,25 +1,16 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-/**
- * Next.js proxy (formerly middleware).
- * Runs on every matched request.
- *
- * Responsibilities:
- * - Add security headers
- * - Redirect HTTP → HTTPS in production
- * - Redirect unauthenticated users away from protected paths
- * - Redirect authenticated users away from auth pages
- */
-
 const AUTH_PATHS = ['/login', '/register'];
 const PROTECTED_PREFIXES = ['/dashboard'];
 
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const method = request.method;
 
   const response = NextResponse.next();
 
+  // Security headers
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-XSS-Protection', '1; mode=block');
@@ -35,6 +26,10 @@ export default function proxy(request: NextRequest) {
     url.protocol = 'https';
     return NextResponse.redirect(url);
   }
+
+  // CSRF infrastructure is in place (token generation + cookie + validation helper).
+  // Enforcement is deferred until client-side fetch calls include the x-csrf-token header.
+  // SameSite=Lax cookies provide baseline CSRF protection for all modern browsers.
 
   const hasAuth = request.cookies.has('ip_access_token');
 

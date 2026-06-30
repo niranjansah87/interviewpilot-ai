@@ -71,6 +71,9 @@ export interface InterviewContext {
   summarizedHistory: string | null;
   followUpDepth: number;
   silenceCount: number;
+  difficulty: DifficultyLevel;
+  /** Score of the candidate's last response (estimated by engine, 0-100) */
+  lastResponseScore: number | null;
 }
 
 export interface InterviewConfig {
@@ -116,6 +119,8 @@ export function createInterviewContext(
     summarizedHistory: null,
     followUpDepth: 0,
     silenceCount: 0,
+    difficulty: config.experienceLevel === 'senior' ? 4 : config.experienceLevel === 'mid' ? 3 : 2,
+    lastResponseScore: null,
   };
 }
 
@@ -132,11 +137,35 @@ function getTopicsByType(type: InterviewConfig['type']): string[] {
   }
 }
 
+// ---- Difficulty Scaling ----
+
+export type DifficultyLevel = 1 | 2 | 3 | 4 | 5;
+
+export function adjustDifficulty(
+  score: number,
+  current: DifficultyLevel,
+): DifficultyLevel {
+  // Score 0-100: <40 = decrease, 40-70 = maintain, >70 = increase
+  if (score < 40 && current > 1) return (current - 1) as DifficultyLevel;
+  if (score > 70 && current < 5) return (current + 1) as DifficultyLevel;
+  return current;
+}
+
+export function getDifficultyLabel(d: DifficultyLevel): string {
+  switch (d) {
+    case 1: return 'foundational';
+    case 2: return 'intermediate';
+    case 3: return 'advanced';
+    case 4: return 'expert';
+    case 5: return 'principal';
+  }
+}
+
 // ---- Follow-Up Decision Engine ----
 
 export type FollowUpDecision =
-  | 'clarify'     // Response vague — ask for more
-  | 'probe_deeper' // Good response — explore further
+  | 'clarify'      // Response vague — ask for more
+  | 'probe_deeper'  // Good response — explore further
   | 'challenge'    // Flawed response — push back
   | 'acknowledge'  // Strong — move forward
   | 'transition'   // Topic exhausted — next topic
@@ -173,8 +202,52 @@ export function selectNextTopic(ctx: InterviewContext): string {
 
   if (remaining.length === 0) return 'closing';
 
-  // Pick next sequential topic (not random — predictable is better for testing)
   return remaining[0] ?? 'closing';
+}
+
+// ---- Follow-Up Style Patterns ----
+
+const STYLES: Record<FollowUpDecision, string[]> = {
+  clarify: [
+    'Can you elaborate on that?',
+    'Could you give me a specific example?',
+    'Help me understand — what exactly happened there?',
+    'Walk me through your reasoning on that point.',
+  ],
+  probe_deeper: [
+    'What trade-offs did you consider?',
+    'What was the hardest part of that decision?',
+    'If you had to do it again, what would you change?',
+    'How did you validate that approach?',
+    'What risks did you accept with that design?',
+  ],
+  challenge: [
+    'I understand your reasoning, but what if the constraints were different?',
+    'Suppose that assumption was wrong — how would you recover?',
+    'Can you defend that choice against the alternative?',
+    'What if you had 10x the scale — would your solution hold?',
+  ],
+  acknowledge: [
+    'That is a well-reasoned answer. Let us explore another area.',
+    'I appreciate that perspective. Let me shift to a different topic.',
+    'Good. Let us move on to something related.',
+  ],
+  transition: [
+    'Let us shift gears. I would like to hear about...',
+    'Changing topics — tell me about...',
+    'Moving on — I am curious about your experience with...',
+  ],
+  conclude: [
+    'Thank you — that gives me a clear picture. We have covered a lot of ground today.',
+    'I think we have a good foundation. Let me wrap up with a final question.',
+    'Before we finish, I have one last topic I would like to explore.',
+  ],
+};
+
+/** Get a natural-language follow-up opener for a decision type. */
+export function getFollowUpStyle(decision: FollowUpDecision): string {
+  const pool = STYLES[decision];
+  return pool[Math.floor(Math.random() * pool.length)] ?? '';
 }
 
 // ---- Token Estimation ----
