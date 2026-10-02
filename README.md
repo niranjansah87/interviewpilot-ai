@@ -67,6 +67,7 @@ Unlike static question banks, InterviewPilot:
 ## Key Features
 
 ### Voice AI
+
 - **ElevenLabs ConvAI** (primary) with OpenAI Realtime fallback
 - Real-time **Web Audio API** waveform visualization
 - Voice Activity Detection with silence/speaking/loud states
@@ -74,6 +75,7 @@ Unlike static question banks, InterviewPilot:
 - Streaming transcript with speaker identification
 
 ### Conversation Engine
+
 - **12-state deterministic machine** — no LLM owns the interview flow
 - **8 interview types** — Behavioral, Technical, System Design, Frontend, Backend, Full-Stack, DevOps, Mixed
 - **Adaptive difficulty** — scales from foundational to principal based on response quality
@@ -81,12 +83,14 @@ Unlike static question banks, InterviewPilot:
 - **Context-aware** — uses resume, job description, and conversation history
 
 ### Feedback
+
 - Overall score with Communication, Confidence, and Technical Reasoning breakdowns
 - **Hiring recommendation** — Strong Hire / Hire / Lean Hire / No Hire
 - Strengths, weaknesses, and actionable improvement plan
 - GPT-4 powered analysis with transcript citations
 
 ### Platform
+
 - JWT auth (15min access + 7d refresh) in httpOnly cookies
 - bcrypt (cost 12) + CSRF + rate limiting
 - PostgreSQL via Prisma ORM with Redis cache-aside
@@ -130,20 +134,20 @@ Next.js 16 App Router
 
 ## Tech Stack
 
-| Category | Technology |
-|---|---|
-| Framework | Next.js 16, React 19, TypeScript |
-| Styling | TailwindCSS, shadcn/ui, Framer Motion |
-| Backend | Next.js Route Handlers |
-| Database | PostgreSQL (Supabase) |
-| ORM | Prisma 6 |
-| Cache | Redis (ioredis) + Memory fallback |
-| Voice AI | ElevenLabs ConvAI, OpenAI Realtime |
-| Text AI | GPT-4 / GPT-4.1 |
-| Auth | JWT (jose), bcrypt, SHA-256 |
-| Validation | Zod v4 |
-| Logging | Pino v10 |
-| Deployment | Vercel |
+| Category   | Technology                            |
+| ---------- | ------------------------------------- |
+| Framework  | Next.js 16, React 19, TypeScript      |
+| Styling    | TailwindCSS, shadcn/ui, Framer Motion |
+| Backend    | Next.js Route Handlers                |
+| Database   | PostgreSQL (Supabase)                 |
+| ORM        | Prisma 6                              |
+| Cache      | Redis (ioredis) + Memory fallback     |
+| Voice AI   | ElevenLabs ConvAI, OpenAI Realtime    |
+| Text AI    | GPT-4 / GPT-4.1                       |
+| Auth       | JWT (jose), bcrypt, SHA-256           |
+| Validation | Zod v4                                |
+| Logging    | Pino v10                              |
+| Deployment | Vercel                                |
 
 ---
 
@@ -179,21 +183,21 @@ pnpm dev
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|---|---|---|
-| `DATABASE_URL` | Yes | PostgreSQL connection (Supabase) |
-| `JWT_SECRET` | Yes | Access token signing (min 32 chars) |
-| `JWT_REFRESH_SECRET` | Yes | Refresh token signing (min 32 chars) |
-| `OPENAI_API_KEY` | Yes | OpenAI API key |
-| `NEXT_PUBLIC_APP_URL` | Yes | Application URL |
-| `ELEVENLABS_API_KEY` | Voice | Primary ElevenLabs key |
-| `ELEVENLABS_AGENT_ID` | Voice | Primary ConvAI agent |
-| `ELEVENLABS_BACKUP_API_KEY` | Optional | Backup agent key |
-| `ELEVENLABS_BACKUP_AGENT_ID` | Optional | Backup agent ID |
-| `ELEVENLABS_EXTRA_API_KEY` | Optional | Extra agent key |
-| `ELEVENLABS_EXTRA_AGENT_ID` | Optional | Extra agent ID |
-| `REDIS_URL` | Optional | Redis connection |
-| `CACHE_PROVIDER` | Optional | `redis` or `memory` (default) |
+| Variable                     | Required | Description                          |
+| ---------------------------- | -------- | ------------------------------------ |
+| `DATABASE_URL`               | Yes      | PostgreSQL connection (Supabase)     |
+| `JWT_SECRET`                 | Yes      | Access token signing (min 32 chars)  |
+| `JWT_REFRESH_SECRET`         | Yes      | Refresh token signing (min 32 chars) |
+| `OPENAI_API_KEY`             | Yes      | OpenAI API key                       |
+| `NEXT_PUBLIC_APP_URL`        | Yes      | Application URL                      |
+| `ELEVENLABS_API_KEY`         | Voice    | Primary ElevenLabs key               |
+| `ELEVENLABS_AGENT_ID`        | Voice    | Primary ConvAI agent                 |
+| `ELEVENLABS_BACKUP_API_KEY`  | Optional | Backup agent key                     |
+| `ELEVENLABS_BACKUP_AGENT_ID` | Optional | Backup agent ID                      |
+| `ELEVENLABS_EXTRA_API_KEY`   | Optional | Extra agent key                      |
+| `ELEVENLABS_EXTRA_AGENT_ID`  | Optional | Extra agent ID                       |
+| `REDIS_URL`                  | Optional | Redis connection                     |
+| `CACHE_PROVIDER`             | Optional | `redis` or `memory` (default)        |
 
 ---
 
@@ -227,40 +231,40 @@ src/
 
 ## Design Decisions
 
-| Decision | Rationale |
-|---|---|
-| **Next.js App Router** | Server Components, Route Handlers, single deployment |
-| **ElevenLabs ConvAI** | Production voice quality, WebSocket streaming, VAD built-in |
-| **Provider abstraction** | Swap voice providers without touching application code |
-| **Agent pool with circuit breaker** | Load-balance across 3 agents, auto-skip failed ones |
-| **Shared AudioContext** | Single source for mic, VAD, and visualization — zero latency |
-| **Prisma + PostgreSQL** | Type-safe queries, migrations, Supabase managed hosting |
-| **Redis cache-aside** | Automatic memory fallback, no single point of failure |
-| **Deterministic conversation engine** | LLM generates language, engine owns the interview flow |
+| Decision                              | Rationale                                                    |
+| ------------------------------------- | ------------------------------------------------------------ |
+| **Next.js App Router**                | Server Components, Route Handlers, single deployment         |
+| **ElevenLabs ConvAI**                 | Production voice quality, WebSocket streaming, VAD built-in  |
+| **Provider abstraction**              | Swap voice providers without touching application code       |
+| **Agent pool with circuit breaker**   | Load-balance across 3 agents, auto-skip failed ones          |
+| **Shared AudioContext**               | Single source for mic, VAD, and visualization — zero latency |
+| **Prisma + PostgreSQL**               | Type-safe queries, migrations, Supabase managed hosting      |
+| **Redis cache-aside**                 | Automatic memory fallback, no single point of failure        |
+| **Deterministic conversation engine** | LLM generates language, engine owns the interview flow       |
 
 ---
 
 ## API Endpoints
 
-| Method | Route | Description |
-|---|---|---|
-| `POST` | `/api/v1/auth/register` | Create account |
-| `POST` | `/api/v1/auth/login` | Sign in |
-| `POST` | `/api/v1/auth/logout` | Sign out |
-| `POST` | `/api/v1/auth/refresh` | Refresh tokens |
-| `GET` | `/api/v1/users/me` | Get profile |
-| `PATCH` | `/api/v1/users/me/name` | Update name |
-| `POST` | `/api/v1/users/me/password` | Change password |
-| `POST` | `/api/v1/users/me/resume` | Upload resume |
-| `GET` | `/api/v1/interviews` | List interviews |
-| `POST` | `/api/v1/interviews` | Create interview |
-| `GET` | `/api/v1/interviews/[id]` | Get interview |
-| `PATCH` | `/api/v1/interviews/[id]` | Update status |
-| `DELETE` | `/api/v1/interviews/[id]` | Delete interview |
-| `POST` | `/api/v1/interviews/[id]/report` | Generate feedback |
-| `POST` | `/api/v1/interviews/[id]/transcript` | Save transcript |
-| `POST` | `/api/v1/voice/connect` | Get signed ElevenLabs URL |
-| `GET` | `/api/v1/health` | Health check |
+| Method   | Route                                | Description               |
+| -------- | ------------------------------------ | ------------------------- |
+| `POST`   | `/api/v1/auth/register`              | Create account            |
+| `POST`   | `/api/v1/auth/login`                 | Sign in                   |
+| `POST`   | `/api/v1/auth/logout`                | Sign out                  |
+| `POST`   | `/api/v1/auth/refresh`               | Refresh tokens            |
+| `GET`    | `/api/v1/users/me`                   | Get profile               |
+| `PATCH`  | `/api/v1/users/me/name`              | Update name               |
+| `POST`   | `/api/v1/users/me/password`          | Change password           |
+| `POST`   | `/api/v1/users/me/resume`            | Upload resume             |
+| `GET`    | `/api/v1/interviews`                 | List interviews           |
+| `POST`   | `/api/v1/interviews`                 | Create interview          |
+| `GET`    | `/api/v1/interviews/[id]`            | Get interview             |
+| `PATCH`  | `/api/v1/interviews/[id]`            | Update status             |
+| `DELETE` | `/api/v1/interviews/[id]`            | Delete interview          |
+| `POST`   | `/api/v1/interviews/[id]/report`     | Generate feedback         |
+| `POST`   | `/api/v1/interviews/[id]/transcript` | Save transcript           |
+| `POST`   | `/api/v1/voice/connect`              | Get signed ElevenLabs URL |
+| `GET`    | `/api/v1/health`                     | Health check              |
 
 ---
 
@@ -281,19 +285,19 @@ src/
 
 System architecture, voice pipeline, and interview lifecycle — rendered as Mermaid diagrams on GitHub.
 
-| Diagram | Description |
-|---|---|
-| [System Architecture](docs/architecture/01-system-architecture.md) | Full system overview — browser, Next.js, AI providers, database |
-| [Voice Pipeline](docs/architecture/02-voice-pipeline.md) | Microphone → Web Audio API → VAD → ElevenLabs → Playback |
-| [Interview Lifecycle](docs/architecture/03-interview-lifecycle.md) | State machine: idle → connecting → listening → speaking → completed |
-| [End-to-End Flow](docs/architecture/04-end-to-end-flow.md) | Complete user journey from registration to feedback report |
-| [Database Schema](docs/architecture/05-database-schema.md) | PostgreSQL tables, relationships, indexes, enums |
-| [Auth Flow](docs/architecture/06-auth-flow.md) | JWT login, refresh, CSRF, cookie flow |
-| [Provider Architecture](docs/architecture/07-provider-architecture.md) | AI provider abstraction, agent pool, circuit breaker |
-| [Authentication](docs/engineering/diagrams/authentication.md) | Login sequence, token exchange, cookie flow |
-| [Deployment](docs/engineering/diagrams/deployment.md) | Vercel + Supabase + Redis deployment topology |
-| [Interview Engine](docs/engineering/diagrams/interview-engine.md) | Conversation engine state machine and decision flow |
-| [Voice Flow](docs/engineering/diagrams/voice-flow.md) | WebSocket audio streaming and transcript pipeline |
+| Diagram                                                                | Description                                                         |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| [System Architecture](docs/architecture/01-system-architecture.md)     | Full system overview — browser, Next.js, AI providers, database     |
+| [Voice Pipeline](docs/architecture/02-voice-pipeline.md)               | Microphone → Web Audio API → VAD → ElevenLabs → Playback            |
+| [Interview Lifecycle](docs/architecture/03-interview-lifecycle.md)     | State machine: idle → connecting → listening → speaking → completed |
+| [End-to-End Flow](docs/architecture/04-end-to-end-flow.md)             | Complete user journey from registration to feedback report          |
+| [Database Schema](docs/architecture/05-database-schema.md)             | PostgreSQL tables, relationships, indexes, enums                    |
+| [Auth Flow](docs/architecture/06-auth-flow.md)                         | JWT login, refresh, CSRF, cookie flow                               |
+| [Provider Architecture](docs/architecture/07-provider-architecture.md) | AI provider abstraction, agent pool, circuit breaker                |
+| [Authentication](docs/engineering/diagrams/authentication.md)          | Login sequence, token exchange, cookie flow                         |
+| [Deployment](docs/engineering/diagrams/deployment.md)                  | Vercel + Supabase + Redis deployment topology                       |
+| [Interview Engine](docs/engineering/diagrams/interview-engine.md)      | Conversation engine state machine and decision flow                 |
+| [Voice Flow](docs/engineering/diagrams/voice-flow.md)                  | WebSocket audio streaming and transcript pipeline                   |
 
 ---
 

@@ -1,6 +1,7 @@
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FlatCompat } from '@eslint/eslintrc';
+import unicorn from 'eslint-plugin-unicorn';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,7 +24,33 @@ const eslintConfig = [
     'plugin:react-hooks/recommended',
   ),
   {
-    ignores: ['.next/**', 'node_modules/**', 'dist/**', 'build/**'],
+    plugins: { unicorn },
+  },
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: dirname(fileURLToPath(import.meta.url)),
+      },
+    },
+  },
+  {
+    ignores: [
+      '.next/**',
+      'node_modules/**',
+      'dist/**',
+      'build/**',
+      'coverage/**',
+      '.turbo/**',
+      '.cache/**',
+      'next-env.d.ts',
+      'public/**',
+      '*.config.js',
+      '*.config.ts',
+      'vitest.config.ts',
+      'playwright.config.ts',
+    ],
   },
   {
     rules: {

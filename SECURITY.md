@@ -42,6 +42,7 @@ This document defines the security requirements and guidelines for InterviewPilo
 ## Ownership Validation
 
 Users can only access their own:
+
 - Interview sessions
 - Transcripts
 - Feedback reports

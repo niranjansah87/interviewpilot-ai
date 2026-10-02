@@ -51,9 +51,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/api/(.*)',
-        headers: [
-          { key: 'Cache-Control', value: 'no-store, must-revalidate' },
-        ],
+        headers: [{ key: 'Cache-Control', value: 'no-store, must-revalidate' }],
       },
     ];
   },

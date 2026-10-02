@@ -1,4 +1,3 @@
-
 # UX Case Study
 
 **Project:** InterviewPilot AI
