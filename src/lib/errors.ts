@@ -9,12 +9,7 @@ export class ApplicationError extends Error {
   public readonly statusCode: number;
   public readonly isOperational: boolean;
 
-  constructor(
-    message: string,
-    code: string,
-    statusCode: number,
-    isOperational = true,
-  ) {
+  constructor(message: string, code: string, statusCode: number, isOperational = true) {
     super(message);
     this.name = this.constructor.name;
     this.code = code;
@@ -75,9 +70,7 @@ export class AuthorizationError extends ApplicationError {
  */
 export class NotFoundError extends ApplicationError {
   constructor(resource = 'Resource', identifier?: string) {
-    const message = identifier
-      ? `${resource} '${identifier}' not found`
-      : `${resource} not found`;
+    const message = identifier ? `${resource} '${identifier}' not found` : `${resource} not found`;
     super(message, 'NOT_FOUND', 404);
     this.name = 'NotFoundError';
   }
@@ -97,11 +90,7 @@ export class ConflictError extends ApplicationError {
  * Thrown when a service (database, AI provider, etc.) is unavailable.
  */
 export class InfrastructureError extends ApplicationError {
-  constructor(
-    message: string,
-    code = 'INFRASTRUCTURE_ERROR',
-    statusCode = 503,
-  ) {
+  constructor(message: string, code = 'INFRASTRUCTURE_ERROR', statusCode = 503) {
     super(message, code, statusCode, false);
     this.name = 'InfrastructureError';
   }
@@ -114,11 +103,7 @@ export class AIProviderError extends ApplicationError {
   public readonly provider: string;
   public readonly retryable: boolean;
 
-  constructor(
-    message: string,
-    provider: string,
-    retryable = false,
-  ) {
+  constructor(message: string, provider: string, retryable = false) {
     super(message, 'AI_PROVIDER_ERROR', 502, true);
     this.provider = provider;
     this.retryable = retryable;

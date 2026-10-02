@@ -19,7 +19,8 @@ export const interviewService = {
     scheduledAt?: Date;
   }) {
     const session = await interviewRepository.create(data);
-    interviewLogger.info({ msg: 'Interview session created',
+    interviewLogger.info({
+      msg: 'Interview session created',
       sessionId: session.id,
       userId: data.userId,
       type: data.type,

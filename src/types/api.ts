@@ -4,17 +4,8 @@
  */
 
 import type { PaginatedResult } from './common';
-import type {
-  User,
-  AuthTokens,
-  LoginInput,
-  RegisterInput,
-} from './auth';
-import type {
-  InterviewSessionModel,
-  FeedbackReportModel,
-  TranscriptEntryModel,
-} from './database';
+import type { User, AuthTokens, LoginInput, RegisterInput } from './auth';
+import type { InterviewSessionModel, FeedbackReportModel, TranscriptEntryModel } from './database';
 
 // ---------------------------------------------------------------------------
 // Auth
@@ -54,8 +45,7 @@ export interface CreateInterviewRequest {
   experienceLevel?: string;
 }
 
-export interface GetInterviewsResponse
-  extends PaginatedResult<InterviewSessionModel> {}
+export interface GetInterviewsResponse extends PaginatedResult<InterviewSessionModel> {}
 
 export interface GetInterviewResponse {
   interview: InterviewSessionModel;

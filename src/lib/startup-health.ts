@@ -65,10 +65,19 @@ async function checkOpenAI(key: string | undefined): Promise<CheckResult> {
   }
 }
 
-async function checkElevenLabsAgent(id: string | undefined, key: string | undefined, label: string): Promise<CheckResult> {
+async function checkElevenLabsAgent(
+  id: string | undefined,
+  key: string | undefined,
+  label: string,
+): Promise<CheckResult> {
   const start = Date.now();
   if (!id || !key) {
-    return { service: `ElevenLabs ${label}`, status: 'degraded', latencyMs: 0, detail: 'not configured' };
+    return {
+      service: `ElevenLabs ${label}`,
+      status: 'degraded',
+      latencyMs: 0,
+      detail: 'not configured',
+    };
   }
   try {
     // Check actual credits/characters remaining via subscription API
@@ -81,7 +90,11 @@ async function checkElevenLabsAgent(id: string | undefined, key: string | undefi
       return { service: `ElevenLabs ${label}`, status: 'down', latencyMs: Date.now() - start };
     }
 
-    const data = await subResp.json() as { character_count?: number; character_limit?: number; subscription?: { character_count?: number; character_limit?: number } };
+    const data = (await subResp.json()) as {
+      character_count?: number;
+      character_limit?: number;
+      subscription?: { character_count?: number; character_limit?: number };
+    };
     // Fields may be at top level OR nested under .subscription
     const used = data?.character_count ?? data?.subscription?.character_count ?? 0;
     const limit = data?.character_limit ?? data?.subscription?.character_limit ?? 1;
@@ -96,10 +109,15 @@ async function checkElevenLabsAgent(id: string | undefined, key: string | undefi
 
     const creditInfo = `${remaining.toLocaleString()} remaining · ${used.toLocaleString()} used of ${limit.toLocaleString()} total`;
     if (remaining < 150 || !agentResp.ok) {
-      const body = await agentResp.json().catch(() => ({})) as { detail?: { message?: string } };
+      const body = (await agentResp.json().catch(() => ({}))) as { detail?: { message?: string } };
       const msg = body?.detail?.message ?? '';
       const reason = remaining < 150 ? `low credits — ${creditInfo}` : msg;
-      return { service: `ElevenLabs ${label}`, status: 'degraded', latencyMs: Date.now() - start, detail: creditInfo };
+      return {
+        service: `ElevenLabs ${label}`,
+        status: 'degraded',
+        latencyMs: Date.now() - start,
+        detail: creditInfo,
+      };
     }
 
     return {
@@ -118,9 +136,21 @@ export async function runStartupHealthCheck() {
     checkDatabase(process.env.DATABASE_URL),
     checkRedis(process.env.REDIS_URL),
     checkOpenAI(process.env.OPENAI_API_KEY),
-    checkElevenLabsAgent(process.env.ELEVENLABS_AGENT_ID, process.env.ELEVENLABS_API_KEY, 'agent-1'),
-    checkElevenLabsAgent(process.env.ELEVENLABS_BACKUP_AGENT_ID, process.env.ELEVENLABS_BACKUP_API_KEY, 'agent-2'),
-    checkElevenLabsAgent(process.env.ELEVENLABS_EXTRA_AGENT_ID, process.env.ELEVENLABS_EXTRA_API_KEY, 'agent-3'),
+    checkElevenLabsAgent(
+      process.env.ELEVENLABS_AGENT_ID,
+      process.env.ELEVENLABS_API_KEY,
+      'agent-1',
+    ),
+    checkElevenLabsAgent(
+      process.env.ELEVENLABS_BACKUP_AGENT_ID,
+      process.env.ELEVENLABS_BACKUP_API_KEY,
+      'agent-2',
+    ),
+    checkElevenLabsAgent(
+      process.env.ELEVENLABS_EXTRA_AGENT_ID,
+      process.env.ELEVENLABS_EXTRA_API_KEY,
+      'agent-3',
+    ),
   ]);
 
   const results = [db, redis, openai, el1, el2, el3];

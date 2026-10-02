@@ -48,12 +48,8 @@ export function createServiceLogger(service: string) {
  * Log helpers using Pino v10 object-first API.
  */
 export const log = {
-  info: (msg: string, extra?: Record<string, unknown>) =>
-    logger.info({ ...extra, msg }),
-  error: (msg: string, extra?: Record<string, unknown>) =>
-    logger.error({ ...extra, msg }),
-  warn: (msg: string, extra?: Record<string, unknown>) =>
-    logger.warn({ ...extra, msg }),
-  debug: (msg: string, extra?: Record<string, unknown>) =>
-    logger.debug({ ...extra, msg }),
+  info: (msg: string, extra?: Record<string, unknown>) => logger.info({ ...extra, msg }),
+  error: (msg: string, extra?: Record<string, unknown>) => logger.error({ ...extra, msg }),
+  warn: (msg: string, extra?: Record<string, unknown>) => logger.warn({ ...extra, msg }),
+  debug: (msg: string, extra?: Record<string, unknown>) => logger.debug({ ...extra, msg }),
 };

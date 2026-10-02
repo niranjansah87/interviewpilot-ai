@@ -3,7 +3,8 @@
  * These are the canonical DB-facing types.
  */
 
-export type InterviewStatus = 'created' | 'ready' | 'active' | 'completed' | 'failed' | 'scheduled' | 'cancelled';
+export type InterviewStatus =
+  'created' | 'ready' | 'active' | 'completed' | 'failed' | 'scheduled' | 'cancelled';
 export type InterviewType = 'behavioral' | 'technical' | 'mixed';
 export type ExperienceLevel = 'junior' | 'mid' | 'senior';
 export type TranscriptRole = 'interviewer' | 'candidate';

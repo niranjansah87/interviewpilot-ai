@@ -36,10 +36,17 @@ export const feedbackService = {
 
     const hasTranscript = session.transcript.length > 0;
     const transcriptText = hasTranscript
-      ? session.transcript.map((e) => `${e.role === 'INTERVIEWER' ? 'Interviewer' : 'Candidate'}: ${e.content}`).join('\n\n')
+      ? session.transcript
+          .map((e) => `${e.role === 'INTERVIEWER' ? 'Interviewer' : 'Candidate'}: ${e.content}`)
+          .join('\n\n')
       : '';
 
-    log.info({ msg: 'Generating feedback', sessionId, hasTranscript, turns: session.transcript.length });
+    log.info({
+      msg: 'Generating feedback',
+      sessionId,
+      hasTranscript,
+      turns: session.transcript.length,
+    });
 
     const systemPrompt = hasTranscript
       ? `You are an expert interview coach. Analyze the interview transcript and provide structured feedback. Return ONLY valid JSON (no markdown). Format: {"overallScore":0-100,"communicationScore":0-100,"confidenceScore":0-100,"technicalReasoning":0-100|null,"strengths":["..."],"weaknesses":["..."],"improvements":["..."],"summary":"..."}. Reference specific moments. Be constructive. 4 items max each. Summary under 200 chars.`
@@ -53,7 +60,7 @@ export const feedbackService = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: 'gpt-4.1-mini',
@@ -76,7 +83,10 @@ export const feedbackService = {
     };
 
     const raw = data.choices[0]?.message?.content ?? '';
-    const json = raw.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+    const json = raw
+      .replace(/```json\s*/g, '')
+      .replace(/```\s*/g, '')
+      .trim();
 
     let feedback: FeedbackResult;
     try {

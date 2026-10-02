@@ -11,12 +11,12 @@ tests/
 
 ## Tooling
 
-| Type | Tool |
-|------|------|
-| Unit + Integration | Vitest |
-| Component | React Testing Library |
-| E2E | Playwright |
-| API integration | Supertest (or fetch) |
+| Type               | Tool                  |
+| ------------------ | --------------------- |
+| Unit + Integration | Vitest                |
+| Component          | React Testing Library |
+| E2E                | Playwright            |
+| API integration    | Supertest (or fetch)  |
 
 ## Rules
 

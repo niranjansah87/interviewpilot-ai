@@ -34,11 +34,7 @@ export const interviewRepository = {
     );
   },
 
-  async findByUser(
-    userId: string,
-    page = 1,
-    limit = 10,
-  ): Promise<PaginatedResult<unknown>> {
+  async findByUser(userId: string, page = 1, limit = 10): Promise<PaginatedResult<unknown>> {
     const listKey = cacheKeys.interviewList(userId) + `:p${page}:l${limit}`;
     return cache.getOrSet(
       listKey,

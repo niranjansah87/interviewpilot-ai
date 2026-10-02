@@ -41,7 +41,10 @@ export const userRepository = {
     return user;
   },
 
-  async update(id: string, data: { name?: string; email?: string; passwordHash?: string }): Promise<UserRecord> {
+  async update(
+    id: string,
+    data: { name?: string; email?: string; passwordHash?: string },
+  ): Promise<UserRecord> {
     const user = await prisma.user.update({ where: { id }, data, select: userSelect });
     await cache.set(cacheKeys.user(id), user, { ttlSeconds: USER_TTL });
     return user;
