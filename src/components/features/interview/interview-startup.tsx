@@ -25,13 +25,19 @@ export function InterviewStartup({ candidateName, interviewType, onComplete }: S
   useEffect(() => {
     const interval = setInterval(() => {
       setStep((s) => {
-        if (s >= STEPS.length) { clearInterval(interval); return s; }
+        if (s >= STEPS.length) {
+          clearInterval(interval);
+          return s;
+        }
         return s + 1;
       });
     }, 800);
 
     const complete = setTimeout(onComplete, STEPS.length * 800 + 500);
-    return () => { clearInterval(interval); clearTimeout(complete); };
+    return () => {
+      clearInterval(interval);
+      clearTimeout(complete);
+    };
   }, [onComplete]);
 
   return (
@@ -49,9 +55,7 @@ export function InterviewStartup({ candidateName, interviewType, onComplete }: S
           <Mic className="h-10 w-10 text-primary" />
         </motion.div>
 
-        <h2 className="text-xl font-semibold">
-          Hello{name !== 'there' ? `, ${name}` : ''}
-        </h2>
+        <h2 className="text-xl font-semibold">Hello{name !== 'there' ? `, ${name}` : ''}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Setting up your {interviewType?.toLowerCase() ?? 'behavioral'} interview
         </p>

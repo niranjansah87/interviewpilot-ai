@@ -22,23 +22,26 @@ export function useDialog(): UseDialogReturn {
   const hide = useCallback(() => setOpen(false), []);
 
   const DialogComponent = useCallback(
-    ({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) => {
+    ({
+      title,
+      description,
+      children,
+    }: {
+      title: string;
+      description?: string;
+      children: React.ReactNode;
+    }) => {
       if (!open) return null;
       return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-            onClick={hide}
-          />
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={hide} />
           {/* Dialog */}
-          <div className="relative z-10 mx-4 w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-2xl animate-in fade-in-0 zoom-in-95">
+          <div className="animate-in fade-in-0 zoom-in-95 relative z-10 mx-4 w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-2xl">
             <div className="flex items-start justify-between">
               <div>
                 <h2 className="text-lg font-semibold">{title}</h2>
-                {description && (
-                  <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-                )}
+                {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
               </div>
               <button
                 onClick={hide}

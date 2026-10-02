@@ -21,7 +21,12 @@ const CLOSING_MESSAGES = [
   'Finalizing your personalized action plan…',
 ];
 
-export function InterviewWrapUp({ candidateName, interviewType, interviewId, onComplete }: WrapUpProps) {
+export function InterviewWrapUp({
+  candidateName,
+  interviewType,
+  interviewId,
+  onComplete,
+}: WrapUpProps) {
   const [step, setStep] = useState(0);
   const [showContent, setShowContent] = useState(false);
   const name = candidateName || 'there';
@@ -74,7 +79,15 @@ export function InterviewWrapUp({ candidateName, interviewType, interviewId, onC
                   className="absolute inset-0"
                 >
                   <svg width="80" height="80" viewBox="0 0 80 80" className="text-primary/30">
-                    <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="6 4" />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="36"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeDasharray="6 4"
+                    />
                   </svg>
                 </motion.div>
                 {/* Pulsing sparkle icon */}
@@ -94,18 +107,17 @@ export function InterviewWrapUp({ candidateName, interviewType, interviewId, onC
               animate={{ opacity: 1 }}
               transition={{ delay: 1, duration: 1 }}
             >
-              <h2 className="text-2xl font-semibold tracking-tight">
-                Thank you, {name}
-              </h2>
+              <h2 className="text-2xl font-semibold tracking-tight">Thank you, {name}</h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 {interviewType === 'BEHAVIORAL'
                   ? 'I enjoyed learning about your experiences and how you approach workplace situations. Your examples were thoughtful and demonstrated strong self-awareness.'
                   : interviewType === 'TECHNICAL'
-                  ? 'You demonstrated solid technical knowledge and explained your reasoning clearly. I appreciated how you worked through problems step by step.'
-                  : 'I enjoyed our conversation today. Your responses showed both technical depth and strong communication skills.'}
+                    ? 'You demonstrated solid technical knowledge and explained your reasoning clearly. I appreciated how you worked through problems step by step.'
+                    : 'I enjoyed our conversation today. Your responses showed both technical depth and strong communication skills.'}
               </p>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                I&apos;m now preparing your comprehensive feedback report with detailed scores, specific strengths, and an actionable improvement plan.
+                I&apos;m now preparing your comprehensive feedback report with detailed scores,
+                specific strengths, and an actionable improvement plan.
               </p>
             </motion.div>
 
@@ -133,15 +145,21 @@ export function InterviewWrapUp({ candidateName, interviewType, interviewId, onC
                       animate={{ scale: 1 }}
                       className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/20"
                     >
-                      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2 }}
-                        className="h-2 w-2 rounded-full bg-emerald-500" />
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="h-2 w-2 rounded-full bg-emerald-500"
+                      />
                     </motion.div>
                   ) : i === step ? (
                     <Loader2 className="h-5 w-5 shrink-0 animate-spin text-primary" />
                   ) : (
                     <div className="h-5 w-5 shrink-0 rounded-full border border-border" />
                   )}
-                  <span className={i <= step ? 'text-muted-foreground' : 'text-muted-foreground/30'}>
+                  <span
+                    className={i <= step ? 'text-muted-foreground' : 'text-muted-foreground/30'}
+                  >
                     {msg}
                   </span>
                 </motion.div>
@@ -157,7 +175,7 @@ export function InterviewWrapUp({ candidateName, interviewType, interviewId, onC
             >
               <button
                 onClick={onComplete}
-                className="flex items-center gap-2 mx-auto text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="mx-auto flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 <FileText className="h-4 w-4" />
                 View my report now

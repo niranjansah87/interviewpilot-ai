@@ -12,7 +12,14 @@ interface WaveformProps {
   barCount?: number;
 }
 
-export function Waveform({ frequencies, level, active, color = 'hsl(var(--primary))', className = '', barCount = 32 }: WaveformProps) {
+export function Waveform({
+  frequencies,
+  level,
+  active,
+  color = 'hsl(var(--primary))',
+  className = '',
+  barCount = 32,
+}: WaveformProps) {
   const bars = useMemo(() => {
     const result: number[] = [];
     const step = Math.floor(frequencies.length / barCount);
@@ -24,7 +31,10 @@ export function Waveform({ frequencies, level, active, color = 'hsl(var(--primar
   }, [frequencies, barCount]);
 
   return (
-    <div className={`flex items-end justify-center gap-[2px] ${className}`} style={{ height: '100%' }}>
+    <div
+      className={`flex items-end justify-center gap-[2px] ${className}`}
+      style={{ height: '100%' }}
+    >
       {bars.map((value, i) => {
         const height = active ? Math.max(2, value * 100) : 2;
         const centerDistance = Math.abs(i - barCount / 2) / (barCount / 2);
@@ -50,7 +60,12 @@ interface PulseRingProps {
   className?: string;
 }
 
-export function PulseRing({ active, level, color = 'hsl(var(--primary))', className = '' }: PulseRingProps) {
+export function PulseRing({
+  active,
+  level,
+  color = 'hsl(var(--primary))',
+  className = '',
+}: PulseRingProps) {
   const scale = active ? 1 + level * 0.5 : 1;
   const opacity = active ? 0.1 + level * 0.3 : 0.05;
 

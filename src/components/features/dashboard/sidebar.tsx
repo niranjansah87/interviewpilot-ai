@@ -4,7 +4,18 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { cn } from '@/lib/cn';
-import { LayoutDashboard, Mic, History, Settings, User, LogOut, PanelLeftClose, PanelLeft, FileText, ClipboardCheck } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Mic,
+  History,
+  Settings,
+  User,
+  LogOut,
+  PanelLeftClose,
+  PanelLeft,
+  FileText,
+  ClipboardCheck,
+} from 'lucide-react';
 import { useState, useCallback } from 'react';
 
 const NAV = [
@@ -45,8 +56,20 @@ export function Sidebar() {
       {/* Logo + collapse */}
       <div className="flex h-14 items-center justify-center">
         <Link href="/dashboard" className="group">
-          <Image src="/logo_dark.png" alt="InterviewPilot" width={60} height={60} className="hidden shrink-0 dark:block transition-transform duration-300 group-hover:scale-110" />
-          <Image src="/logo_light.png" alt="InterviewPilot" width={60} height={60} className="block shrink-0 dark:hidden transition-transform duration-300 group-hover:scale-110" />
+          <Image
+            src="/logo_dark.png"
+            alt="InterviewPilot"
+            width={60}
+            height={60}
+            className="hidden shrink-0 transition-transform duration-300 group-hover:scale-110 dark:block"
+          />
+          <Image
+            src="/logo_light.png"
+            alt="InterviewPilot"
+            width={60}
+            height={60}
+            className="block shrink-0 transition-transform duration-300 group-hover:scale-110 dark:hidden"
+          />
         </Link>
       </div>
 
@@ -55,7 +78,9 @@ export function Sidebar() {
         {NAV.map(({ href, label, icon: Icon }) => {
           // Exact match for parent routes that have sub-routes
           const exact = href === '/dashboard/profile' || href === '/dashboard/interviews';
-          const active = exact ? pathname === href : (pathname === href || (href !== '/dashboard' && pathname.startsWith(href)));
+          const active = exact
+            ? pathname === href
+            : pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
           return (
             <Link
               key={href}
@@ -64,7 +89,7 @@ export function Sidebar() {
                 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors',
                 collapsed && 'justify-center px-0 py-2.5',
                 active
-                  ? 'bg-accent text-foreground font-medium'
+                  ? 'bg-accent font-medium text-foreground'
                   : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
               )}
             >
@@ -76,7 +101,7 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom actions */}
-      <div className="border-t border-border px-2 py-2 space-y-0.5">
+      <div className="space-y-0.5 border-t border-border px-2 py-2">
         <button
           onClick={() => setCollapsed(!collapsed)}
           className={cn(
@@ -84,7 +109,11 @@ export function Sidebar() {
             collapsed && 'justify-center px-0',
           )}
         >
-          {collapsed ? <PanelLeft className="h-[18px] w-[18px] shrink-0" /> : <PanelLeftClose className="h-[18px] w-[18px] shrink-0" />}
+          {collapsed ? (
+            <PanelLeft className="h-[18px] w-[18px] shrink-0" />
+          ) : (
+            <PanelLeftClose className="h-[18px] w-[18px] shrink-0" />
+          )}
           {!collapsed && <span>Collapse</span>}
         </button>
         <button

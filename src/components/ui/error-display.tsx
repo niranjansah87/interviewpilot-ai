@@ -35,7 +35,13 @@ const COLORS: Record<ErrorCategory, string> = {
   unknown: 'border-red-500/30 bg-red-500/5',
 };
 
-export function ErrorDisplay({ message, category = 'unknown', onRetry, onDismiss, compact = false }: ErrorDisplayProps) {
+export function ErrorDisplay({
+  message,
+  category = 'unknown',
+  onRetry,
+  onDismiss,
+  compact = false,
+}: ErrorDisplayProps) {
   const Icon = ICONS[category];
 
   if (compact) {
@@ -51,7 +57,12 @@ export function ErrorDisplay({ message, category = 'unknown', onRetry, onDismiss
           )}
         </div>
         {onDismiss && (
-          <button onClick={onDismiss} className="shrink-0 text-muted-foreground hover:text-foreground">×</button>
+          <button
+            onClick={onDismiss}
+            className="shrink-0 text-muted-foreground hover:text-foreground"
+          >
+            ×
+          </button>
         )}
       </div>
     );
@@ -70,7 +81,9 @@ export function ErrorDisplay({ message, category = 'unknown', onRetry, onDismiss
           </Button>
         )}
         {onDismiss && (
-          <Button variant="ghost" onClick={onDismiss}>Dismiss</Button>
+          <Button variant="ghost" onClick={onDismiss}>
+            Dismiss
+          </Button>
         )}
       </div>
     </Card>
