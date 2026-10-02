@@ -14,7 +14,16 @@ Domain events for decoupling parts of the application.
 ```typescript
 // Event types
 export type DomainEvent =
-  | { type: 'INTERVIEW_STARTED'; payload: { sessionId: string; userId: string } }
-  | { type: 'INTERVIEW_COMPLETED'; payload: { sessionId: string; duration: number } }
-  | { type: 'FEEDBACK_GENERATED'; payload: { sessionId: string; reportId: string } };
+  | {
+      type: 'INTERVIEW_STARTED';
+      payload: { sessionId: string; userId: string };
+    }
+  | {
+      type: 'INTERVIEW_COMPLETED';
+      payload: { sessionId: string; duration: number };
+    }
+  | {
+      type: 'FEEDBACK_GENERATED';
+      payload: { sessionId: string; reportId: string };
+    };
 ```

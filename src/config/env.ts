@@ -70,7 +70,8 @@ export function getEnv(): ServerEnv {
     const clientSafe: ServerEnv = {
       NODE_ENV: (process.env.NODE_ENV ?? 'development') as ServerEnv['NODE_ENV'],
       LOG_LEVEL: (process.env.LOG_LEVEL ?? 'info') as ServerEnv['LOG_LEVEL'],
-      NEXT_PUBLIC_APP_URL: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000',
+      NEXT_PUBLIC_APP_URL:
+        typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000',
       API_VERSION: 'v1',
       DATABASE_URL: '',
       JWT_SECRET: '',
@@ -81,8 +82,10 @@ export function getEnv(): ServerEnv {
       OPENAI_REALTIME_MODEL: '',
       ELEVENLABS_API_KEY: process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY ?? '',
       ELEVENLABS_AGENT_ID: process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID ?? '',
-      VOICE_PROVIDER: (process.env.NEXT_PUBLIC_VOICE_PROVIDER ?? 'elevenlabs') as ServerEnv['VOICE_PROVIDER'],
-      VOICE_FALLBACK_PROVIDER: (process.env.NEXT_PUBLIC_VOICE_FALLBACK_PROVIDER ?? 'mock') as ServerEnv['VOICE_FALLBACK_PROVIDER'],
+      VOICE_PROVIDER: (process.env.NEXT_PUBLIC_VOICE_PROVIDER ??
+        'elevenlabs') as ServerEnv['VOICE_PROVIDER'],
+      VOICE_FALLBACK_PROVIDER: (process.env.NEXT_PUBLIC_VOICE_FALLBACK_PROVIDER ??
+        'mock') as ServerEnv['VOICE_FALLBACK_PROVIDER'],
       CACHE_PROVIDER: 'memory',
       REDIS_URL: undefined,
       SENTRY_DSN: undefined,

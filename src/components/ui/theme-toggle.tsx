@@ -8,7 +8,9 @@ export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isDark = mounted && resolvedTheme === 'dark';
 
@@ -19,11 +21,7 @@ export function ThemeToggle() {
       className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-all duration-200 hover:bg-accent hover:text-foreground"
       aria-label="Toggle theme"
     >
-      {isDark ? (
-        <Sun className="h-[18px] w-[18px]" />
-      ) : (
-        <Moon className="h-[18px] w-[18px]" />
-      )}
+      {isDark ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
     </button>
   );
 }

@@ -14,8 +14,7 @@ export function Toaster() {
       closeButton
       duration={4000}
       toastOptions={{
-        className:
-          'rounded-xl border border-border bg-card text-foreground shadow-lg',
+        className: 'rounded-xl border border-border bg-card text-foreground shadow-lg',
         descriptionClassName: 'text-muted-foreground',
       }}
     />

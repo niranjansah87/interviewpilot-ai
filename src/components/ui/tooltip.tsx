@@ -16,7 +16,7 @@ export function Tooltip({ children, content, className }: TooltipProps) {
       <div
         role="tooltip"
         className={cn(
-          'pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2',
+          'pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2',
           'rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground',
           'opacity-0 transition-opacity group-hover:opacity-100',
           'z-50 whitespace-nowrap',

@@ -28,11 +28,26 @@ function buildPool(): PoolEntry[] {
 
   const agents: (AgentConfig | null)[] = [
     process.env.ELEVENLABS_AGENT_ID && process.env.ELEVENLABS_API_KEY
-      ? { id: process.env.ELEVENLABS_AGENT_ID, key: process.env.ELEVENLABS_API_KEY, label: 'agent-1' } : null,
+      ? {
+          id: process.env.ELEVENLABS_AGENT_ID,
+          key: process.env.ELEVENLABS_API_KEY,
+          label: 'agent-1',
+        }
+      : null,
     process.env.ELEVENLABS_BACKUP_AGENT_ID && process.env.ELEVENLABS_BACKUP_API_KEY
-      ? { id: process.env.ELEVENLABS_BACKUP_AGENT_ID, key: process.env.ELEVENLABS_BACKUP_API_KEY, label: 'agent-2' } : null,
+      ? {
+          id: process.env.ELEVENLABS_BACKUP_AGENT_ID,
+          key: process.env.ELEVENLABS_BACKUP_API_KEY,
+          label: 'agent-2',
+        }
+      : null,
     process.env.ELEVENLABS_EXTRA_AGENT_ID && process.env.ELEVENLABS_EXTRA_API_KEY
-      ? { id: process.env.ELEVENLABS_EXTRA_AGENT_ID, key: process.env.ELEVENLABS_EXTRA_API_KEY, label: 'agent-3' } : null,
+      ? {
+          id: process.env.ELEVENLABS_EXTRA_AGENT_ID,
+          key: process.env.ELEVENLABS_EXTRA_API_KEY,
+          label: 'agent-3',
+        }
+      : null,
   ];
 
   for (const a of agents) {
@@ -55,7 +70,7 @@ function checkCircuits(entries: PoolEntry[]): void {
 
 /** Weighted random selection */
 function weightedRandom(entries: PoolEntry[]): PoolEntry | null {
-  const available = entries.filter(e => !e.open);
+  const available = entries.filter((e) => !e.open);
   if (available.length === 0) return null;
 
   const totalWeight = available.reduce((s, e) => s + e.weight, 0);
@@ -75,9 +90,12 @@ export function selectAgent(): PoolEntry | null {
   checkCircuits(entries);
 
   // If all circuits open, force-reset and try anyway
-  const available = entries.filter(e => !e.open);
+  const available = entries.filter((e) => !e.open);
   if (available.length === 0) {
-    for (const e of entries) { e.open = false; e.failures = 0; }
+    for (const e of entries) {
+      e.open = false;
+      e.failures = 0;
+    }
     return weightedRandom(entries);
   }
   return weightedRandom(entries);
@@ -85,7 +103,7 @@ export function selectAgent(): PoolEntry | null {
 
 /** Report agent success — increase weight */
 export function reportSuccess(agentId: string): void {
-  const e = pool.find(a => a.id === agentId);
+  const e = pool.find((a) => a.id === agentId);
   if (e) {
     e.failures = 0;
     e.weight = Math.min(MAX_WEIGHT, e.weight + 1);
@@ -94,7 +112,7 @@ export function reportSuccess(agentId: string): void {
 
 /** Report agent failure — decrease weight, maybe open circuit */
 export function reportFailure(agentId: string): void {
-  const e = pool.find(a => a.id === agentId);
+  const e = pool.find((a) => a.id === agentId);
   if (!e) return;
 
   e.failures++;
@@ -108,7 +126,7 @@ export function reportFailure(agentId: string): void {
 
 /** Get pool stats for debugging */
 export function getPoolStats() {
-  return pool.map(e => ({
+  return pool.map((e) => ({
     label: e.label,
     weight: e.weight,
     failures: e.failures,

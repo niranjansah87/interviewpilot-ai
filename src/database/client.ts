@@ -10,14 +10,12 @@
 import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined,
+  prisma: PrismaClient | undefined;
 };
 
 function createPrismaClient(): PrismaClient {
   const logLevels: Array<'query' | 'info' | 'warn' | 'error'> =
-    process.env.NODE_ENV === 'development'
-      ? ['query', 'error', 'warn']
-      : ['error'];
+    process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'];
 
   return new PrismaClient({
     log: logLevels,

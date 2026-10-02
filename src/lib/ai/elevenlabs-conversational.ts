@@ -26,10 +26,10 @@ const ELEVENLABS_WS = 'wss://api.elevenlabs.io/v1/convai/conversation';
 function sanitizeDynamicVar(value: string): string {
   // Allow only alphanumeric, spaces, and safe punctuation
   const cleaned = value
-    .replace(/[\x00-\x1f\x7f]/g, '')     // strip control characters
-    .replace(/[^\w .,'\-+#/()&]/g, '')   // allow only safe chars
+    .replace(/[\x00-\x1f\x7f]/g, '') // strip control characters
+    .replace(/[^\w .,'\-+#/()&]/g, '') // allow only safe chars
     .trim()
-    .slice(0, 100);                       // max 100 chars
+    .slice(0, 100); // max 100 chars
 
   if (cleaned !== value) {
     aiLogger.warn({
@@ -49,8 +49,10 @@ export const elevenlabsAdapter: AIProvider = {
     const apiKey = getEnv().ELEVENLABS_API_KEY;
     const agentId = getEnv().ELEVENLABS_AGENT_ID;
 
-    if (!apiKey) throw new AIProviderError('ELEVENLABS_API_KEY not configured', 'elevenlabs', false);
-    if (!agentId) throw new AIProviderError('ELEVENLABS_AGENT_ID not configured', 'elevenlabs', false);
+    if (!apiKey)
+      throw new AIProviderError('ELEVENLABS_API_KEY not configured', 'elevenlabs', false);
+    if (!agentId)
+      throw new AIProviderError('ELEVENLABS_AGENT_ID not configured', 'elevenlabs', false);
 
     const sessionId = `el_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 
@@ -69,12 +71,16 @@ export const elevenlabsAdapter: AIProvider = {
     onEvent: RealtimeEventHandler,
     config?: RealtimeSessionConfig,
   ): Promise<RealtimeConnection> {
-    const conn = new ElevenLabsConnection(sessionId, {
-      type: config?.type,
-      role: config?.targetRole,
-      level: config?.experienceLevel,
-      candidateName: config?.candidateName,
-    }, onEvent);
+    const conn = new ElevenLabsConnection(
+      sessionId,
+      {
+        type: config?.type,
+        role: config?.targetRole,
+        level: config?.experienceLevel,
+        candidateName: config?.candidateName,
+      },
+      onEvent,
+    );
     await conn.initialize();
     return conn;
   },
@@ -119,7 +125,10 @@ class ElevenLabsConnection implements RealtimeConnection {
 
     if (!apiKey || !agentId) {
       this.status = 'disconnected';
-      this.dispatch({ type: 'error', error: { type: 'config', message: 'ElevenLabs not configured' } });
+      this.dispatch({
+        type: 'error',
+        error: { type: 'config', message: 'ElevenLabs not configured' },
+      });
       return;
     }
 
@@ -129,7 +138,8 @@ class ElevenLabsConnection implements RealtimeConnection {
       if (this.config.type) dynamicVars.interview_type = sanitizeDynamicVar(this.config.type);
       if (this.config.role) dynamicVars.role = sanitizeDynamicVar(this.config.role);
       if (this.config.level) dynamicVars.level = sanitizeDynamicVar(this.config.level);
-      if (this.config.candidateName) dynamicVars.candidate_name = sanitizeDynamicVar(this.config.candidateName);
+      if (this.config.candidateName)
+        dynamicVars.candidate_name = sanitizeDynamicVar(this.config.candidateName);
 
       // Create signed URL with dynamic variables via config override
       const overrideBody: Record<string, unknown> = {};
@@ -156,7 +166,7 @@ class ElevenLabsConnection implements RealtimeConnection {
         throw new Error(`Failed to get signed URL: ${signRes.status}`);
       }
 
-      const { signed_url } = await signRes.json() as { signed_url: string };
+      const { signed_url } = (await signRes.json()) as { signed_url: string };
 
       this.ws = new WebSocket(signed_url);
 
@@ -289,7 +299,9 @@ class ElevenLabsConnection implements RealtimeConnection {
 
   onEvent(handler: RealtimeEventHandler): () => void {
     this.handlers.push(handler);
-    return () => { this.handlers = this.handlers.filter(h => h !== handler); };
+    return () => {
+      this.handlers = this.handlers.filter((h) => h !== handler);
+    };
   }
 
   private dispatch(event: RealtimeEvent): void {

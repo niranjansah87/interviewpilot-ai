@@ -7,7 +7,12 @@
 
 import { audioRuntime } from '@/lib/audio/runtime';
 import type { InterviewConfig, InterviewContext } from '@/lib/conversation/engine';
-import { createInterviewContext, decideFollowUp, selectNextTopic, transition } from '@/lib/conversation/engine';
+import {
+  createInterviewContext,
+  decideFollowUp,
+  selectNextTopic,
+  transition,
+} from '@/lib/conversation/engine';
 import { estimatePromptTokens } from '@/lib/conversation/prompt-engine';
 import { logger } from '@/monitoring/logger';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -67,13 +72,17 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
   const [muted, setMuted] = useState(false);
   const mutedRef = useRef(false);
   // Keep ref in sync with state so audio callback always reads latest value
-  useEffect(() => { mutedRef.current = muted; }, [muted]);
+  useEffect(() => {
+    mutedRef.current = muted;
+  }, [muted]);
 
   // ---- Barge-in: stop current AI audio when candidate speaks ----
   const stopPlayback = useCallback(() => {
     try {
       activeSourceRef.current?.stop();
-    } catch { /* already stopped */ }
+    } catch {
+      /* already stopped */
+    }
     activeSourceRef.current = null;
     setAiSpeaking(false);
     ////console.log('[BargeIn] Stopped current audio source');
@@ -147,7 +156,9 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
           const { data: resume } = await resumeRes.json();
           if (resume?.text) resumeContext = resume.text.slice(0, 3000);
         }
-      } catch { /* non-critical */ }
+      } catch {
+        /* non-critical */
+      }
 
       // Connect to voice provider via server-side API (keeps keys safe)
       let providerError = '';
@@ -167,10 +178,14 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
 
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
-          throw new Error((err as { detail?: string }).detail ?? `Voice API returned ${res.status}`);
+          throw new Error(
+            (err as { detail?: string }).detail ?? `Voice API returned ${res.status}`,
+          );
         }
 
-        const { data } = await res.json() as { data: { signedUrl: string; dynamicVars?: Record<string, string> } };
+        const { data } = (await res.json()) as {
+          data: { signedUrl: string; dynamicVars?: Record<string, string> };
+        };
         const { signedUrl, dynamicVars } = data;
 
         // Connect WebSocket direct to ElevenLabs (browser-to-ElevenLabs, low latency)
@@ -186,12 +201,15 @@ export function useInterviewSession(sessionId: string, config: Partial<Interview
             setError(`Connection lost: ${reason}. Your progress has been saved.`);
             // Mark interview as completed
             fetch(`/api/v1/interviews/${sessionId}`, {
-              method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
               body: JSON.stringify({ status: 'COMPLETED', durationSeconds: duration }),
             }).catch(() => {});
             // Generate feedback
             fetch(`/api/v1/interviews/${sessionId}/report`, {
-              method: 'POST', credentials: 'include',
+              method: 'POST',
+              credentials: 'include',
             }).catch(() => {});
           },
           onUserSpeech: () => {
@@ -261,24 +279,30 @@ Experience Level: ${level}${resume}
 
 Address the candidate by name in your first message. Personalize every question to this role and level. Reference their resume experience.`;
 
-        ws.send(JSON.stringify({
-          type: 'contextual_update',
-          text: contextMessage,
-        }));
+        ws.send(
+          JSON.stringify({
+            type: 'contextual_update',
+            text: contextMessage,
+          }),
+        );
 
         // Then trigger the agent to start (after a short delay to let context process)
         setTimeout(() => {
           if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({
-              type: 'conversation_initiation_client_data',
-              conversation_initiation_client_data_event: {},
-            }));
+            ws.send(
+              JSON.stringify({
+                type: 'conversation_initiation_client_data',
+                conversation_initiation_client_data_event: {},
+              }),
+            );
           }
         }, 500);
       } catch (err) {
         providerError = err instanceof Error ? err.message : String(err);
         aiLogger.error({ msg: 'AI provider connection failed', error: providerError });
-        setError(`Voice provider unavailable: ${providerError}. Click below to try demo mode instead.`);
+        setError(
+          `Voice provider unavailable: ${providerError}. Click below to try demo mode instead.`,
+        );
         updateCtx('error');
         setStatus('disconnected');
         return;
@@ -296,7 +320,9 @@ Address the candidate by name in your first message. Personalize every question 
           credentials: 'include',
           body: JSON.stringify({ status: 'ACTIVE' }),
         });
-      } catch { /* non-critical */ }
+      } catch {
+        /* non-critical */
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start interview');
       updateCtx('error');
@@ -321,7 +347,9 @@ Address the candidate by name in your first message. Personalize every question 
             } else if (typeof conn?.interrupt === 'function') {
               conn.interrupt();
             }
-          } catch { /* best effort */ }
+          } catch {
+            /* best effort */
+          }
           break;
 
         case 'input_audio_buffer.speech_stopped':
@@ -343,7 +371,10 @@ Address the candidate by name in your first message. Personalize every question 
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               credentials: 'include',
-              body: JSON.stringify({ role: event.role ?? 'interviewer', content: event.transcript }),
+              body: JSON.stringify({
+                role: event.role ?? 'interviewer',
+                content: event.transcript,
+              }),
             }).catch(() => {});
           }
           updateCtx('response_completed');
@@ -458,19 +489,29 @@ Address the candidate by name in your first message. Personalize every question 
     updateCtx('connected');
     setSpeaker('interviewer');
 
-    const intro = 'Hello! Welcome to InterviewPilot AI Demo Mode. This is a simulated ' +
-      ctx.config.type + ' interview. The AI responses are pre-scripted for demonstration purposes. ' +
+    const intro =
+      'Hello! Welcome to InterviewPilot AI Demo Mode. This is a simulated ' +
+      ctx.config.type +
+      ' interview. The AI responses are pre-scripted for demonstration purposes. ' +
       'Tell me about your background and experience.';
     addTranscription('interviewer', intro, false);
 
     // Simulated follow-ups
     setTimeout(() => {
       setSpeaker('candidate');
-      addTranscription('candidate', 'I have experience building full-stack applications with modern technologies. I have worked on several projects involving distributed systems and cloud architecture.', false);
+      addTranscription(
+        'candidate',
+        'I have experience building full-stack applications with modern technologies. I have worked on several projects involving distributed systems and cloud architecture.',
+        false,
+      );
     }, 3000);
     setTimeout(() => {
       setSpeaker('interviewer');
-      addTranscription('interviewer', 'Interesting. Can you describe a specific project where you had to make a difficult architectural decision? What were the trade-offs you considered?', false);
+      addTranscription(
+        'interviewer',
+        'Interesting. Can you describe a specific project where you had to make a difficult architectural decision? What were the trade-offs you considered?',
+        false,
+      );
     }, 8000);
   }, [ctx.config.type, ctx.config.targetRole, requestMic, updateCtx, addTranscription]);
 
@@ -497,7 +538,7 @@ Address the candidate by name in your first message. Personalize every question 
     handleReconnect,
     addTranscription,
     muted,
-    toggleMute: () => setMuted(m => !m),
+    toggleMute: () => setMuted((m) => !m),
   };
 }
 
@@ -527,11 +568,13 @@ function createWebSocketConnection(
   function activateBargeIn() {
     const now = Date.now();
     bargeInUntil = now + 1000; // 1 second cooldown — flush all in-flight audio
-    try { activeSource?.stop(); } catch {}
+    try {
+      activeSource?.stop();
+    } catch {}
     activeSource = null;
     nextAudioTime = 0;
     const g = audioRuntime.getSpeakerGain();
-    if (g) g.gain.setTargetAtTime(0, (audioRuntime.getContext()?.currentTime ?? 0), 0.02);
+    if (g) g.gain.setTargetAtTime(0, audioRuntime.getContext()?.currentTime ?? 0, 0.02);
     if (ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({ type: 'interrupt' }));
     }
@@ -539,7 +582,11 @@ function createWebSocketConnection(
 
   // Subscribe to local VAD for instant barge-in
   unsubVAD = audioRuntime.onVAD((vad) => {
-    if ((vad === 'speaking' || vad === 'loud') && activeSource !== null && Date.now() > bargeInUntil) {
+    if (
+      (vad === 'speaking' || vad === 'loud') &&
+      activeSource !== null &&
+      Date.now() > bargeInUntil
+    ) {
       activateBargeIn();
       callbacks.onUserSpeech();
     }
@@ -585,7 +632,9 @@ function createWebSocketConnection(
       if (nextAudioTime < now) nextAudioTime = now;
       source.start(nextAudioTime);
       nextAudioTime += audioBuffer.duration;
-    } catch { /* skip bad audio */ }
+    } catch {
+      /* skip bad audio */
+    }
   }
 
   ws.binaryType = 'arraybuffer';
@@ -601,7 +650,7 @@ function createWebSocketConnection(
     }
     if (msg.data instanceof Blob) {
       ////console.log('[WS] recv audio blob', (msg.data as Blob).size, 'bytes');
-      (msg.data as Blob).arrayBuffer().then(buf => playPCM16(buf));
+      (msg.data as Blob).arrayBuffer().then((buf) => playPCM16(buf));
       return;
     }
     try {
@@ -625,22 +674,35 @@ function createWebSocketConnection(
           // New response starting — clear cooldown, restore gain
           bargeInUntil = 0;
           const gainNode = audioRuntime.getSpeakerGain();
-          if (gainNode) gainNode.gain.setTargetAtTime(1, (audioRuntime.getContext()?.currentTime ?? 0), 0.05);
+          if (gainNode)
+            gainNode.gain.setTargetAtTime(1, audioRuntime.getContext()?.currentTime ?? 0, 0.05);
           if (parsed.agent_response_event?.agent_response) {
             ////console.log('[WS] agent:', parsed.agent_response_event.agent_response);
-            onEvent({ type: 'response.audio_transcript.done', role: 'interviewer', transcript: parsed.agent_response_event.agent_response });
+            onEvent({
+              type: 'response.audio_transcript.done',
+              role: 'interviewer',
+              transcript: parsed.agent_response_event.agent_response,
+            });
           }
           break;
         case 'user_transcript':
           if (parsed.user_transcription_event?.user_transcript) {
             ////console.log('[WS] user:', parsed.user_transcription_event.user_transcript);
-            onEvent({ type: 'response.audio_transcript.done', role: 'candidate', transcript: parsed.user_transcription_event.user_transcript });
+            onEvent({
+              type: 'response.audio_transcript.done',
+              role: 'candidate',
+              transcript: parsed.user_transcription_event.user_transcript,
+            });
           }
           break;
         case 'agent_transcript':
           if (parsed.agent_transcription_event?.agent_transcript) {
             ////console.log('[WS] agent transcript:', parsed.agent_transcription_event.agent_transcript);
-            onEvent({ type: 'response.audio_transcript.done', role: 'interviewer', transcript: parsed.agent_transcription_event.agent_transcript });
+            onEvent({
+              type: 'response.audio_transcript.done',
+              role: 'interviewer',
+              transcript: parsed.agent_transcription_event.agent_transcript,
+            });
           }
           break;
         case 'user_started_speaking':
@@ -649,19 +711,31 @@ function createWebSocketConnection(
           callbacks.onUserSpeech();
           break;
           // Mute speaker gain + stop current source (don't close ctx — mic uses it)
-          try { activeSource?.stop(); } catch {}
+          try {
+            activeSource?.stop();
+          } catch {}
           activeSource = null;
           nextAudioTime = 0;
-          try { audioRuntime.getSpeakerGain()?.gain.setTargetAtTime(0, audioRuntime.getContext()?.currentTime ?? 0, 0.05); } catch {}
+          try {
+            audioRuntime
+              .getSpeakerGain()
+              ?.gain.setTargetAtTime(0, audioRuntime.getContext()?.currentTime ?? 0, 0.05);
+          } catch {}
           break;
         case 'interruption':
           ////console.log('[WS] INTERRUPTION from server');
           callbacks.onUserSpeech();
           // Mute speaker gain + stop current source
-          try { activeSource?.stop(); } catch {}
+          try {
+            activeSource?.stop();
+          } catch {}
           activeSource = null;
           nextAudioTime = 0;
-          try { audioRuntime.getSpeakerGain()?.gain.setTargetAtTime(0, audioRuntime.getContext()?.currentTime ?? 0, 0.05); } catch {}
+          try {
+            audioRuntime
+              .getSpeakerGain()
+              ?.gain.setTargetAtTime(0, audioRuntime.getContext()?.currentTime ?? 0, 0.05);
+          } catch {}
           break;
         case 'ping':
           if (parsed.ping_event?.event_id) {
@@ -670,7 +744,9 @@ function createWebSocketConnection(
           break;
         case 'session_timeout':
           ////console.log('[WS] ElevenLabs session timeout — silence or max duration');
-          callbacks.onDisconnect('Session timed out — the agent disconnected due to silence or duration limit');
+          callbacks.onDisconnect(
+            'Session timed out — the agent disconnected due to silence or duration limit',
+          );
           break;
         case 'conversation_ended':
           ////console.log('[WS] ElevenLabs conversation ended by agent');
@@ -681,16 +757,20 @@ function createWebSocketConnection(
           callbacks.onDisconnect('AI interviewer disconnected');
           break;
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   };
 
   ws.onclose = (e: CloseEvent) => {
     unsubVAD?.(); // Clean up VAD subscription
-    const reason = e.reason || (
-      e.code === 1005 ? 'Agent ended session (no status)' :
-      e.code === 1000 ? 'Session completed normally' :
-      `code ${e.code}`
-    );
+    const reason =
+      e.reason ||
+      (e.code === 1005
+        ? 'Agent ended session (no status)'
+        : e.code === 1000
+          ? 'Session completed normally'
+          : `code ${e.code}`);
     ////console.log('[WS] CLOSED — code:', e.code, 'reason:', e.reason, 'clean:', e.wasClean);
     callbacks.onDisconnect(`Connection closed (${reason})`);
   };

@@ -87,9 +87,7 @@ export const openaiAdapter: AIProvider = {
   async generateFeedback(params: FeedbackRequest): Promise<FeedbackResult> {
     try {
       const client = getClient();
-      const transcriptText = params.transcript
-        .map((e) => `${e.role}: ${e.content}`)
-        .join('\n\n');
+      const transcriptText = params.transcript.map((e) => `${e.role}: ${e.content}`).join('\n\n');
 
       const completion = await client.chat.completions.create({
         model: 'gpt-4.1-mini',
@@ -107,9 +105,7 @@ export const openaiAdapter: AIProvider = {
         temperature: 0.3,
       });
 
-      const result = JSON.parse(
-        completion.choices[0]?.message?.content ?? '{}',
-      ) as FeedbackResult;
+      const result = JSON.parse(completion.choices[0]?.message?.content ?? '{}') as FeedbackResult;
 
       return {
         ...result,
