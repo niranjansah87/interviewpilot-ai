@@ -58,9 +58,9 @@ graph LR
 
 ## Key Files
 
-| File | Purpose |
-|------|---------|
-| `src/lib/audio/runtime.ts` | Shared AudioContext, AnalyserNodes, VAD, lifecycle |
-| `src/hooks/use-audio-analyzer.ts` | React hook — 60fps subscription to runtime |
-| `src/hooks/use-interview-session.ts` | WebSocket, audio capture/playback, barge-in |
-| `src/components/features/interview/voice-interface.tsx` | Voice UI with waveforms, avatars, transcript |
+| File                                                    | Purpose                                            |
+| ------------------------------------------------------- | -------------------------------------------------- |
+| `src/lib/audio/runtime.ts`                              | Shared AudioContext, AnalyserNodes, VAD, lifecycle |
+| `src/hooks/use-audio-analyzer.ts`                       | React hook — 60fps subscription to runtime         |
+| `src/hooks/use-interview-session.ts`                    | WebSocket, audio capture/playback, barge-in        |
+| `src/components/features/interview/voice-interface.tsx` | Voice UI with waveforms, avatars, transcript       |

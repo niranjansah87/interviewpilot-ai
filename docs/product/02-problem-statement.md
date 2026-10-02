@@ -1,4 +1,3 @@
-
 # Problem Statement
 
 **Product:** InterviewPilot AI
@@ -253,4 +252,3 @@ The quality of conversation, adaptability, and feedback are prioritized over fea
 - 03-goals-and-non-goals.md
 - 04-user-personas.md
 - ARCHITECTURE.md
-

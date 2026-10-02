@@ -26,6 +26,7 @@ Code is read far more often than it is written. Prioritize clarity, consistency,
 ### Types vs Interfaces
 
 Use `interface` for object shapes that may be extended:
+
 ```typescript
 interface User {
   id: string;
@@ -34,6 +35,7 @@ interface User {
 ```
 
 Use `type` for unions, intersections, and aliases:
+
 ```typescript
 type Status = 'idle' | 'listening' | 'processing';
 type MaybeUser = User | null;
@@ -41,16 +43,16 @@ type MaybeUser = User | null;
 
 ### Naming
 
-| Construct | Convention | Example |
-|-----------|-----------|---------|
-| Variables | camelCase | `userId`, `isLoading` |
-| Functions | camelCase | `getUser()`, `createSession()` |
-| Classes | PascalCase | `InterviewSession` |
-| Types/Interfaces | PascalCase | `UserProfile`, `InterviewConfig` |
-| Constants | UPPER_SNAKE | `MAX_DURATION_SECONDS` |
-| Files (components) | PascalCase | `InterviewCard.tsx` |
-| Files (utilities) | kebab-case | `api-client.ts` |
-| Enums | PascalCase | `enum InterviewType` (prefer string unions instead) |
+| Construct          | Convention  | Example                                             |
+| ------------------ | ----------- | --------------------------------------------------- |
+| Variables          | camelCase   | `userId`, `isLoading`                               |
+| Functions          | camelCase   | `getUser()`, `createSession()`                      |
+| Classes            | PascalCase  | `InterviewSession`                                  |
+| Types/Interfaces   | PascalCase  | `UserProfile`, `InterviewConfig`                    |
+| Constants          | UPPER_SNAKE | `MAX_DURATION_SECONDS`                              |
+| Files (components) | PascalCase  | `InterviewCard.tsx`                                 |
+| Files (utilities)  | kebab-case  | `api-client.ts`                                     |
+| Enums              | PascalCase  | `enum InterviewType` (prefer string unions instead) |
 
 ---
 
@@ -101,7 +103,7 @@ export async function POST(req: Request) {
     if (error instanceof ValidationError) {
       return Response.json(
         { detail: error.message, code: 'VALIDATION_ERROR' },
-        { status: 422 }
+        { status: 422 },
       );
     }
     throw error; // Let Next.js error handler catch it
@@ -110,6 +112,7 @@ export async function POST(req: Request) {
 ```
 
 Rules:
+
 - Always `async`.
 - Always return `Response` or `NextResponse`.
 - Never return plain objects — always `Response.json()`.
@@ -131,17 +134,18 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 [optional footer]
 ```
 
-| Type | When to Use |
-|------|------------|
-| feat | New feature |
-| fix | Bug fix |
-| docs | Documentation only |
+| Type     | When to Use                     |
+| -------- | ------------------------------- |
+| feat     | New feature                     |
+| fix      | Bug fix                         |
+| docs     | Documentation only              |
 | refactor | Code change with no feature/fix |
-| test | Adding or updating tests |
-| chore | Maintenance, dependency updates |
-| perf | Performance improvement |
+| test     | Adding or updating tests        |
+| chore    | Maintenance, dependency updates |
+| perf     | Performance improvement         |
 
 Examples:
+
 ```
 feat(auth): add JWT refresh token rotation
 fix(interview): prevent duplicate transcript entries on reconnect
@@ -186,11 +190,11 @@ src/
 
 ## 7. Linting & Formatting
 
-| Tool | Purpose |
-|------|---------|
-| ESLint | Code quality and style |
-| Prettier | Code formatting (runs via ESLint plugin) |
-| TypeScript | Type checking (`npm run typecheck`) |
+| Tool       | Purpose                                  |
+| ---------- | ---------------------------------------- |
+| ESLint     | Code quality and style                   |
+| Prettier   | Code formatting (runs via ESLint plugin) |
+| TypeScript | Type checking (`npm run typecheck`)      |
 
 CI enforces both ESLint and TypeScript. Editors should format on save.
 

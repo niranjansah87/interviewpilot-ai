@@ -40,12 +40,12 @@ Tokens are short-lived (15 minutes) and delivered via httpOnly cookies during lo
 
 ### Public Endpoints
 
-| Method | Path | Auth Required |
-|--------|------|---------------|
-| POST | /api/auth/register | No |
-| POST | /api/auth/login | No |
-| POST | /api/auth/refresh | Refresh token only |
-| GET | /api/health | No |
+| Method | Path               | Auth Required      |
+| ------ | ------------------ | ------------------ |
+| POST   | /api/auth/register | No                 |
+| POST   | /api/auth/login    | No                 |
+| POST   | /api/auth/refresh  | Refresh token only |
+| GET    | /api/health        | No                 |
 
 ---
 
@@ -68,11 +68,11 @@ Create a new user account.
 
 **Responses**
 
-| Status | Meaning |
-|--------|---------|
-| 201 | User created successfully |
-| 409 | Email already registered |
-| 422 | Validation error |
+| Status | Meaning                   |
+| ------ | ------------------------- |
+| 201    | User created successfully |
+| 409    | Email already registered  |
+| 422    | Validation error          |
 
 **Response (201)**
 
@@ -212,11 +212,11 @@ List the authenticated user's interview sessions.
 
 **Query Parameters**
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| page | number | 1 | Page number |
-| limit | number | 10 | Items per page |
-| status | string | — | Filter by status |
+| Parameter | Type   | Default | Description      |
+| --------- | ------ | ------- | ---------------- |
+| page      | number | 1       | Page number      |
+| limit     | number | 10      | Items per page   |
+| status    | string | —       | Filter by status |
 
 **Response (200)**
 
@@ -351,25 +351,25 @@ All errors follow a consistent format:
 
 ### Standard Error Codes
 
-| HTTP Status | Code | Meaning |
-|-------------|------|---------|
-| 400 | BAD_REQUEST | Malformed request |
-| 401 | UNAUTHORIZED | Missing or invalid token |
-| 403 | FORBIDDEN | Token valid but insufficient permissions |
-| 404 | NOT_FOUND | Resource does not exist |
-| 409 | CONFLICT | Resource already exists |
-| 422 | VALIDATION_ERROR | Request failed validation |
-| 429 | RATE_LIMITED | Too many requests |
-| 500 | INTERNAL_ERROR | Unexpected server error |
+| HTTP Status | Code             | Meaning                                  |
+| ----------- | ---------------- | ---------------------------------------- |
+| 400         | BAD_REQUEST      | Malformed request                        |
+| 401         | UNAUTHORIZED     | Missing or invalid token                 |
+| 403         | FORBIDDEN        | Token valid but insufficient permissions |
+| 404         | NOT_FOUND        | Resource does not exist                  |
+| 409         | CONFLICT         | Resource already exists                  |
+| 422         | VALIDATION_ERROR | Request failed validation                |
+| 429         | RATE_LIMITED     | Too many requests                        |
+| 500         | INTERNAL_ERROR   | Unexpected server error                  |
 
 ---
 
 ## 6. Rate Limiting
 
-| Endpoint Group | Limit |
-|---------------|-------|
-| Auth endpoints | 10 requests / 15 minutes / IP |
-| General API | 100 requests / 1 minute / user |
+| Endpoint Group | Limit                          |
+| -------------- | ------------------------------ |
+| Auth endpoints | 10 requests / 15 minutes / IP  |
+| General API    | 100 requests / 1 minute / user |
 
 Rate limit headers are returned on all responses:
 

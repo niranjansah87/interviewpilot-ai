@@ -40,12 +40,12 @@ InterviewPilot AI uses structured logging, error tracking, and performance monit
 
 ### What to Log
 
-| Level | When to Use | Example |
-|-------|-------------|---------|
-| DEBUG | Detailed diagnostic info (dev only) | `Entering handler POST /api/interviews` |
-| INFO | Significant business events | `Interview session created`, `User logged in` |
-| WARNING | Unexpected but handled situations | `Rate limit approached`, `Token near expiry` |
-| ERROR | Unhandled exceptions | `Database connection failed`, `OpenAI API timeout` |
+| Level   | When to Use                         | Example                                            |
+| ------- | ----------------------------------- | -------------------------------------------------- |
+| DEBUG   | Detailed diagnostic info (dev only) | `Entering handler POST /api/interviews`            |
+| INFO    | Significant business events         | `Interview session created`, `User logged in`      |
+| WARNING | Unexpected but handled situations   | `Rate limit approached`, `Token near expiry`       |
+| ERROR   | Unhandled exceptions                | `Database connection failed`, `OpenAI API timeout` |
 
 ### What Never to Log
 
@@ -78,12 +78,12 @@ All logs include a `requestId` (UUID generated at route entry) for correlation.
 
 ### Sentry Configuration
 
-| Setting | Value |
-|---------|-------|
-| DSN | Configured in environment |
-| Traces Sample Rate | 10% on staging, 1% on production |
-| Errors Sample Rate | 100% |
-| Environment | Injected via `SENTRY_ENVIRONMENT` |
+| Setting            | Value                             |
+| ------------------ | --------------------------------- |
+| DSN                | Configured in environment         |
+| Traces Sample Rate | 10% on staging, 1% on production  |
+| Errors Sample Rate | 100%                              |
+| Environment        | Injected via `SENTRY_ENVIRONMENT` |
 
 ### Error Breadcrumbs
 
@@ -104,22 +104,22 @@ Sentry.captureException(error, { extra: { userId, sessionId } });
 
 ### Business Metrics
 
-| Metric | Target | Alert Threshold |
-|--------|--------|----------------|
-| Interview completion rate | > 85% | < 70% |
-| Average interview duration | 15–25 min | < 5 min or > 45 min |
-| Daily active users | — | > 20% drop from baseline |
-| New signups | — | > 50% drop from baseline |
+| Metric                     | Target    | Alert Threshold          |
+| -------------------------- | --------- | ------------------------ |
+| Interview completion rate  | > 85%     | < 70%                    |
+| Average interview duration | 15–25 min | < 5 min or > 45 min      |
+| Daily active users         | —         | > 20% drop from baseline |
+| New signups                | —         | > 50% drop from baseline |
 
 ### Technical Metrics
 
-| Metric | Target | Alert Threshold |
-|--------|--------|----------------|
-| API error rate | < 1% | > 5% |
-| API p95 latency | < 500ms | > 2s |
-| AI response latency | < 2s | > 5s |
-| Database query time (avg) | < 50ms | > 200ms |
-| Build success rate | 100% | < 95% |
+| Metric                    | Target  | Alert Threshold |
+| ------------------------- | ------- | --------------- |
+| API error rate            | < 1%    | > 5%            |
+| API p95 latency           | < 500ms | > 2s            |
+| AI response latency       | < 2s    | > 5s            |
+| Database query time (avg) | < 50ms  | > 200ms         |
+| Build success rate        | 100%    | < 95%           |
 
 ---
 
@@ -127,11 +127,11 @@ Sentry.captureException(error, { extra: { userId, sessionId } });
 
 ### Sentry Alerts
 
-| Alert | Condition | Severity | Action |
-|-------|-----------|----------|--------|
-| High error rate | > 5% errors in 5 min | Critical | Page on-call + #incidents |
-| Performance regression | p95 > 2s for 10 min | Warning | Slack #engineering |
-| New issue spike | > 10 new issues in 1 hour | Warning | Slack #engineering |
+| Alert                  | Condition                 | Severity | Action                    |
+| ---------------------- | ------------------------- | -------- | ------------------------- |
+| High error rate        | > 5% errors in 5 min      | Critical | Page on-call + #incidents |
+| Performance regression | p95 > 2s for 10 min       | Warning  | Slack #engineering        |
+| New issue spike        | > 10 new issues in 1 hour | Warning  | Slack #engineering        |
 
 ### Uptime Monitoring
 
@@ -144,12 +144,12 @@ Sentry.captureException(error, { extra: { userId, sessionId } });
 
 ## 7. Dashboards
 
-| Dashboard | URL | Contents |
-|-----------|-----|---------|
-| Vercel Analytics | Vercel Dashboard | Web Vitals, request counts, geography |
-| Sentry | sentry.io/organizations/interviewpilot | Errors, performance, issues |
-| Supabase | supabase.com/dashboard | DB size, connection count, query performance |
-| OpenAI | platform.openai.com | API usage, quota, errors |
+| Dashboard        | URL                                    | Contents                                     |
+| ---------------- | -------------------------------------- | -------------------------------------------- |
+| Vercel Analytics | Vercel Dashboard                       | Web Vitals, request counts, geography        |
+| Sentry           | sentry.io/organizations/interviewpilot | Errors, performance, issues                  |
+| Supabase         | supabase.com/dashboard                 | DB size, connection count, query performance |
+| OpenAI           | platform.openai.com                    | API usage, quota, errors                     |
 
 ---
 

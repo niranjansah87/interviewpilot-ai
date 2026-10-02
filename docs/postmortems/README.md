@@ -6,17 +6,17 @@ Incident postmortems for InterviewPilot AI. Postmortems are **blameless** — th
 
 ## When to Write a Postmortem
 
-| Severity | Postmortem Required? | Deadline |
-|----------|---------------------|---------|
-| SEV1 (full outage) | Yes | Within 48 hours |
-| SEV2 (major degradation) | Yes | Within 72 hours |
-| SEV3 (minor issue) | Optional | Within 1 week |
+| Severity                 | Postmortem Required? | Deadline        |
+| ------------------------ | -------------------- | --------------- |
+| SEV1 (full outage)       | Yes                  | Within 48 hours |
+| SEV2 (major degradation) | Yes                  | Within 72 hours |
+| SEV3 (minor issue)       | Optional             | Within 1 week   |
 
 ---
 
 ## Postmortem Index
 
-*No postmortems yet. Use the template below to create one after an incident.*
+_No postmortems yet. Use the template below to create one after an incident._
 
 ---
 

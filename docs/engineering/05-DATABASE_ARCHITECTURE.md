@@ -22,14 +22,14 @@ The architecture follows a relational model centered around interview sessions, 
 
 The database design follows these principles:
 
-* Normalize where practical
-* Avoid unnecessary joins
-* Preserve complete interview history
-* Maintain auditability
-* Support future expansion
-* Prefer immutable interview records
-* Minimize redundant data
-* Optimize for read-heavy workloads
+- Normalize where practical
+- Avoid unnecessary joins
+- Preserve complete interview history
+- Maintain auditability
+- Support future expansion
+- Prefer immutable interview records
+- Minimize redundant data
+- Optimize for read-heavy workloads
 
 ---
 
@@ -41,12 +41,12 @@ PostgreSQL
 
 ### Why PostgreSQL?
 
-* ACID compliance
-* Strong relational modeling
-* JSON support
-* Excellent indexing
-* Mature ecosystem
-* Future scalability
+- ACID compliance
+- Strong relational modeling
+- JSON support
+- Excellent indexing
+- Mature ecosystem
+- Future scalability
 
 ---
 
@@ -56,10 +56,10 @@ Prisma ORM
 
 Reasons:
 
-* Type-safe queries
-* Excellent migration tooling
-* Strong TypeScript integration
-* Maintainable schema evolution
+- Type-safe queries
+- Excellent migration tooling
+- Strong TypeScript integration
+- Maintainable schema evolution
 
 ---
 
@@ -96,10 +96,10 @@ Represents a registered user.
 
 Stores:
 
-* Authentication details
-* Profile information
-* Preferences
-* Interview history
+- Authentication details
+- Profile information
+- Preferences
+- Interview history
 
 Relationships
 
@@ -117,21 +117,21 @@ Represents one interview.
 
 Stores:
 
-* Interview Type
-* Role
-* Experience Level
-* Duration
-* Status
-* AI Configuration
-* Metadata
+- Interview Type
+- Role
+- Experience Level
+- Duration
+- Status
+- AI Configuration
+- Metadata
 
 Status values:
 
-* Pending
-* Active
-* Completed
-* Cancelled
-* Failed
+- Pending
+- Active
+- Completed
+- Cancelled
+- Failed
 
 ---
 
@@ -141,11 +141,11 @@ Each interview owns one transcript.
 
 Stores:
 
-* Session summary
-* Metadata
-* AI provider
-* Token statistics
-* Duration
+- Session summary
+- Metadata
+- AI provider
+- Token statistics
+- Duration
 
 Transcript content is separated into transcript messages.
 
@@ -157,17 +157,17 @@ Stores individual conversation messages.
 
 Each message contains:
 
-* Speaker
-* Timestamp
-* Message Type
-* Content
-* Sequence Number
+- Speaker
+- Timestamp
+- Message Type
+- Content
+- Sequence Number
 
 Speaker values:
 
-* User
-* AI
-* System
+- User
+- AI
+- System
 
 ---
 
@@ -177,13 +177,13 @@ Generated once an interview completes.
 
 Stores:
 
-* Overall Score
-* Communication
-* Technical Knowledge
-* Confidence
-* Strengths
-* Weaknesses
-* Recommendations
+- Overall Score
+- Communication
+- Technical Knowledge
+- Confidence
+- Strengths
+- Weaknesses
+- Recommendations
 
 Feedback remains immutable once generated.
 
@@ -267,15 +267,15 @@ The platform persists data incrementally.
 
 Immediately stored:
 
-* User
-* Session
-* Transcript messages
+- User
+- Session
+- Transcript messages
 
 Generated after completion:
 
-* Evaluation
-* Feedback
-* Final report
+- Evaluation
+- Feedback
+- Final report
 
 This minimizes data loss in unexpected interruptions.
 
@@ -285,21 +285,21 @@ This minimizes data loss in unexpected interruptions.
 
 Primary indexes:
 
-* User Email
-* Session Status
-* Created At
-* User ID
+- User Email
+- Session Status
+- Created At
+- User ID
 
 Composite indexes:
 
-* User + Created At
-* Session + Status
+- User + Created At
+- Session + Status
 
 Future indexes:
 
-* Role
-* Interview Type
-* Experience Level
+- Role
+- Interview Type
+- Experience Level
 
 ---
 
@@ -307,13 +307,13 @@ Future indexes:
 
 Every table should include:
 
-* id
-* createdAt
-* updatedAt
+- id
+- createdAt
+- updatedAt
 
 Optional:
 
-* deletedAt (future soft delete)
+- deletedAt (future soft delete)
 
 Interview records should never be permanently modified.
 
@@ -323,9 +323,9 @@ Interview records should never be permanently modified.
 
 Database transactions should be used when:
 
-* Creating interviews
-* Completing interviews
-* Generating reports
+- Creating interviews
+- Completing interviews
+- Generating reports
 
 This ensures data consistency.
 
@@ -335,9 +335,9 @@ This ensures data consistency.
 
 Foreign key constraints should enforce:
 
-* Session ownership
-* Transcript ownership
-* Feedback ownership
+- Session ownership
+- Transcript ownership
+- Feedback ownership
 
 Cascade deletion should be avoided for completed interview history.
 
@@ -347,14 +347,14 @@ Cascade deletion should be avoided for completed interview history.
 
 The schema should support future entities such as:
 
-* Resume
-* Job Description
-* Company
-* Coding Submission
-* AI Persona
-* Interview Template
-* Organization
-* Team Workspace
+- Resume
+- Job Description
+- Company
+- Coding Submission
+- AI Persona
+- Interview Template
+- Organization
+- Team Workspace
 
 without requiring major schema redesign.
 
@@ -376,10 +376,10 @@ Destructive migrations should be avoided.
 
 # 15. Related Documents
 
-* AI_ENGINE.md
-* API.md
-* SECURITY.md
-* ARCHITECTURE.
+- AI_ENGINE.md
+- API.md
+- SECURITY.md
+- ARCHITECTURE.
 
 # Database
 
@@ -433,7 +433,7 @@ User
 | Column           | Type         | Constraints |
 | ---------------- | ------------ | ----------- |
 | id               | UUID         | PK          |
-| user_id          | UUID         | FK → Users |
+| user_id          | UUID         | FK → Users  |
 | interview_type   | VARCHAR(100) | NOT NULL    |
 | target_role      | VARCHAR(100) | NOT NULL    |
 | experience_level | VARCHAR(50)  | NOT NULL    |
@@ -448,7 +448,7 @@ User
 | Column     | Type         | Constraints                      |
 | ---------- | ------------ | -------------------------------- |
 | id         | UUID         | PK                               |
-| session_id | UUID         | FK → InterviewSessions          |
+| session_id | UUID         | FK → InterviewSessions           |
 | role       | VARCHAR(20)  | NOT NULL (interviewer/candidate) |
 | content    | TEXT         | NOT NULL                         |
 | audio_url  | VARCHAR(500) | NULL                             |
@@ -456,18 +456,18 @@ User
 
 ## Feedback Reports
 
-| Column              | Type      | Constraints                     |
-| ------------------- | --------- | ------------------------------- |
-| id                  | UUID      | PK                              |
+| Column              | Type      | Constraints                    |
+| ------------------- | --------- | ------------------------------ |
+| id                  | UUID      | PK                             |
 | session_id          | UUID      | FK → InterviewSessions, UNIQUE |
-| overall_score       | INTEGER   | NOT NULL                        |
-| communication_score | INTEGER   | NOT NULL                        |
-| confidence_score    | INTEGER   | NOT NULL                        |
-| strengths           | JSON      | NOT NULL                        |
-| weaknesses          | JSON      | NOT NULL                        |
-| improvements        | JSON      | NOT NULL                        |
-| summary             | TEXT      | NOT NULL                        |
-| created_at          | TIMESTAMP | NOT NULL                        |
+| overall_score       | INTEGER   | NOT NULL                       |
+| communication_score | INTEGER   | NOT NULL                       |
+| confidence_score    | INTEGER   | NOT NULL                       |
+| strengths           | JSON      | NOT NULL                       |
+| weaknesses          | JSON      | NOT NULL                       |
+| improvements        | JSON      | NOT NULL                       |
+| summary             | TEXT      | NOT NULL                       |
+| created_at          | TIMESTAMP | NOT NULL                       |
 
 ---
 
@@ -490,4 +490,3 @@ Migrations are managed using Alembic.
 
 - 01-ARCHITECTURE.md
 - 02-TECHSTACK.md
-

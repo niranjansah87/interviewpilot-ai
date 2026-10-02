@@ -1,4 +1,3 @@
-
 # Goals and Non-Goals
 
 **Product:** InterviewPilot AI
@@ -220,4 +219,3 @@ These are intentionally excluded from the MVP.
 - 02-problem-statement.md
 - 04-user-personas.md
 - 09-mvp-scope.md
-

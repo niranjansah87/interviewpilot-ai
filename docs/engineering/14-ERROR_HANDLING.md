@@ -20,25 +20,25 @@ Errors should be informative to developers debugging issues and actionable for u
 
 These originate from invalid user input or unauthorized access. They return `4xx` status codes with structured JSON bodies.
 
-| Status | Code | When |
-|--------|------|------|
-| 400 | `BAD_REQUEST` | Malformed request syntax |
-| 401 | `UNAUTHORIZED` | Missing or invalid token |
-| 403 | `FORBIDDEN` | Valid token but insufficient permissions |
-| 404 | `NOT_FOUND` | Resource does not exist |
-| 409 | `CONFLICT` | Email already exists, duplicate resource |
-| 422 | `VALIDATION_ERROR` | Zod validation failed |
-| 429 | `RATE_LIMITED` | Too many requests |
+| Status | Code               | When                                     |
+| ------ | ------------------ | ---------------------------------------- |
+| 400    | `BAD_REQUEST`      | Malformed request syntax                 |
+| 401    | `UNAUTHORIZED`     | Missing or invalid token                 |
+| 403    | `FORBIDDEN`        | Valid token but insufficient permissions |
+| 404    | `NOT_FOUND`        | Resource does not exist                  |
+| 409    | `CONFLICT`         | Email already exists, duplicate resource |
+| 422    | `VALIDATION_ERROR` | Zod validation failed                    |
+| 429    | `RATE_LIMITED`     | Too many requests                        |
 
 ### Server Errors (5xx)
 
 These are unexpected failures. They return `500` with a generic message to the client. Full details go to Sentry.
 
-| Status | Code | When |
-|--------|------|------|
-| 500 | `INTERNAL_ERROR` | Unhandled exception |
-| 502 | `BAD_GATEWAY` | External service (OpenAI/Supabase) failed |
-| 503 | `SERVICE_UNAVAILABLE` | Temporary overload or maintenance |
+| Status | Code                  | When                                      |
+| ------ | --------------------- | ----------------------------------------- |
+| 500    | `INTERNAL_ERROR`      | Unhandled exception                       |
+| 502    | `BAD_GATEWAY`         | External service (OpenAI/Supabase) failed |
+| 503    | `SERVICE_UNAVAILABLE` | Temporary overload or maintenance         |
 
 ---
 
@@ -48,16 +48,17 @@ All API errors follow this structure:
 
 ```typescript
 interface ApiError {
-  detail: string;       // Human-readable message (safe to show users)
-  code: string;         // Machine-readable error code
-  field?: string;       // Which field failed (for validation errors)
-  requestId?: string;   // For support to reference in logs
+  detail: string; // Human-readable message (safe to show users)
+  code: string; // Machine-readable error code
+  field?: string; // Which field failed (for validation errors)
+  requestId?: string; // For support to reference in logs
 }
 ```
 
 ### Examples
 
 **Validation error (422):**
+
 ```json
 {
   "detail": "Invalid email format",
@@ -67,6 +68,7 @@ interface ApiError {
 ```
 
 **Unauthorized (401):**
+
 ```json
 {
   "detail": "Your session has expired. Please log in again.",
@@ -76,6 +78,7 @@ interface ApiError {
 ```
 
 **Server error (500):**
+
 ```json
 {
   "detail": "Something went wrong. Our team has been notified.",
@@ -97,7 +100,7 @@ export class ApiError extends Error {
     public statusCode: number,
     public code: string,
     message: string,
-    public field?: string
+    public field?: string,
   ) {
     super(message);
     this.name = 'ApiError';
@@ -114,7 +117,7 @@ export async function POST(req: Request) {
     if (err instanceof ApiError) {
       return Response.json(
         { detail: err.message, code: err.code, field: err.field },
-        { status: err.statusCode }
+        { status: err.statusCode },
       );
     }
     // Log unexpected errors, re-throw for global handler
@@ -134,12 +137,12 @@ Next.js 16 Route Handlers do not have a global error handler like Express. Error
 
 ### OpenAI Realtime API Errors
 
-| Error | User Message | Action |
-|-------|-------------|--------|
-| `session.create failed` | "Could not start interview. Retrying…" | Retry 3x with exponential backoff |
-| `response generation timeout` | "The AI is taking longer than expected…" | Retry once |
-| `audio stream interrupted` | Silent reconnect, no user message | Auto-reconnect |
-| `API key invalid` | Admin alert only | Log + alert engineering |
+| Error                         | User Message                             | Action                            |
+| ----------------------------- | ---------------------------------------- | --------------------------------- |
+| `session.create failed`       | "Could not start interview. Retrying…"   | Retry 3x with exponential backoff |
+| `response generation timeout` | "The AI is taking longer than expected…" | Retry once                        |
+| `audio stream interrupted`    | Silent reconnect, no user message        | Auto-reconnect                    |
+| `API key invalid`             | Admin alert only                         | Log + alert engineering           |
 
 ### Recovery Strategy
 
@@ -175,7 +178,11 @@ async function apiRequest<T>(url: string, options?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new ApiError(res.status, body.code || 'UNKNOWN', body.detail || 'An error occurred');
+    throw new ApiError(
+      res.status,
+      body.code || 'UNKNOWN',
+      body.detail || 'An error occurred',
+    );
   }
 
   return res.json();
@@ -184,13 +191,13 @@ async function apiRequest<T>(url: string, options?: RequestInit): Promise<T> {
 
 ### Error States in UI
 
-| State | What to Show |
-|-------|-------------|
-| Network error | "Check your internet connection and try again." |
-| 401 | Redirect to login with return URL |
-| 422 | Inline field errors from `code: "VALIDATION_ERROR"` |
-| 429 | "Too many requests. Please wait a moment." |
-| 500 | "Something went wrong. Please try again." with retry button |
+| State         | What to Show                                                |
+| ------------- | ----------------------------------------------------------- |
+| Network error | "Check your internet connection and try again."             |
+| 401           | Redirect to login with return URL                           |
+| 422           | Inline field errors from `code: "VALIDATION_ERROR"`         |
+| 429           | "Too many requests. Please wait a moment."                  |
+| 500           | "Something went wrong. Please try again." with retry button |
 
 ---
 

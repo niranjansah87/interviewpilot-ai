@@ -36,10 +36,10 @@ InterviewPilot AI deliberately avoids that approach.
 
 Instead:
 
-* Business logic lives in application services.
-* The Interview Engine controls conversation flow.
-* The LLM generates contextual language.
-* Evaluation remains deterministic wherever possible.
+- Business logic lives in application services.
+- The Interview Engine controls conversation flow.
+- The LLM generates contextual language.
+- Evaluation remains deterministic wherever possible.
 
 This separation reduces vendor lock-in and improves long-term maintainability.
 
@@ -55,11 +55,11 @@ The architecture should support replacing one LLM provider with another through 
 
 Supported providers may include:
 
-* OpenAI
-* Azure OpenAI
-* Anthropic
-* Gemini
-* Local Models
+- OpenAI
+- Azure OpenAI
+- Anthropic
+- Gemini
+- Local Models
 
 Application logic must never directly depend on provider-specific APIs.
 
@@ -71,9 +71,9 @@ The language model should never be considered the permanent source of conversati
 
 Instead:
 
-* every request is constructed using application-managed context,
-* interview state is persisted outside the model,
-* historical information is reconstructed when required.
+- every request is constructed using application-managed context,
+- interview state is persisted outside the model,
+- historical information is reconstructed when required.
 
 The LLM remains computationally stateless.
 
@@ -85,13 +85,13 @@ The model may suggest conversational responses.
 
 It does **not** decide:
 
-* interview completion,
-* authentication,
-* scoring,
-* persistence,
-* security,
-* authorization,
-* workflow transitions.
+- interview completion,
+- authentication,
+- scoring,
+- persistence,
+- security,
+- authorization,
+- workflow transitions.
 
 Those responsibilities belong exclusively to the application.
 
@@ -103,10 +103,10 @@ Every prompt sent to the model should be reproducible.
 
 Given:
 
-* session state,
-* interview configuration,
-* transcript,
-* prompt version,
+- session state,
+- interview configuration,
+- transcript,
+- prompt version,
 
 developers should be able to reconstruct exactly what the model received.
 
@@ -118,10 +118,10 @@ Prompt generation should therefore be deterministic and observable.
 
 The system minimizes hallucinations by:
 
-* restricting model responsibilities,
-* providing structured context,
-* avoiding unnecessary instructions,
-* validating generated outputs.
+- restricting model responsibilities,
+- providing structured context,
+- avoiding unnecessary instructions,
+- validating generated outputs.
 
 ---
 
@@ -225,12 +225,12 @@ The Interview Engine owns conversation state.
 
 State includes:
 
-* interview phase,
-* current topic,
-* candidate progress,
-* previous questions,
-* unanswered follow-ups,
-* interview objectives.
+- interview phase,
+- current topic,
+- candidate progress,
+- previous questions,
+- unanswered follow-ups,
+- interview objectives.
 
 Conversation state is persisted independently from the language model.
 
@@ -276,10 +276,10 @@ Provides permanent behavioral rules.
 
 Examples include:
 
-* interviewer personality,
-* communication style,
-* evaluation objectives,
-* safety instructions.
+- interviewer personality,
+- communication style,
+- evaluation objectives,
+- safety instructions.
 
 System context rarely changes.
 
@@ -291,11 +291,11 @@ Defines interview-specific information.
 
 Includes:
 
-* role,
-* experience level,
-* interview type,
-* expected difficulty,
-* interview duration.
+- role,
+- experience level,
+- interview type,
+- expected difficulty,
+- interview duration.
 
 This context remains constant throughout a session.
 
@@ -307,10 +307,10 @@ Represents the current interview.
 
 Contains:
 
-* previous questions,
-* candidate answers,
-* follow-up history,
-* topic progression.
+- previous questions,
+- candidate answers,
+- follow-up history,
+- topic progression.
 
 This layer changes after every interaction.
 
@@ -322,10 +322,10 @@ Contains temporary execution data.
 
 Examples:
 
-* retry count,
-* timeout state,
-* active tool,
-* pending evaluation.
+- retry count,
+- timeout state,
+- active tool,
+- pending evaluation.
 
 Runtime context should never be persisted permanently.
 
@@ -341,9 +341,9 @@ Maintains the current conversational window.
 
 Includes:
 
-* recent exchanges,
-* active topic,
-* unresolved follow-up.
+- recent exchanges,
+- active topic,
+- unresolved follow-up.
 
 ---
 
@@ -353,9 +353,9 @@ Represents the complete interview.
 
 Stores:
 
-* transcript,
-* interview metadata,
-* evaluation state.
+- transcript,
+- interview metadata,
+- evaluation state.
 
 ---
 
@@ -365,9 +365,9 @@ Reserved for future releases.
 
 Potential use cases include:
 
-* candidate preferences,
-* historical interview performance,
-* personalized coaching.
+- candidate preferences,
+- historical interview performance,
+- personalized coaching.
 
 Persistent memory should never influence interviews without explicit user consent.
 
@@ -379,11 +379,11 @@ The Context Builder assembles the minimal amount of information required to gene
 
 Responsibilities include:
 
-* retrieving session state,
-* selecting relevant transcript segments,
-* removing redundant information,
-* compressing historical conversation,
-* preparing structured prompt input.
+- retrieving session state,
+- selecting relevant transcript segments,
+- removing redundant information,
+- compressing historical conversation,
+- preparing structured prompt input.
 
 The builder prioritizes relevance over completeness.
 
@@ -395,11 +395,11 @@ The Prompt Compiler transforms structured application data into a provider-speci
 
 Inputs include:
 
-* system instructions,
-* interview configuration,
-* summarized history,
-* latest candidate response,
-* expected response schema.
+- system instructions,
+- interview configuration,
+- summarized history,
+- latest candidate response,
+- expected response schema.
 
 Outputs are provider-independent prompt objects.
 
@@ -411,23 +411,23 @@ The compiler should never contain interview business logic.
 
 The LLM subsystem should:
 
-* remain provider agnostic,
-* minimize prompt complexity,
-* maximize conversational consistency,
-* support deterministic debugging,
-* optimize latency,
-* reduce operational cost,
-* remain observable,
-* scale horizontally.
+- remain provider agnostic,
+- minimize prompt complexity,
+- maximize conversational consistency,
+- support deterministic debugging,
+- optimize latency,
+- reduce operational cost,
+- remain observable,
+- scale horizontally.
 
 ---
 
 # Related Documents
 
-* AI_ENGINE.md
-* DATABASE_ARCHITECTURE.md
-* API.md
-* SECURITY.md
+- AI_ENGINE.md
+- DATABASE_ARCHITECTURE.md
+- API.md
+- SECURITY.md
 
 ---
 
@@ -876,7 +876,7 @@ Captures interview metrics.
 
 ---
 
-The LLM decides *when* a tool may be useful.
+The LLM decides _when_ a tool may be useful.
 
 The runtime validates and executes tool calls.
 
@@ -913,6 +913,7 @@ Prompt quality should prioritize:
 Prompt templates should remain reusable across interview types.
 
 ---
+
 ---
 
 # 22. Evaluation Engine
@@ -1834,16 +1835,16 @@ Future enterprise capabilities may include:
 
 # 51. Key Architectural Decisions
 
-| Decision | Rationale |
-|-----------|-----------|
-| Application owns interview state | Deterministic behavior |
-| Provider abstraction | Avoid vendor lock-in |
-| Dynamic prompt compilation | Better maintainability |
-| Structured outputs | Easier validation |
-| Conversation summaries | Lower token usage |
-| Layered context architecture | Improved prompt quality |
-| Runtime validation | Reduced hallucinations |
-| Separate evaluation pipeline | Lower conversation latency |
+| Decision                         | Rationale                  |
+| -------------------------------- | -------------------------- |
+| Application owns interview state | Deterministic behavior     |
+| Provider abstraction             | Avoid vendor lock-in       |
+| Dynamic prompt compilation       | Better maintainability     |
+| Structured outputs               | Easier validation          |
+| Conversation summaries           | Lower token usage          |
+| Layered context architecture     | Improved prompt quality    |
+| Runtime validation               | Reduced hallucinations     |
+| Separate evaluation pipeline     | Lower conversation latency |
 
 ---
 
@@ -1865,5 +1866,3 @@ This separation enables scalability, maintainability, provider independence, and
 - SECURITY.md
 - OBSERVABILITY.md
 - DECISIONS.md
-
-

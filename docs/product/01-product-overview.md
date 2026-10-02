@@ -1,4 +1,3 @@
-
 # Product Overview
 
 **Product:** InterviewPilot AI
@@ -117,4 +116,3 @@ InterviewPilot AI succeeds when users report that the interview experience feels
 - 02-problem-statement.md
 - 03-goals-and-non-goals.md
 - 04-user-personas.md
-

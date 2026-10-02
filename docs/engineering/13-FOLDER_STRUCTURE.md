@@ -135,12 +135,12 @@ Related code lives together. A component, its types, and its tests are in the sa
 
 ### Separation of Concerns
 
-| Layer | Responsibility | Never does |
-|-------|---------------|-----------|
-| `app/` | HTTP routing, auth middleware | Business logic |
-| `services/` | Business logic, orchestration | Direct database access |
-| `lib/db/` | Database access | Business logic |
-| `components/` | Rendering, UI state | Direct DB access, JWT operations |
+| Layer         | Responsibility                | Never does                       |
+| ------------- | ----------------------------- | -------------------------------- |
+| `app/`        | HTTP routing, auth middleware | Business logic                   |
+| `services/`   | Business logic, orchestration | Direct database access           |
+| `lib/db/`     | Database access               | Business logic                   |
+| `components/` | Rendering, UI state           | Direct DB access, JWT operations |
 
 ### Route Groups
 

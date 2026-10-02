@@ -30,11 +30,11 @@ InterviewPilot AI requires secure authentication for user accounts. Users must b
 
 ## Token Strategy
 
-| Token | Storage | Expiry | Purpose |
-|-------|---------|--------|---------|
-| `access_token` | httpOnly cookie | 15 minutes | API authorization |
-| `refresh_token` | httpOnly cookie | 7 days | Token rotation |
-| `csrf_token` | Plain cookie | 7 days | CSRF double-submit |
+| Token           | Storage         | Expiry     | Purpose            |
+| --------------- | --------------- | ---------- | ------------------ |
+| `access_token`  | httpOnly cookie | 15 minutes | API authorization  |
+| `refresh_token` | httpOnly cookie | 7 days     | Token rotation     |
+| `csrf_token`    | Plain cookie    | 7 days     | CSRF double-submit |
 
 - Refresh tokens are opaque and stored in the database for revocation capability.
 - Access tokens are signed JWTs verified on every request.

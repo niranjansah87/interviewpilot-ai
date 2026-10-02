@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Phase 3 — AI Interview Engine (In Progress)
 
 #### Added
+
 - AI Provider abstraction layer (`src/lib/ai/provider.ts`) with runtime registry
 - OpenAI Realtime API adapter (WebSocket voice + GPT-4.1 feedback)
 - ElevenLabs ConvAI adapter (WebSocket voice conversation)
@@ -28,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Phase 2 — Core Architecture
 
 #### Added
+
 - Next.js 16 App Router with (auth) and (dashboard) route groups
 - 14 API endpoints: auth (5), users (3), interviews (5), health (1)
 - JWT authentication with jose — access (15 min) + refresh (7 days) tokens
@@ -65,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Engineering docs: caching strategy (ADM), updated architecture, API spec
 
 #### Changed
+
 - ESLint config simplified (removed perfectionist plugin)
 - tsconfig adjusted for Turbopack path resolution
 - globals.css rewritten with shadcn/ui design tokens (light + dark)
@@ -72,6 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Separator and Tooltip components simplified (no Radix dependency)
 
 #### Fixed
+
 - Zod v4 API migration (`.errors` → `.issues`, `.startsWith()` → `.min()`)
 - JWT type naming (jwtPayload → TokenPayload)
 - Duration `.toMillis` getter access
@@ -81,6 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Phase 1 — Foundation
 
 #### Added
+
 - Project scaffolding with Next.js, TypeScript, TailwindCSS
 - Full documentation structure: product/, engineering/, decisions/, runbooks/, templates/
 - 5 Architecture Decision Records (ADRs)

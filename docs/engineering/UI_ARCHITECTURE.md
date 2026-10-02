@@ -176,11 +176,11 @@ VoiceInterface
 
 ## 7. Responsive Breakpoints
 
-| Breakpoint | Width | Layout Adaptation |
-|------------|-------|------------------|
-| Mobile | < 640px | Single column, bottom nav |
-| Tablet | 640–1024px | Collapsible sidebar |
-| Desktop | > 1024px | Full layout with persistent sidebar |
+| Breakpoint | Width      | Layout Adaptation                   |
+| ---------- | ---------- | ----------------------------------- |
+| Mobile     | < 640px    | Single column, bottom nav           |
+| Tablet     | 640–1024px | Collapsible sidebar                 |
+| Desktop    | > 1024px   | Full layout with persistent sidebar |
 
 ---
 

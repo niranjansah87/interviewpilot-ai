@@ -1,4 +1,3 @@
-
 # System Architecture
 
 **Product:** InterviewPilot AI

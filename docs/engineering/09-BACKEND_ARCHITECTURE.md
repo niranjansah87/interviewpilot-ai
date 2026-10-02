@@ -1,4 +1,3 @@
-
 # Backend Architecture
 
 **Project:** InterviewPilot AI
@@ -19,13 +18,13 @@ The backend architecture of InterviewPilot AI is designed to support low-latency
 
 Unlike traditional CRUD applications, the backend primarily coordinates:
 
-* authentication
-* interview lifecycle
-* conversation state
-* AI orchestration
-* transcript persistence
-* evaluation
-* analytics
+- authentication
+- interview lifecycle
+- conversation state
+- AI orchestration
+- transcript persistence
+- evaluation
+- analytics
 
 The backend intentionally treats the LLM as one service within a deterministic application rather than the application's source of truth.
 
@@ -127,10 +126,10 @@ The backend is divided into logical layers.
 
 Responsibilities:
 
-* request validation
-* authentication
-* routing
-* response formatting
+- request validation
+- authentication
+- routing
+- response formatting
 
 No business logic should exist here.
 
@@ -142,10 +141,10 @@ Contains application business logic.
 
 Examples:
 
-* interview creation
-* report generation
-* authentication
-* transcript persistence
+- interview creation
+- report generation
+- authentication
+- transcript persistence
 
 ---
 
@@ -153,10 +152,10 @@ Examples:
 
 Owns:
 
-* interview state
-* topic progression
-* follow-up decisions
-* prompt compilation
+- interview state
+- topic progression
+- follow-up decisions
+- prompt compilation
 
 This layer controls interview behavior.
 
@@ -166,10 +165,10 @@ This layer controls interview behavior.
 
 Responsible for:
 
-* prompt generation
-* provider communication
-* response validation
-* structured outputs
+- prompt generation
+- provider communication
+- response validation
+- structured outputs
 
 ---
 
@@ -177,9 +176,9 @@ Responsible for:
 
 Responsible for:
 
-* persistence
-* transactions
-* repository abstraction
+- persistence
+- transactions
+- repository abstraction
 
 ---
 
@@ -277,11 +276,11 @@ Realtime communication uses streaming endpoints.
 
 API characteristics:
 
-* predictable
-* versioned
-* typed
-* validated
-* documented
+- predictable
+- versioned
+- typed
+- validated
+- documented
 
 ---
 
@@ -321,10 +320,10 @@ Every incoming request is validated before execution.
 
 Validation covers:
 
-* request body
-* query parameters
-* path parameters
-* headers
+- request body
+- query parameters
+- path parameters
+- headers
 
 Zod schemas serve as the single source of truth.
 
@@ -336,26 +335,26 @@ Errors are categorized.
 
 Client Errors
 
-* validation
-* authentication
-* authorization
+- validation
+- authentication
+- authorization
 
 Application Errors
 
-* business rules
-* interview state
+- business rules
+- interview state
 
 Infrastructure Errors
 
-* database
-* network
-* provider failures
+- database
+- network
+- provider failures
 
 AI Errors
 
-* malformed responses
-* timeout
-* token exhaustion
+- malformed responses
+- timeout
+- token exhaustion
 
 Each category has standardized error responses.
 
@@ -421,10 +420,10 @@ Certain operations execute asynchronously.
 
 Examples:
 
-* report generation
-* analytics
-* evaluation
-* activity logging
+- report generation
+- analytics
+- evaluation
+- activity logging
 
 Future versions may introduce background workers.
 
@@ -436,11 +435,11 @@ Configuration originates from environment variables.
 
 Examples:
 
-* OpenAI keys
-* database URL
-* JWT secret
-* logging
-* feature flags
+- OpenAI keys
+- database URL
+- JWT secret
+- logging
+- feature flags
 
 Application configuration remains centralized.
 
@@ -450,12 +449,12 @@ Application configuration remains centralized.
 
 The backend enforces:
 
-* HTTPS
-* secure cookies
-* input validation
-* rate limiting
-* least privilege
-* output sanitization
+- HTTPS
+- secure cookies
+- input validation
+- rate limiting
+- least privilege
+- output sanitization
 
 Security is applied by default rather than per feature.
 
@@ -467,11 +466,11 @@ Current architecture supports a modular monolith.
 
 Future extraction candidates:
 
-* AI Runtime
-* Evaluation Engine
-* Analytics
-* Notifications
-* Voice Processing
+- AI Runtime
+- Evaluation Engine
+- Analytics
+- Notifications
+- Voice Processing
 
 Extraction should require minimal code changes.
 
@@ -483,13 +482,13 @@ Every request generates structured logs.
 
 Captured metadata includes:
 
-* request ID
-* user ID
-* interview ID
-* latency
-* endpoint
-* provider
-* status code
+- request ID
+- user ID
+- interview ID
+- latency
+- endpoint
+- provider
+- status code
 
 Sensitive information is never logged.
 
@@ -499,12 +498,12 @@ Sensitive information is never logged.
 
 Operational metrics include:
 
-* API latency
-* interview duration
-* AI response time
-* provider failures
-* database performance
-* error rates
+- API latency
+- interview duration
+- AI response time
+- provider failures
+- database performance
+- error rates
 
 Metrics support proactive monitoring.
 
@@ -514,11 +513,11 @@ Metrics support proactive monitoring.
 
 Every backend module should:
 
-* remain testable
-* avoid hidden dependencies
-* expose typed interfaces
-* document public APIs
-* fail predictably
+- remain testable
+- avoid hidden dependencies
+- expose typed interfaces
+- document public APIs
+- fail predictably
 
 Business logic should remain independent of infrastructure.
 
@@ -528,14 +527,14 @@ Business logic should remain independent of infrastructure.
 
 Planned enhancements include:
 
-* Redis caching
-* Event queues
-* Worker processes
-* Multi-provider AI routing
-* Horizontal scaling
-* Kubernetes deployment
-* Distributed tracing
-* WebSocket gateway
+- Redis caching
+- Event queues
+- Worker processes
+- Multi-provider AI routing
+- Horizontal scaling
+- Kubernetes deployment
+- Distributed tracing
+- WebSocket gateway
 
 The architecture intentionally supports incremental evolution.
 
@@ -543,12 +542,11 @@ The architecture intentionally supports incremental evolution.
 
 # Related Documents
 
-* ARCHITECTURE.md
-* API.md
-* DATABASE.md
-* LLM_ARCHITECTURE.md
-* CONVERSATION_ENGINE.md
-* STATE_MANAGEMENT.md
-* DEPLOYMENT.md
-* OBSERVABILITY.md
-
+- ARCHITECTURE.md
+- API.md
+- DATABASE.md
+- LLM_ARCHITECTURE.md
+- CONVERSATION_ENGINE.md
+- STATE_MANAGEMENT.md
+- DEPLOYMENT.md
+- OBSERVABILITY.md

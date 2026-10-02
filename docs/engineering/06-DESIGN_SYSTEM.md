@@ -78,13 +78,13 @@ Users should experience intelligence—not configuration.
 
 InterviewPilot AI should feel:
 
-* Professional
-* Modern
-* Calm
-* Intelligent
-* Trustworthy
-* Minimal
-* Premium
+- Professional
+- Modern
+- Calm
+- Intelligent
+- Trustworthy
+- Minimal
+- Premium
 
 The visual language should communicate confidence without appearing corporate or sterile.
 
@@ -94,21 +94,21 @@ The visual language should communicate confidence without appearing corporate or
 
 The product draws inspiration from:
 
-* Linear
-* Raycast
-* Vercel
-* Stripe Dashboard
-* Apple Human Interface Guidelines
-* Notion Calendar
+- Linear
+- Raycast
+- Vercel
+- Stripe Dashboard
+- Apple Human Interface Guidelines
+- Notion Calendar
 
 Explicitly avoid:
 
-* Neon gradients
-* Cyberpunk aesthetics
-* Floating robots
-* Excessive glassmorphism
-* Generic AI illustrations
-* Flashy landing pages
+- Neon gradients
+- Cyberpunk aesthetics
+- Floating robots
+- Excessive glassmorphism
+- Generic AI illustrations
+- Flashy landing pages
 
 ---
 
@@ -118,11 +118,11 @@ Every interaction should satisfy the following objectives.
 
 Users should:
 
-* immediately understand the interface,
-* remain focused on the interview,
-* experience minimal friction,
-* feel confident throughout the session,
-* trust the generated feedback.
+- immediately understand the interface,
+- remain focused on the interview,
+- experience minimal friction,
+- feel confident throughout the session,
+- trust the generated feedback.
 
 The interface should disappear behind the experience.
 
@@ -134,13 +134,13 @@ The UI is intentionally understated.
 
 Characteristics include:
 
-* generous whitespace,
-* strong typography,
-* restrained color palette,
-* soft shadows,
-* subtle elevation,
-* rounded geometry,
-* minimal decoration.
+- generous whitespace,
+- strong typography,
+- restrained color palette,
+- soft shadows,
+- subtle elevation,
+- rounded geometry,
+- minimal decoration.
 
 The visual hierarchy should emerge from spacing and typography rather than bright colors.
 
@@ -176,9 +176,9 @@ The landing page should immediately communicate professionalism.
 
 Within five seconds users should understand:
 
-* what the product does,
-* who it is for,
-* why it is different.
+- what the product does,
+- who it is for,
+- why it is different.
 
 Avoid overwhelming users with excessive content.
 
@@ -206,9 +206,9 @@ If the answer to any question is "No", the design should be refined before imple
 
 # Related Documents
 
-* UI_ARCHITECTURE.md
-* FRONTEND_ARCHITECTURE.md
-* UX_CASE_STUDY.
+- UI_ARCHITECTURE.md
+- FRONTEND_ARCHITECTURE.md
+- UX_CASE_STUDY.
 
 # Design System
 
@@ -365,10 +365,8 @@ Base unit: 4px
 - 01-ARCHITECTURE.md
 - 02-TECHSTACK.md
 
-
-
-
 ---
+
 # 11. Color Philosophy
 
 Color should communicate meaning rather than decoration.
@@ -377,6 +375,7 @@ The interface intentionally uses a restrained palette to reduce cognitive load a
 
 Accent colors are reserved for interaction, progress, and system status.
 ---
+
 # 12. Primary Palette
 
 ## Background
@@ -631,10 +630,10 @@ Lucide
 
 Characteristics:
 
-* minimal
-* consistent stroke width
-* rounded ends
-* scalable
+- minimal
+- consistent stroke width
+- rounded ends
+- scalable
 
 Avoid mixing icon libraries.
 
@@ -646,10 +645,10 @@ Avoid AI-generated artwork.
 
 Prefer:
 
-* geometric illustrations
-* abstract shapes
-* subtle diagrams
-* product visuals
+- geometric illustrations
+- abstract shapes
+- subtle diagrams
+- product visuals
 
 The product should feel engineered rather than illustrated.
 
@@ -657,12 +656,11 @@ The product should feel engineered rather than illustrated.
 
 # Related Documents
 
-* UI_ARCHITECTURE.md
-* UX_CASE_STUDY.md
-
-
+- UI_ARCHITECTURE.md
+- UX_CASE_STUDY.md
 
 ---
+
 # 21. Motion Philosophy
 
 Motion communicates system state.
@@ -677,6 +675,7 @@ rather than:
 
 "Look what I can animate."
 ---
+
 # 22. Animation Duration
 
 Micro
@@ -853,8 +852,8 @@ Before shipping any UI:
 
 # Related Documents
 
-* FRONTEND_ARCHITECTURE.md
-* UX_CASE_STUDY.md
+- FRONTEND_ARCHITECTURE.md
+- UX_CASE_STUDY.md
 
 ````
 
@@ -874,20 +873,17 @@ This is **not** about colors.
 
 It defines:
 
-* Every page
-* Every layout
-* Navigation
-* Information architecture
-* Component hierarchy
-* Loading flow
-* Empty states
-* Error states
-* Mobile layouts
-* Responsive behavior
-* Screen transitions
-* Shared layouts
+- Every page
+- Every layout
+- Navigation
+- Information architecture
+- Component hierarchy
+- Loading flow
+- Empty states
+- Error states
+- Mobile layouts
+- Responsive behavior
+- Screen transitions
+- Shared layouts
 
 Think of it as the blueprint your frontend implementation will follow. Once that's written, building the UI becomes much more systematic, and the final product will feel cohesive rather than assembled page by page.
-
-
-

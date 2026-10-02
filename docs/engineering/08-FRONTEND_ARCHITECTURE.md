@@ -1,4 +1,3 @@
-
 # Frontend Architecture
 
 **Project:** InterviewPilot AI
@@ -21,13 +20,13 @@ The objective is to build a scalable, maintainable, and performant application c
 
 The frontend architecture prioritizes:
 
-* predictable state management
-* modular feature organization
-* reusable UI components
-* accessibility
-* performance
-* developer experience
-* production readiness
+- predictable state management
+- modular feature organization
+- reusable UI components
+- accessibility
+- performance
+- developer experience
+- production readiness
 
 ---
 
@@ -113,51 +112,51 @@ Component
 
 Framework
 
-* Next.js App Router
+- Next.js App Router
 
 Language
 
-* TypeScript
+- TypeScript
 
 Styling
 
-* Tailwind CSS
+- Tailwind CSS
 
 Component Library
 
-* shadcn/ui
+- shadcn/ui
 
 Icons
 
-* Lucide
+- Lucide
 
 Animation
 
-* Framer Motion
+- Framer Motion
 
 State
 
-* Zustand
+- Zustand
 
 Forms
 
-* React Hook Form
+- React Hook Form
 
 Validation
 
-* Zod
+- Zod
 
 Tables
 
-* TanStack Table
+- TanStack Table
 
 Charts
 
-* Recharts
+- Recharts
 
 Notifications
 
-* Sonner
+- Sonner
 
 ---
 
@@ -321,19 +320,19 @@ The application intentionally mixes Server Components and Client Components.
 
 Server Components
 
-* layouts
-* dashboards
-* history
-* reports
+- layouts
+- dashboards
+- history
+- reports
 
 Client Components
 
-* microphone
-* waveform
-* realtime transcript
-* timers
-* animations
-* interview session
+- microphone
+- waveform
+- realtime transcript
+- timers
+- animations
+- interview session
 
 This minimizes JavaScript while maintaining responsiveness.
 
@@ -405,11 +404,11 @@ All visual values originate from the Design System.
 
 No hardcoded:
 
-* colors
-* spacing
-* typography
-* shadows
-* border radius
+- colors
+- spacing
+- typography
+- shadows
+- border radius
 
 Every value references centralized tokens.
 
@@ -441,11 +440,11 @@ The frontend should prioritize perceived performance over raw benchmarks.
 
 Every interactive component must support:
 
-* keyboard navigation
-* visible focus states
-* screen readers
-* reduced motion
-* semantic HTML
+- keyboard navigation
+- visible focus states
+- screen readers
+- reduced motion
+- semantic HTML
 
 Accessibility is a first-class engineering requirement.
 
@@ -455,11 +454,11 @@ Accessibility is a first-class engineering requirement.
 
 Future improvements may include:
 
-* offline support
-* PWA capabilities
-* multi-language UI
-* collaborative interview sessions
-* recruiter dashboards
+- offline support
+- PWA capabilities
+- multi-language UI
+- collaborative interview sessions
+- recruiter dashboards
 
 The architecture should accommodate these features without significant restructuring.
 
@@ -467,9 +466,8 @@ The architecture should accommodate these features without significant restructu
 
 # Related Documents
 
-* DESIGN_SYSTEM.md
-* UI_ARCHITECTURE.md
-* STATE_MANAGEMENT.md
-* BACKEND_ARCHITECTURE.md
-* API.md
-
+- DESIGN_SYSTEM.md
+- UI_ARCHITECTURE.md
+- STATE_MANAGEMENT.md
+- BACKEND_ARCHITECTURE.md
+- API.md

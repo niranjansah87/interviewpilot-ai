@@ -58,15 +58,15 @@ When candidate speaks while AI is talking:
 
 ## File Reference
 
-| File | Purpose |
-|------|---------|
-| `src/lib/audio/runtime.ts` | Shared AudioContext, AnalyserNodes, VAD |
-| `src/hooks/use-audio-analyzer.ts` | React hook consuming runtime at 60fps |
-| `src/hooks/use-interview-session.ts` | WebSocket connection, audio capture/playback, barge-in |
-| `src/components/features/interview/voice-interface.tsx` | Voice UI with waveforms, avatars, transcript |
-| `src/components/features/interview/waveform.tsx` | Waveform + PulseRing components |
-| `src/lib/ai/elevenlabs-conversational.ts` | ElevenLabs ConvAI adapter |
-| `src/app/api/v1/voice/connect/route.ts` | Signed URL endpoint |
+| File                                                    | Purpose                                                |
+| ------------------------------------------------------- | ------------------------------------------------------ |
+| `src/lib/audio/runtime.ts`                              | Shared AudioContext, AnalyserNodes, VAD                |
+| `src/hooks/use-audio-analyzer.ts`                       | React hook consuming runtime at 60fps                  |
+| `src/hooks/use-interview-session.ts`                    | WebSocket connection, audio capture/playback, barge-in |
+| `src/components/features/interview/voice-interface.tsx` | Voice UI with waveforms, avatars, transcript           |
+| `src/components/features/interview/waveform.tsx`        | Waveform + PulseRing components                        |
+| `src/lib/ai/elevenlabs-conversational.ts`               | ElevenLabs ConvAI adapter                              |
+| `src/app/api/v1/voice/connect/route.ts`                 | Signed URL endpoint                                    |
 
 ## Known Limitations
 

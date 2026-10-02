@@ -16,13 +16,13 @@ This document serves as the index and summary of all Architecture Decision Recor
 
 ## 2. Decision Index
 
-| ID | Title | Status | Date |
-|----|-------|--------|------|
-| [0001](../decisions/0001-nextjs.md) | Next.js as Frontend Framework | ✅ Accepted | 2026-06-21 |
-| [0002](../decisions/0002-openai-realtime.md) | OpenAI Realtime API for Voice | ✅ Accepted | 2026-06-21 |
-| [0003](../decisions/0003-prisma.md) | Prisma as Database ORM | ✅ Accepted | 2026-06-21 |
-| [0004](../decisions/0004-postgres.md) | PostgreSQL as Primary Database | ✅ Accepted | 2026-06-21 |
-| [0005](../decisions/0005-jwt-auth.md) | JWT for Authentication | ✅ Accepted | 2026-06-21 |
+| ID                                           | Title                          | Status      | Date       |
+| -------------------------------------------- | ------------------------------ | ----------- | ---------- |
+| [0001](../decisions/0001-nextjs.md)          | Next.js as Frontend Framework  | ✅ Accepted | 2026-06-21 |
+| [0002](../decisions/0002-openai-realtime.md) | OpenAI Realtime API for Voice  | ✅ Accepted | 2026-06-21 |
+| [0003](../decisions/0003-prisma.md)          | Prisma as Database ORM         | ✅ Accepted | 2026-06-21 |
+| [0004](../decisions/0004-postgres.md)        | PostgreSQL as Primary Database | ✅ Accepted | 2026-06-21 |
+| [0005](../decisions/0005-jwt-auth.md)        | JWT for Authentication         | ✅ Accepted | 2026-06-21 |
 
 ---
 

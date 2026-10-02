@@ -20,12 +20,12 @@ Unlike traditional chatbot systems where an LLM simply responds to user input, I
 
 The Conversation Engine owns:
 
-* interview progression
-* topic management
-* follow-up generation
-* interruption handling
-* recovery
-* completion logic
+- interview progression
+- topic management
+- follow-up generation
+- interruption handling
+- recovery
+- completion logic
 
 The language model is responsible only for language generation.
 
@@ -243,10 +243,10 @@ Transcript updates continuously.
 
 Conversation Engine analyzes:
 
-* interview objective
-* previous answer
-* topic completion
-* follow-up opportunities
+- interview objective
+- previous answer
+- topic completion
+- follow-up opportunities
 
 ---
 
@@ -358,8 +358,6 @@ Evaluation only begins after completion.
 
 These invariants simplify debugging and guarantee deterministic behavior.
 
-
-
 ---
 
 # 9. Event-Driven Architecture
@@ -370,10 +368,10 @@ Components communicate through events rather than direct dependencies.
 
 Benefits include:
 
-* loose coupling
-* easier testing
-* replayable conversations
-* better observability
+- loose coupling
+- easier testing
+- replayable conversations
+- better observability
 
 ---
 
@@ -511,10 +509,10 @@ System
 
 Speaker ownership determines:
 
-* microphone status
-* transcript destination
-* timeout logic
-* interruption handling
+- microphone status
+- transcript destination
+- timeout logic
+- interruption handling
 
 ---
 
@@ -599,7 +597,6 @@ Source
 Correlation ID
 
 Logs should support replaying complete interview sessions for debugging.
-
 
 ---
 
@@ -829,7 +826,7 @@ Natural transitions improve immersion and interview realism.
 
 # Related Documents
 
-* LLM_ARCHITECTURE.md
-* AI_ENGINE.md
-* DATABASE_ARCHITECTURE.md
-* API.md
+- LLM_ARCHITECTURE.md
+- AI_ENGINE.md
+- DATABASE_ARCHITECTURE.md
+- API.md

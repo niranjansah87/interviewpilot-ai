@@ -35,6 +35,7 @@ export interface CacheOptions {
 ```
 
 Implementations:
+
 - `src/cache/memory-cache.ts` — development only
 - `src/cache/redis-cache.ts` — production
 
@@ -68,6 +69,7 @@ Implementations:
 ### Trigger
 
 Switch from memory to Redis when:
+
 - Second server instance is added
 - Cache persistence across restarts is needed
 - Cache sharing between processes is required
@@ -121,15 +123,15 @@ Request
 
 ## 6. TTL Strategy
 
-| Data Type | TTL | Rationale |
-|-----------|-----|-----------|
-| User session | 15 min | Matches JWT access token |
-| Interview config | 1 hour | Rarely changes |
-| Feedback report | 24 hours | Immutable once generated |
-| Transcript | No cache | Write-heavy, read once |
-| AI prompts (system) | 1 hour | Rarely changes |
-| Rate limit counters | 1 min | Rolling window |
-| Static assets | 1 year | Immutable |
+| Data Type           | TTL      | Rationale                |
+| ------------------- | -------- | ------------------------ |
+| User session        | 15 min   | Matches JWT access token |
+| Interview config    | 1 hour   | Rarely changes           |
+| Feedback report     | 24 hours | Immutable once generated |
+| Transcript          | No cache | Write-heavy, read once   |
+| AI prompts (system) | 1 hour   | Rarely changes           |
+| Rate limit counters | 1 min    | Rolling window           |
+| Static assets       | 1 year   | Immutable                |
 
 ---
 
@@ -137,21 +139,21 @@ Request
 
 ### Patterns
 
-| Pattern | When | Method |
-|---------|------|--------|
-| Cache-aside | On read | `getOrSet(key, fetch)` |
-| Write-through | On write | Write DB, then update cache |
-| Write-behind | On write | Write to DB, async cache update |
-| TTL expiry | Time-based | Set `expiresAt` on write |
+| Pattern       | When       | Method                          |
+| ------------- | ---------- | ------------------------------- |
+| Cache-aside   | On read    | `getOrSet(key, fetch)`          |
+| Write-through | On write   | Write DB, then update cache     |
+| Write-behind  | On write   | Write to DB, async cache update |
+| TTL expiry    | Time-based | Set `expiresAt` on write        |
 
 ### Invalidation Triggers
 
-| Event | Invalidates |
-|-------|------------|
-| User updates profile | `user:{id}`, `user:session:{userId}` |
-| Interview ends | `interview:{id}`, `interview:list:{userId}` |
-| Feedback generated | `feedback:{sessionId}` |
-| Admin updates config | `app:config:*` |
+| Event                | Invalidates                                 |
+| -------------------- | ------------------------------------------- |
+| User updates profile | `user:{id}`, `user:session:{userId}`        |
+| Interview ends       | `interview:{id}`, `interview:list:{userId}` |
+| Feedback generated   | `feedback:{sessionId}`                      |
+| Admin updates config | `app:config:*`                              |
 
 ### Cache Tags (Future)
 
@@ -172,15 +174,15 @@ All cache keys follow the format:
 {entity}:{id}:{subresource}:{variant}
 ```
 
-| Key Pattern | TTL | Description |
-|-------------|-----|-------------|
-| `user:{id}` | 15 min | User profile |
-| `user:{id}:sessions` | 5 min | User session list |
-| `interview:{id}` | 1 hour | Interview metadata |
-| `interview:{id}:transcript` | 24 hours | Full transcript |
-| `feedback:{sessionId}` | 24 hours | Feedback report |
-| `ratelimit:{ip}:{endpoint}` | 1 min | Rate limit counter |
-| `config:app` | 1 hour | App configuration |
+| Key Pattern                 | TTL      | Description        |
+| --------------------------- | -------- | ------------------ |
+| `user:{id}`                 | 15 min   | User profile       |
+| `user:{id}:sessions`        | 5 min    | User session list  |
+| `interview:{id}`            | 1 hour   | Interview metadata |
+| `interview:{id}:transcript` | 24 hours | Full transcript    |
+| `feedback:{sessionId}`      | 24 hours | Feedback report    |
+| `ratelimit:{ip}:{endpoint}` | 1 min    | Rate limit counter |
+| `config:app`                | 1 hour   | App configuration  |
 
 ---
 
@@ -244,11 +246,11 @@ Do NOT cache OpenAI Realtime API responses. Every conversation is unique and con
 
 Aggregate metrics cached aggressively:
 
-| Metric | Granularity | TTL |
-|--------|------------|-----|
-| Daily interview count | 1 day | 1 hour |
-| Average feedback score | 7 days | 1 hour |
-| User activity | 30 days | 15 min |
+| Metric                 | Granularity | TTL    |
+| ---------------------- | ----------- | ------ |
+| Daily interview count  | 1 day       | 1 hour |
+| Average feedback score | 7 days      | 1 hour |
+| User activity          | 30 days     | 15 min |
 
 Raw events are never cached — written directly to the analytics store.
 
@@ -279,12 +281,12 @@ Use consistent hashing for key distribution across Redis cluster nodes.
 
 Track per-cache-metrics:
 
-| Metric | Alert Threshold |
-|--------|---------------|
-| Hit rate | < 80% |
-| Memory usage | > 80% |
-| Latency (p99) | > 10ms |
-| Eviction rate | > 100/sec |
+| Metric        | Alert Threshold |
+| ------------- | --------------- |
+| Hit rate      | < 80%           |
+| Memory usage  | > 80%           |
+| Latency (p99) | > 10ms          |
+| Eviction rate | > 100/sec       |
 
 ---
 

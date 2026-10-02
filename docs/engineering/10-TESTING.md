@@ -51,12 +51,12 @@ Test complete user journeys in a real browser.
 
 ## 3. Test Coverage Targets
 
-| Layer | Target | Enforcement |
-|-------|--------|-------------|
-| API route handlers | 80%+ | CI gate |
-| Services / business logic | 80%+ | CI gate |
-| UI components (critical) | 70%+ | CI gate |
-| E2E (key journeys) | 100% of defined flows | Manual per-release |
+| Layer                     | Target                | Enforcement        |
+| ------------------------- | --------------------- | ------------------ |
+| API route handlers        | 80%+                  | CI gate            |
+| Services / business logic | 80%+                  | CI gate            |
+| UI components (critical)  | 70%+                  | CI gate            |
+| E2E (key journeys)        | 100% of defined flows | Manual per-release |
 
 ---
 
@@ -64,17 +64,17 @@ Test complete user journeys in a real browser.
 
 These user journeys must always pass in CI before release:
 
-| # | Journey | Test Type | Priority |
-|---|---------|-----------|---------|
-| 1 | Register new account | E2E | Critical |
-| 2 | Login with valid credentials | E2E | Critical |
-| 3 | Login with invalid credentials | Unit | High |
-| 4 | Start an interview session | Integration | Critical |
-| 5 | Complete an interview (mock AI) | Integration | Critical |
-| 6 | View feedback report | E2E | Critical |
-| 7 | View interview history | Integration | High |
-| 8 | JWT token refresh | Integration | High |
-| 9 | Unauthorized access to protected route | Integration | High |
+| #   | Journey                                | Test Type   | Priority |
+| --- | -------------------------------------- | ----------- | -------- |
+| 1   | Register new account                   | E2E         | Critical |
+| 2   | Login with valid credentials           | E2E         | Critical |
+| 3   | Login with invalid credentials         | Unit        | High     |
+| 4   | Start an interview session             | Integration | Critical |
+| 5   | Complete an interview (mock AI)        | Integration | Critical |
+| 6   | View feedback report                   | E2E         | Critical |
+| 7   | View interview history                 | Integration | High     |
+| 8   | JWT token refresh                      | Integration | High     |
+| 9   | Unauthorized access to protected route | Integration | High     |
 
 ---
 
@@ -101,6 +101,7 @@ prisma/
 ```
 
 **Naming conventions:**
+
 - Unit tests: `*.test.ts` or `*.spec.ts`
 - Integration tests: `*.integration.test.ts`
 - E2E tests: `*.e2e.spec.ts`
@@ -109,13 +110,13 @@ prisma/
 
 ## 6. Mocking Strategy
 
-| Dependency | Strategy |
-|------------|---------|
+| Dependency | Strategy                                                               |
+| ---------- | ---------------------------------------------------------------------- |
 | OpenAI API | Mock at the service layer; use recorded responses for regression tests |
-| Database | Use a test database (separate schema or Supabase test project) |
-| WebRTC | Mock `MediaRecorder` and `RTCPeerConnection` in unit tests |
-| Time | Use `vi.useFakeTimers()` (Vitest) for testing time-dependent logic |
-| Auth | Use signed test JWTs with known expiry |
+| Database   | Use a test database (separate schema or Supabase test project)         |
+| WebRTC     | Mock `MediaRecorder` and `RTCPeerConnection` in unit tests             |
+| Time       | Use `vi.useFakeTimers()` (Vitest) for testing time-dependent logic     |
+| Auth       | Use signed test JWTs with known expiry                                 |
 
 ---
 

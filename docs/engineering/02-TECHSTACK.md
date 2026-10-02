@@ -1,4 +1,3 @@
-
 # Technology Stack
 
 **Product:** InterviewPilot AI

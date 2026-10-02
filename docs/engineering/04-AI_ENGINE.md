@@ -42,11 +42,11 @@ The AI provider generates language.
 
 The Interview Engine owns:
 
-* Interview state
-* Business rules
-* Session lifecycle
-* Evaluation pipeline
-* Persistence
+- Interview state
+- Business rules
+- Session lifecycle
+- Evaluation pipeline
+- Persistence
 
 The application should never depend directly on AI provider behavior.
 
@@ -58,11 +58,11 @@ The engine communicates through an AI Provider abstraction.
 
 Potential providers include:
 
-* OpenAI Realtime
-* Azure OpenAI
-* Anthropic
-* Gemini
-* Future providers
+- OpenAI Realtime
+- Azure OpenAI
+- Anthropic
+- Gemini
+- Future providers
 
 Changing providers should require minimal changes outside the provider implementation.
 
@@ -72,10 +72,10 @@ Changing providers should require minimal changes outside the provider implement
 
 Business decisions such as:
 
-* interview completion
-* session timeout
-* report generation
-* transcript persistence
+- interview completion
+- session timeout
+- report generation
+- transcript persistence
 
 must remain deterministic and owned by the application.
 
@@ -85,21 +85,21 @@ must remain deterministic and owned by the application.
 
 The engine is responsible for:
 
-* Interview initialization
-* Context management
-* Prompt orchestration
-* Conversation state
-* AI communication
-* Transcript persistence
-* Feedback generation
-* Session completion
+- Interview initialization
+- Context management
+- Prompt orchestration
+- Conversation state
+- AI communication
+- Transcript persistence
+- Feedback generation
+- Session completion
 
 It is intentionally not responsible for:
 
-* Authentication
-* Database implementation
-* UI rendering
-* Infrastructure provisioning
+- Authentication
+- Database implementation
+- UI rendering
+- Infrastructure provisioning
 
 ---
 
@@ -249,11 +249,11 @@ State transitions are managed by the Interview Engine rather than the AI provide
 
 Responsible for:
 
-* Creating interview sessions
-* Managing session lifecycle
-* Tracking interview status
-* Handling interruptions
-* Ending interviews
+- Creating interview sessions
+- Managing session lifecycle
+- Tracking interview status
+- Handling interruptions
+- Ending interviews
 
 ---
 
@@ -263,11 +263,11 @@ Maintains conversational flow.
 
 Responsibilities include:
 
-* Current topic
-* Previous questions
-* Candidate responses
-* Topic transitions
-* Follow-up generation
+- Current topic
+- Previous questions
+- Candidate responses
+- Topic transitions
+- Follow-up generation
 
 ---
 
@@ -275,11 +275,11 @@ Responsibilities include:
 
 Constructs prompts dynamically using:
 
-* Interview type
-* Candidate experience
-* Target role
-* Previous conversation
-* Current objectives
+- Interview type
+- Candidate experience
+- Target role
+- Previous conversation
+- Current objectives
 
 Prompts should never be hardcoded.
 
@@ -291,11 +291,11 @@ Maintains interview memory.
 
 Tracks:
 
-* Previous answers
-* Important facts
-* Technical topics
-* Behavioral examples
-* Conversation history
+- Previous answers
+- Important facts
+- Technical topics
+- Behavioral examples
+- Conversation history
 
 Context should remain concise while preserving critical information.
 
@@ -305,11 +305,11 @@ Context should remain concise while preserving critical information.
 
 Responsible for:
 
-* User transcript
-* AI transcript
-* Conversation ordering
-* Timestamping
-* Persistence
+- User transcript
+- AI transcript
+- Conversation ordering
+- Timestamping
+- Persistence
 
 The transcript serves as the source of truth for post-interview analysis.
 
@@ -321,12 +321,12 @@ Runs after interview completion.
 
 Evaluates:
 
-* Technical understanding
-* Communication
-* Confidence
-* Problem solving
-* Clarity
-* Completeness
+- Technical understanding
+- Communication
+- Confidence
+- Problem solving
+- Clarity
+- Completeness
 
 The engine produces structured evaluation data independent of presentation.
 
@@ -338,11 +338,11 @@ Transforms evaluation data into actionable insights.
 
 Outputs include:
 
-* Overall assessment
-* Strengths
-* Weaknesses
-* Improvement suggestions
-* Communication observations
+- Overall assessment
+- Strengths
+- Weaknesses
+- Improvement suggestions
+- Communication observations
 
 ---
 
@@ -352,11 +352,11 @@ The AI is guided through structured prompts rather than predefined question list
 
 Prompt construction consists of:
 
-* System instructions
-* Interview configuration
-* Current conversation context
-* Evaluation objectives
-* Recent transcript
+- System instructions
+- Interview configuration
+- Current conversation context
+- Evaluation objectives
+- Recent transcript
 
 This approach enables adaptive conversations while maintaining consistent interview behavior.
 
@@ -372,10 +372,10 @@ Current interview context.
 
 Examples:
 
-* Current topic
-* Previous answer
-* Active follow-up
-* Immediate conversation state
+- Current topic
+- Previous answer
+- Active follow-up
+- Immediate conversation state
 
 ---
 
@@ -385,10 +385,10 @@ Session-level knowledge.
 
 Examples:
 
-* Candidate background
-* Technologies discussed
-* Strengths identified
-* Weaknesses identified
+- Candidate background
+- Technologies discussed
+- Strengths identified
+- Weaknesses identified
 
 Only relevant information should be retained to minimize unnecessary context growth.
 
@@ -400,11 +400,11 @@ After every candidate response, the engine determines the next action.
 
 Possible outcomes include:
 
-* Ask follow-up question
-* Request clarification
-* Challenge assumptions
-* Change topic
-* Conclude interview
+- Ask follow-up question
+- Request clarification
+- Challenge assumptions
+- Change topic
+- Conclude interview
 
 The decision is based on conversation quality rather than predefined branching logic.
 
@@ -414,11 +414,11 @@ The decision is based on conversation quality rather than predefined branching l
 
 To reduce latency and operational cost:
 
-* Avoid repeatedly sending the full transcript
-* Summarize historical context
-* Retain only relevant conversational memory
-* Remove redundant exchanges
-* Reuse structured interview state
+- Avoid repeatedly sending the full transcript
+- Summarize historical context
+- Retain only relevant conversational memory
+- Remove redundant exchanges
+- Reuse structured interview state
 
 The objective is to maximize conversational quality while minimizing unnecessary token consumption.
 
@@ -428,17 +428,17 @@ The objective is to maximize conversational quality while minimizing unnecessary
 
 The AI Engine should gracefully recover from:
 
-* Provider timeouts
-* Temporary network interruptions
-* Partial transcript failures
-* Unexpected provider responses
+- Provider timeouts
+- Temporary network interruptions
+- Partial transcript failures
+- Unexpected provider responses
 
 Whenever recovery is not possible:
 
-* Preserve interview progress
-* Persist available transcript
-* Inform the user
-* Allow future retry
+- Preserve interview progress
+- Persist available transcript
+- Inform the user
+- Allow future retry
 
 ---
 
@@ -446,14 +446,14 @@ Whenever recovery is not possible:
 
 Planned improvements include:
 
-* Multiple interviewer personalities
-* Emotion-aware conversations
-* Company-specific interview styles
-* Resume-aware interviews
-* Coding interview orchestration
-* Adaptive interview difficulty
-* Real-time coaching mode
-* Multi-language conversations
+- Multiple interviewer personalities
+- Emotion-aware conversations
+- Company-specific interview styles
+- Resume-aware interviews
+- Coding interview orchestration
+- Adaptive interview difficulty
+- Real-time coaching mode
+- Multi-language conversations
 
 The architecture should support these capabilities without major structural changes.
 
@@ -461,11 +461,11 @@ The architecture should support these capabilities without major structural chan
 
 # 14. Related Documents
 
-* ARCHITECTURE.md
-* DATABASE.md
-* API.md
-* DESIGN_SYSTEM.md
-* SECURITY.
+- ARCHITECTURE.md
+- DATABASE.md
+- API.md
+- DESIGN_SYSTEM.md
+- SECURITY.
 
 # AI Engine
 
@@ -624,4 +624,3 @@ After each interview, the engine generates:
 - 01-ARCHITECTURE.md
 - 02-TECHSTACK.md
 - 05-API.md
-
