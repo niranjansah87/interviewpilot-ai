@@ -16,25 +16,25 @@ One paragraph: what happened, what the user impact was, and what the resolution 
 
 ## Impact
 
-| Metric | Value |
-|--------|-------|
-| Duration | X minutes/hours |
-| Users affected | ~N |
-| Revenue impact (if applicable) | $X |
-| Failed transactions | N |
+| Metric                         | Value           |
+| ------------------------------ | --------------- |
+| Duration                       | X minutes/hours |
+| Users affected                 | ~N              |
+| Revenue impact (if applicable) | $X              |
+| Failed transactions            | N               |
 
 ---
 
 ## Timeline (all times UTC)
 
-| Time | Event |
-|------|-------|
-| HH:MM | Alert received |
+| Time  | Event                 |
+| ----- | --------------------- |
+| HH:MM | Alert received        |
 | HH:MM | Engineer acknowledged |
 | HH:MM | Root cause identified |
-| HH:MM | Mitigation applied |
-| HH:MM | Service restored |
-| HH:MM | Postmortem published |
+| HH:MM | Mitigation applied    |
+| HH:MM | Service restored      |
+| HH:MM | Postmortem published  |
 
 ---
 
@@ -64,10 +64,10 @@ What slowed down the response?
 
 ## Action Items
 
-| Action | Owner | Due Date | Status |
-|--------|-------|----------|--------|
-| Fix X to prevent recurrence | @name | YYYY-MM-DD | Open |
-| Add alerting for Y | @name | YYYY-MM-DD | Open |
+| Action                      | Owner | Due Date   | Status |
+| --------------------------- | ----- | ---------- | ------ |
+| Fix X to prevent recurrence | @name | YYYY-MM-DD | Open   |
+| Add alerting for Y          | @name | YYYY-MM-DD | Open   |
 
 ---
 

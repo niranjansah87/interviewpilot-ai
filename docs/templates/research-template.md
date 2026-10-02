@@ -37,9 +37,9 @@ What do the findings mean? What patterns or conclusions emerge?
 Based on the findings, what do we recommend?
 
 | Option | Pros | Cons | Recommendation |
-|--------|------|------|----------------|
-| A | ... | ... | ✅ |
-| B | ... | ... | ❌ |
+| ------ | ---- | ---- | -------------- |
+| A      | ...  | ...  | ✅             |
+| B      | ...  | ...  | ❌             |
 
 ## Open Questions
 

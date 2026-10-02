@@ -6,13 +6,13 @@ Standardized templates for creating consistent documentation across the project.
 
 ## Available Templates
 
-| Template | Use For |
-|----------|---------|
-| `adr-template.md` | New Architecture Decision Records |
-| `runbook-template.md` | Operational runbooks |
-| `research-template.md` | Research and spike documents |
-| `postmortem-template.md` | Incident postmortems |
-| `feature-spec-template.md` | New feature specifications |
+| Template                   | Use For                                           |
+| -------------------------- | ------------------------------------------------- |
+| `adr-template.md`          | New Architecture Decision Records                 |
+| `runbook-template.md`      | Operational runbooks                              |
+| `research-template.md`     | Research and spike documents                      |
+| `postmortem-template.md`   | Incident postmortems                              |
+| `feature-spec-template.md` | New feature specifications                        |
 | `pull-request-template.md` | PR descriptions (GitHub default is in `.github/`) |
 
 ---

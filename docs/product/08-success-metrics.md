@@ -1,4 +1,3 @@
-
 # Success Metrics
 
 **Product:** InterviewPilot AI
@@ -148,4 +147,3 @@ Future releases may measure:
 
 - 09-mvp-scope.md
 - 10-future-roadmap.md
-

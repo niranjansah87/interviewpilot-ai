@@ -39,6 +39,7 @@ $ prisma migrate deploy
 ```
 
 Checklist before running:
+
 - [ ] Migration reviewed and approved
 - [ ] Database snapshot taken
 - [ ] Downtime window communicated
@@ -88,8 +89,8 @@ $ npx prisma db pull --force  # pulls schema from DB → verify it matches prism
 
 ## Troubleshooting
 
-| Error | Solution |
-|-------|----------|
+| Error                            | Solution                                                    |
+| -------------------------------- | ----------------------------------------------------------- |
 | `Migration table already exists` | Run `prisma migrate resolve --rolled-back <migration-name>` |
-| `Database schema out of sync` | Run `prisma migrate reset` (local only, destructive) |
-| `Connection refused` | Verify `DATABASE_URL` in `.env` |
+| `Database schema out of sync`    | Run `prisma migrate reset` (local only, destructive)        |
+| `Connection refused`             | Verify `DATABASE_URL` in `.env`                             |

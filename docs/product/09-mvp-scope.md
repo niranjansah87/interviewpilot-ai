@@ -1,4 +1,3 @@
-
 # MVP Scope
 
 **Product:** InterviewPilot AI
@@ -202,4 +201,3 @@ The architecture should minimize the impact of these risks wherever possible.
 
 - 08-success-metrics.md
 - 10-future-roadmap.md
-

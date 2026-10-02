@@ -1,4 +1,3 @@
-
 # Functional Requirements
 
 **Product:** InterviewPilot AI
@@ -186,4 +185,3 @@ without requiring manual intervention.
 - 07-non-functional-requirements.md
 - ARCHITECTURE.md
 - API.md
-

@@ -1,4 +1,3 @@
-
 # User Journeys
 
 **Product:** InterviewPilot AI
@@ -196,4 +195,3 @@ Interview History
 
 - 04-user-personas.md
 - 06-functional-requirements.md
-

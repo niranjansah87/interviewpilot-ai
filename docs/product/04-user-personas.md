@@ -1,4 +1,3 @@
-
 # User Personas
 
 **Product:** InterviewPilot AI
@@ -156,4 +155,3 @@ Regardless of experience level, all users expect:
 - 02-problem-statement.md
 - 03-goals-and-non-goals.md
 - 05-user-journeys.md
-

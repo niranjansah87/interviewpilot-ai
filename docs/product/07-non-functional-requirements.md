@@ -1,4 +1,3 @@
-
 # Non-Functional Requirements
 
 **Product:** InterviewPilot AI
@@ -187,4 +186,3 @@ All major modules SHOULD include:
 - 06-functional-requirements.md
 - ARCHITECTURE.md
 - TECHSTACK.md
-

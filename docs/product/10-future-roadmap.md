@@ -1,4 +1,3 @@
-
 # Future Roadmap
 
 **Product:** InterviewPilot AI
@@ -164,4 +163,3 @@ InterviewPilot AI should evolve into an AI-powered career companion that helps c
 
 - 09-mvp-scope.md
 - 12-release-plan.md
-

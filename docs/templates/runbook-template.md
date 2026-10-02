@@ -54,9 +54,9 @@ If something goes wrong, how do we undo it?
 
 ## Contacts
 
-| Role | Name | Slack |
-|------|------|-------|
-| Engineering Lead | @name | #channel |
+| Role             | Name      | Slack           |
+| ---------------- | --------- | --------------- |
+| Engineering Lead | @name     | #channel        |
 | On-call engineer | PagerDuty | escalation path |
 
 ---

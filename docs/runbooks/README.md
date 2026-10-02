@@ -8,13 +8,13 @@ Operational procedures for running and maintaining InterviewPilot AI in producti
 
 ## Available Runbooks
 
-| Runbook | Description |
-|---------|-------------|
-| `database-migrations.md` | How to run and rollback Prisma migrations |
-| `deployment.md` | Step-by-step production deployment procedure |
-| `incident-response.md` | How to respond to production incidents |
-| `ai-service-health.md` | Checking OpenAI API health and quotas |
-| `backup-recovery.md` | Database backup and recovery procedures |
+| Runbook                  | Description                                  |
+| ------------------------ | -------------------------------------------- |
+| `database-migrations.md` | How to run and rollback Prisma migrations    |
+| `deployment.md`          | Step-by-step production deployment procedure |
+| `incident-response.md`   | How to respond to production incidents       |
+| `ai-service-health.md`   | Checking OpenAI API health and quotas        |
+| `backup-recovery.md`     | Database backup and recovery procedures      |
 
 ---
 
@@ -35,21 +35,27 @@ Each runbook follows this structure:
 # Runbook Title
 
 ## Overview
+
 What this runbook covers.
 
 ## Prerequisites
+
 What you need before starting.
 
 ## Procedure
+
 Step-by-step instructions.
 
 ## Verification
+
 How to confirm the operation succeeded.
 
 ## Rollback
+
 How to undo if something goes wrong.
 
 ## Contacts
+
 Who to notify if issues arise.
 ```
 

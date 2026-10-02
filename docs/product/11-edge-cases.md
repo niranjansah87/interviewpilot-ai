@@ -1,4 +1,3 @@
-
 # Edge Cases
 
 **Product:** InterviewPilot AI
@@ -252,4 +251,3 @@ Additional edge cases may be introduced for:
 - 06-functional-requirements.md
 - 07-non-functional-requirements.md
 - ARCHITECTURE.md
-

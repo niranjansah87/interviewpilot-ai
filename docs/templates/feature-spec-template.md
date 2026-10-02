@@ -47,18 +47,18 @@ What is explicitly out of scope for this feature?
 
 ### Functional Requirements
 
-| ID | Requirement | Priority |
-|----|------------|----------|
-| FR-1 | ... | Must |
-| FR-2 | ... | Should |
-| FR-3 | ... | Could |
+| ID   | Requirement | Priority |
+| ---- | ----------- | -------- |
+| FR-1 | ...         | Must     |
+| FR-2 | ...         | Should   |
+| FR-3 | ...         | Could    |
 
 ### Non-Functional Requirements
 
-| ID | Requirement | Notes |
-|----|------------|-------|
-| NFR-1 | Performance: ... | |
-| NFR-2 | Accessibility: ... | |
+| ID    | Requirement        | Notes |
+| ----- | ------------------ | ----- |
+| NFR-1 | Performance: ...   |       |
+| NFR-2 | Accessibility: ... |       |
 
 ---
 
@@ -79,8 +79,8 @@ Include wireframes, screenshots, or links to Figma.
 ### New Endpoints
 
 | Method | Path | Description |
-|--------|------|-------------|
-| ... | ... | ... |
+| ------ | ---- | ----------- |
+| ...    | ...  | ...         |
 
 ### Request / Response Shapes
 
@@ -112,20 +112,20 @@ model Feature {
 
 ## 9. Metrics
 
-| Metric | Target |
-|--------|--------|
-| Adoption rate | ... |
-| User engagement | ... |
-| Error rate | ... |
+| Metric          | Target |
+| --------------- | ------ |
+| Adoption rate   | ...    |
+| User engagement | ...    |
+| Error rate      | ...    |
 
 ---
 
 ## 10. Dependencies
 
-| Dependency | Owner | Status |
-|-----------|-------|--------|
-| AI provider | ... | ... |
-| Design assets | ... | ... |
+| Dependency    | Owner | Status |
+| ------------- | ----- | ------ |
+| AI provider   | ...   | ...    |
+| Design assets | ...   | ...    |
 
 ---
 
