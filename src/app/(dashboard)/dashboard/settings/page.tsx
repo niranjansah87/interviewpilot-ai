@@ -32,10 +32,15 @@ export default function SettingsPage() {
     setDeleting(true);
     try {
       const res = await fetch('/api/v1/users/me', { method: 'DELETE', credentials: 'include' });
-      if (res.ok) { toast.success('Account deleted'); router.push('/'); }
-      else toast.error('Failed');
-    } catch { toast.error('Network error'); }
-    finally { setDeleting(false); }
+      if (res.ok) {
+        toast.success('Account deleted');
+        router.push('/');
+      } else toast.error('Failed');
+    } catch {
+      toast.error('Network error');
+    } finally {
+      setDeleting(false);
+    }
   }
 
   return (
@@ -48,7 +53,9 @@ export default function SettingsPage() {
       {/* Appearance */}
       <Card className="rounded-2xl">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base"><Palette className="h-4 w-4 text-muted-foreground" /> Appearance</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Palette className="h-4 w-4 text-muted-foreground" /> Appearance
+          </CardTitle>
           <CardDescription>Choose how InterviewPilot looks</CardDescription>
         </CardHeader>
         <CardContent>
@@ -58,9 +65,15 @@ export default function SettingsPage() {
               { value: 'dark', icon: Moon, label: 'Dark' },
               { value: 'system', icon: Monitor, label: 'System' },
             ].map(({ value, icon: Icon, label }) => (
-              <button key={value} onClick={() => setTheme(value as 'light' | 'dark' | 'system')}
+              <button
+                key={value}
+                onClick={() => setTheme(value as 'light' | 'dark' | 'system')}
                 className={`flex flex-1 items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm font-medium transition-all ${
-                  theme === value ? 'border-primary bg-primary/[0.04] text-primary' : 'border-border/40 text-muted-foreground hover:border-border'}`}>
+                  theme === value
+                    ? 'border-primary bg-primary/[0.04] text-primary'
+                    : 'border-border/40 text-muted-foreground hover:border-border'
+                }`}
+              >
                 <Icon className="h-4 w-4" /> {label}
               </button>
             ))}
@@ -71,14 +84,22 @@ export default function SettingsPage() {
       {/* Interview Defaults */}
       <Card className="rounded-2xl">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base"><Mic className="h-4 w-4 text-muted-foreground" /> Interview Defaults</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Mic className="h-4 w-4 text-muted-foreground" /> Interview Defaults
+          </CardTitle>
           <CardDescription>Pre-selected options for new interviews</CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="flex items-center justify-between">
             <Label className="text-sm">Default Type</Label>
-            <select value={defaultType} onChange={(e) => { setDefaultType(e.target.value); savePref('pref_type', e.target.value); }}
-              className="rounded-lg border border-border/40 bg-background px-3 py-2 text-sm">
+            <select
+              value={defaultType}
+              onChange={(e) => {
+                setDefaultType(e.target.value);
+                savePref('pref_type', e.target.value);
+              }}
+              className="rounded-lg border border-border/40 bg-background px-3 py-2 text-sm"
+            >
               <option value="BEHAVIORAL">Behavioral</option>
               <option value="TECHNICAL">Technical</option>
               <option value="MIXED">Mixed</option>
@@ -86,8 +107,14 @@ export default function SettingsPage() {
           </div>
           <div className="flex items-center justify-between">
             <Label className="text-sm">Default Level</Label>
-            <select value={defaultLevel} onChange={(e) => { setDefaultLevel(e.target.value); savePref('pref_level', e.target.value); }}
-              className="rounded-lg border border-border/40 bg-background px-3 py-2 text-sm">
+            <select
+              value={defaultLevel}
+              onChange={(e) => {
+                setDefaultLevel(e.target.value);
+                savePref('pref_level', e.target.value);
+              }}
+              className="rounded-lg border border-border/40 bg-background px-3 py-2 text-sm"
+            >
               <option value="JUNIOR">Junior</option>
               <option value="MID">Mid</option>
               <option value="SENIOR">Senior</option>
@@ -99,12 +126,23 @@ export default function SettingsPage() {
       {/* Danger */}
       <Card className="rounded-2xl border-destructive/20">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base text-destructive"><Trash2 className="h-4 w-4" /> Danger Zone</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-base text-destructive">
+            <Trash2 className="h-4 w-4" /> Danger Zone
+          </CardTitle>
           <CardDescription>Permanently delete your account and all data</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button variant="destructive" onClick={handleDelete} disabled={deleting} className="gap-1.5 rounded-lg">
-            {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={deleting}
+            className="gap-1.5 rounded-lg"
+          >
+            {deleting ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="h-3.5 w-3.5" />
+            )}
             {deleting ? 'Deleting' : 'Delete account'}
           </Button>
         </CardContent>

@@ -3,10 +3,7 @@ import { apiSuccess, apiError } from '@/lib/api/route-helpers';
 import { getSession } from '@/lib/api/get-session';
 import { feedbackService } from '@/services/feedback.service';
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getSession();
     const { id } = await params;
@@ -17,10 +14,7 @@ export async function GET(
   }
 }
 
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getSession();
     const { id } = await params;

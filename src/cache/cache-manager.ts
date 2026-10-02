@@ -39,8 +39,7 @@ export function getCache(): CacheProvider {
 /** Global cache accessor */
 export const cache = {
   get: <T>(key: string) => getCache().get<T>(key),
-  set: <T>(key: string, value: T, options?: CacheOptions) =>
-    getCache().set(key, value, options),
+  set: <T>(key: string, value: T, options?: CacheOptions) => getCache().set(key, value, options),
   delete: (key: string) => getCache().delete(key),
   deletePattern: (pattern: string) => getCache().deletePattern(pattern),
   exists: (key: string) => getCache().exists(key),

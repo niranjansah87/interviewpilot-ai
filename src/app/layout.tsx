@@ -42,7 +42,13 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-    googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 },
+    googleBot: {
+      'index': true,
+      'follow': true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   alternates: { canonical: BASE_URL },
   openGraph: {
@@ -83,15 +89,16 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <QueryProvider>
             {children}
             <Toaster />
@@ -103,12 +110,13 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebApplication',
-              name: 'InterviewPilot AI',
-              description: 'AI-powered voice interview platform that simulates realistic technical and behavioral interviews through dynamic conversations.',
-              applicationCategory: 'EducationalApplication',
-              operatingSystem: 'Web',
-              offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-              author: { '@type': 'Person', name: 'Niranjan Sah' },
+              'name': 'InterviewPilot AI',
+              'description':
+                'AI-powered voice interview platform that simulates realistic technical and behavioral interviews through dynamic conversations.',
+              'applicationCategory': 'EducationalApplication',
+              'operatingSystem': 'Web',
+              'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },
+              'author': { '@type': 'Person', 'name': 'Niranjan Sah' },
             }),
           }}
         />

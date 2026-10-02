@@ -4,10 +4,7 @@ import { getSession } from '@/lib/api/get-session';
 import { prisma } from '@/database/client';
 import { NotFoundError } from '@/lib/errors';
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getSession();
     const { id } = await params;
@@ -34,10 +31,7 @@ export async function POST(
   }
 }
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getSession();
     const { id } = await params;

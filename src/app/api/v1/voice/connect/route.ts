@@ -22,7 +22,12 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}));
 
     const dynamicVars: Record<string, string> = {};
-    const safe = (v: string) => v?.replace(/[\x00-\x1f\x7f]/g, '').replace(/[^\w .,'\-+#/()&]/g, '').trim().slice(0, 100) ?? '';
+    const safe = (v: string) =>
+      v
+        ?.replace(/[\x00-\x1f\x7f]/g, '')
+        .replace(/[^\w .,'\-+#/()&]/g, '')
+        .trim()
+        .slice(0, 100) ?? '';
     if (body.interview_type) dynamicVars.interview_type = safe(body.interview_type);
     if (body.role) dynamicVars.role = safe(body.role);
     if (body.level) dynamicVars.level = safe(body.level);
@@ -46,15 +51,21 @@ export async function POST(req: NextRequest) {
         const signRes = await fetch(url, { headers: { 'xi-api-key': currentAgent.key } });
 
         if (!signRes.ok) {
-          const errBody = await signRes.json().catch(() => ({})) as { detail?: { message?: string } };
+          const errBody = (await signRes.json().catch(() => ({}))) as {
+            detail?: { message?: string };
+          };
           const msg = errBody?.detail?.message ?? `ElevenLabs returned ${signRes.status}`;
-          logger.warn({ msg: `Agent ${currentAgent.label} failed`, status: signRes.status, detail: msg });
+          logger.warn({
+            msg: `Agent ${currentAgent.label} failed`,
+            status: signRes.status,
+            detail: msg,
+          });
           reportFailure(currentAgent.id);
           lastError = msg;
           continue;
         }
 
-        const { signed_url } = await signRes.json() as { signed_url: string };
+        const { signed_url } = (await signRes.json()) as { signed_url: string };
         reportSuccess(currentAgent.id);
         logger.info({ msg: `Voice session via ${currentAgent.label}`, agentId: currentAgent.id });
 
@@ -70,7 +81,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return apiError(Object.assign(new Error(lastError ?? 'All voice providers unavailable'), { statusCode: 502 }));
+    return apiError(
+      Object.assign(new Error(lastError ?? 'All voice providers unavailable'), { statusCode: 502 }),
+    );
   } catch (error) {
     return apiError(error);
   }

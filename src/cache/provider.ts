@@ -42,9 +42,5 @@ export interface CacheProvider {
    * Get and set: return cached value or fetch and cache it.
    * Reduces boilerplate for cache-aside patterns.
    */
-  getOrSet<T>(
-    key: string,
-    fetch: () => Promise<T>,
-    options?: CacheOptions,
-  ): Promise<T>;
+  getOrSet<T>(key: string, fetch: () => Promise<T>, options?: CacheOptions): Promise<T>;
 }

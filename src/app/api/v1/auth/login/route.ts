@@ -21,10 +21,7 @@ export async function POST(req: NextRequest) {
 
     const result = await authService.login(parsed.data);
 
-    const response = NextResponse.json(
-      { data: { user: result.user } },
-      { status: 200 },
-    );
+    const response = NextResponse.json({ data: { user: result.user } }, { status: 200 });
 
     await setAccessTokenCookie(result.accessToken);
     await setRefreshTokenCookie(result.refreshToken);

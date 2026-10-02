@@ -53,12 +53,15 @@ export class RedisCache implements CacheProvider {
       cacheLogger.warn({ msg: 'Redis connection closed' });
     });
 
-    this.redis.connect().then(() => {
-      this.connected = true;
-    }).catch(() => {
-      this.connected = false;
-      cacheLogger.warn({ msg: 'Redis connect failed — using memory fallback' });
-    });
+    this.redis
+      .connect()
+      .then(() => {
+        this.connected = true;
+      })
+      .catch(() => {
+        this.connected = false;
+        cacheLogger.warn({ msg: 'Redis connect failed — using memory fallback' });
+      });
   }
 
   private key(raw: string): string {
@@ -125,11 +128,7 @@ export class RedisCache implements CacheProvider {
     }
   }
 
-  async getOrSet<T>(
-    key: string,
-    fetch: () => Promise<T>,
-    options?: CacheOptions,
-  ): Promise<T> {
+  async getOrSet<T>(key: string, fetch: () => Promise<T>, options?: CacheOptions): Promise<T> {
     const cached = await this.get<T>(key);
     if (cached !== null) return cached;
 

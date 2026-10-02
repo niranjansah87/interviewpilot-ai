@@ -24,8 +24,7 @@ export const cacheKeys = {
   // ---------------------------------------------------------------------------
   interview: (id: string) => buildKey(['interview', id]),
   interviewList: (userId: string) => buildKey(['interview', 'list', userId]),
-  interviewConfig: (type: string, level: string) =>
-    buildKey(['interview', 'config', type, level]),
+  interviewConfig: (type: string, level: string) => buildKey(['interview', 'config', type, level]),
 
   // ---------------------------------------------------------------------------
   // Transcript
@@ -40,15 +39,13 @@ export const cacheKeys = {
   // ---------------------------------------------------------------------------
   // AI / Prompts
   // ---------------------------------------------------------------------------
-  prompt: (type: string, version: string) =>
-    buildKey(['prompt', type, version]),
+  prompt: (type: string, version: string) => buildKey(['prompt', type, version]),
   llmResponse: (hash: string) => buildKey(['llm', 'response', hash]),
 
   // ---------------------------------------------------------------------------
   // Rate Limiting
   // ---------------------------------------------------------------------------
-  rateLimit: (ip: string, endpoint: string) =>
-    buildKey(['ratelimit', endpoint, ip]),
+  rateLimit: (ip: string, endpoint: string) => buildKey(['ratelimit', endpoint, ip]),
 
   // ---------------------------------------------------------------------------
   // Config

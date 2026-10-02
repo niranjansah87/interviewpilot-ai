@@ -71,11 +71,7 @@ export class MemoryCache implements CacheProvider {
     return val !== null;
   }
 
-  async getOrSet<T>(
-    key: string,
-    fetch: () => Promise<T>,
-    options?: CacheOptions,
-  ): Promise<T> {
+  async getOrSet<T>(key: string, fetch: () => Promise<T>, options?: CacheOptions): Promise<T> {
     const cached = await this.get<T>(key);
     if (cached !== null) return cached;
 
@@ -106,9 +102,7 @@ export class MemoryCache implements CacheProvider {
 
   /** Convert glob pattern to RegExp. */
   private patternToRegex(pattern: string): RegExp {
-    const escaped = pattern
-      .replace(/[.+^${}()|[\]\\]/g, '\\$&')
-      .replace(/\*/g, '.*');
+    const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
     return new RegExp(`^${escaped}$`);
   }
 

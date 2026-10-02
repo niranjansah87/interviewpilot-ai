@@ -20,9 +20,11 @@ export default function GlobalError({
       <p className="text-8xl font-bold text-destructive/20">500</p>
       <h1 className="mt-4 text-2xl font-bold tracking-tight">Something went wrong</h1>
       <p className="mt-2 text-muted-foreground">We encountered an unexpected error.</p>
-      <div className="mt-6 flex gap-4 justify-center">
+      <div className="mt-6 flex justify-center gap-4">
         <Button onClick={reset}>Try again</Button>
-        <Button variant="outline" asChild><Link href="/">Go home</Link></Button>
+        <Button variant="outline" asChild>
+          <Link href="/">Go home</Link>
+        </Button>
       </div>
     </main>
   );

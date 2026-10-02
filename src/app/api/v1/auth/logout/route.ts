@@ -17,5 +17,9 @@ async function handleLogout() {
   }
 }
 
-export async function POST(_req: NextRequest) { return handleLogout(); }
-export async function GET(_req: NextRequest) { return handleLogout(); }
+export async function POST(_req: NextRequest) {
+  return handleLogout();
+}
+export async function GET(_req: NextRequest) {
+  return handleLogout();
+}
