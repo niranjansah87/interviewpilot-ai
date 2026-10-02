@@ -6,7 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { History, ArrowRight, Plus, Calendar, Clock, Star, Loader2, FileText, Mic } from 'lucide-react';
+import {
+  History,
+  ArrowRight,
+  Plus,
+  Calendar,
+  Clock,
+  Star,
+  Loader2,
+  FileText,
+  Mic,
+} from 'lucide-react';
 
 interface Interview {
   id: string;
@@ -25,11 +35,31 @@ interface InterviewList {
 }
 
 const STATUS_MAP: Record<string, { label: string; className: string }> = {
-  CREATED:   { label: 'Ready',   className: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800' },
-  READY:     { label: 'Ready',   className: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800' },
-  ACTIVE:    { label: 'Active',  className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800' },
-  COMPLETED: { label: 'Done',    className: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700' },
-  FAILED:    { label: 'Failed',  className: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800' },
+  CREATED: {
+    label: 'Ready',
+    className:
+      'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800',
+  },
+  READY: {
+    label: 'Ready',
+    className:
+      'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800',
+  },
+  ACTIVE: {
+    label: 'Active',
+    className:
+      'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800',
+  },
+  COMPLETED: {
+    label: 'Done',
+    className:
+      'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
+  },
+  FAILED: {
+    label: 'Failed',
+    className:
+      'bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800',
+  },
 };
 
 const TYPE_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -47,7 +77,11 @@ function formatDate(iso: string) {
   if (days === 0) return 'Today';
   if (days === 1) return 'Yesterday';
   if (days < 7) return `${days} days ago`;
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
+  return d.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+  });
 }
 
 function formatDuration(seconds: number | null) {
@@ -120,7 +154,9 @@ export default function InterviewsPage() {
             <History className="h-8 w-8 text-muted-foreground" />
           </div>
           <h3 className="mt-5 text-lg font-semibold">No interviews yet</h3>
-          <p className="mt-1 text-sm text-muted-foreground">Start your first practice session and build your interview skills.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Start your first practice session and build your interview skills.
+          </p>
           <Button asChild className="mt-6 gap-1.5">
             <Link href="/dashboard/interviews/new">
               <Plus className="h-4 w-4" />
@@ -133,7 +169,12 @@ export default function InterviewsPage() {
       {/* Interview list */}
       <div className="space-y-3">
         {interviews.map((i) => {
-          const s = STATUS_MAP[i.status] ?? ({ label: i.status, className: 'bg-muted text-muted-foreground border-border' } as const);
+          const s =
+            STATUS_MAP[i.status] ??
+            ({
+              label: i.status,
+              className: 'bg-muted text-muted-foreground border-border',
+            } as const);
           const TypeIcon = TYPE_ICON[i.type] ?? Mic;
           return (
             <Link
@@ -154,7 +195,7 @@ export default function InterviewsPage() {
                       {i.type?.toLowerCase() ?? 'Unknown'}
                     </span>
                     <span className="text-sm text-muted-foreground">·</span>
-                    <span className="text-sm text-muted-foreground truncate">
+                    <span className="truncate text-sm text-muted-foreground">
                       {i.targetRole || 'General'}
                     </span>
                     <span className="text-sm text-muted-foreground">·</span>
@@ -186,7 +227,9 @@ export default function InterviewsPage() {
                 )}
 
                 {/* Status badge */}
-                <span className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium ${s.className}`}>
+                <span
+                  className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium ${s.className}`}
+                >
                   {s.label}
                 </span>
 
@@ -201,13 +244,25 @@ export default function InterviewsPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-lg text-xs">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="rounded-lg text-xs"
+          >
             Previous
           </Button>
-          <span className="text-xs text-muted-foreground px-2">
+          <span className="px-2 text-xs text-muted-foreground">
             Page {page} of {totalPages}
           </span>
-          <Button variant="outline" size="sm" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="rounded-lg text-xs">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="rounded-lg text-xs"
+          >
             Next
           </Button>
         </div>

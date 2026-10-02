@@ -21,8 +21,8 @@ export default function TranscriptPage({ params }: { params: Promise<{ id: strin
 
   useEffect(() => {
     fetch(`/api/v1/interviews/${id}/transcript`, { credentials: 'include' })
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then(d => setEntries(d.data?.entries ?? []))
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((d) => setEntries(d.data?.entries ?? []))
       .catch(() => toast.error('Failed to load transcript'))
       .finally(() => setLoading(false));
   }, [id]);
@@ -30,15 +30,24 @@ export default function TranscriptPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <Button variant="ghost" size="sm" asChild className="-ml-2 mb-2 gap-1 text-muted-foreground">
-          <Link href={`/dashboard/interviews/${id}`}><ArrowLeft className="h-4 w-4" /> Back to Interview</Link>
+        <Button
+          variant="ghost"
+          size="sm"
+          asChild
+          className="-ml-2 mb-2 gap-1 text-muted-foreground"
+        >
+          <Link href={`/dashboard/interviews/${id}`}>
+            <ArrowLeft className="h-4 w-4" /> Back to Interview
+          </Link>
         </Button>
         <h1 className="text-2xl font-bold tracking-tight">Transcript</h1>
         <p className="text-sm text-muted-foreground">{entries.length} conversation turns</p>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+        <div className="flex justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
       ) : entries.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border py-20 text-center">
           <p className="text-sm text-muted-foreground">No transcript available</p>
@@ -46,13 +55,18 @@ export default function TranscriptPage({ params }: { params: Promise<{ id: strin
       ) : (
         <div className="space-y-4">
           {entries.map((entry) => (
-            <div key={entry.id} className={`flex ${entry.role === 'CANDIDATE' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] rounded-2xl px-5 py-3 ${
-                entry.role === 'CANDIDATE'
-                  ? 'rounded-tr-md bg-primary text-primary-foreground'
-                  : 'rounded-tl-md bg-muted'
-              }`}>
-                <p className="text-[10px] font-medium uppercase tracking-wider opacity-60 mb-1">
+            <div
+              key={entry.id}
+              className={`flex ${entry.role === 'CANDIDATE' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div
+                className={`max-w-[80%] rounded-2xl px-5 py-3 ${
+                  entry.role === 'CANDIDATE'
+                    ? 'rounded-tr-md bg-primary text-primary-foreground'
+                    : 'rounded-tl-md bg-muted'
+                }`}
+              >
+                <p className="mb-1 text-[10px] font-medium uppercase tracking-wider opacity-60">
                   {entry.role === 'INTERVIEWER' ? 'Interviewer' : 'You'}
                 </p>
                 <p className="text-sm leading-relaxed">{entry.content}</p>
