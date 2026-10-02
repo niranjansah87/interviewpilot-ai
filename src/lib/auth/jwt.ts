@@ -22,9 +22,7 @@ export interface TokenPayload {
  * Sign a new access token.
  * Default expiry: 15 minutes.
  */
-export async function signAccessToken(
-  payload: Omit<TokenPayload, 'iat' | 'exp'>,
-): Promise<string> {
+export async function signAccessToken(payload: Omit<TokenPayload, 'iat' | 'exp'>): Promise<string> {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()

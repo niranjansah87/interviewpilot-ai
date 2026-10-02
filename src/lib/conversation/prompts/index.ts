@@ -42,7 +42,12 @@ export function selectPrompt(config: Pick<InterviewConfig, 'type' | 'targetRole'
   if (role.includes('fullstack') || role.includes('full-stack') || role.includes('full stack')) {
     return FULLSTACK_PROMPT;
   }
-  if (role.includes('devops') || role.includes('sre') || role.includes('platform') || role.includes('infrastructure')) {
+  if (
+    role.includes('devops') ||
+    role.includes('sre') ||
+    role.includes('platform') ||
+    role.includes('infrastructure')
+  ) {
     return DEVOPS_PROMPT;
   }
   if (role.includes('system') && (role.includes('design') || role.includes('architect'))) {
@@ -51,10 +56,14 @@ export function selectPrompt(config: Pick<InterviewConfig, 'type' | 'targetRole'
 
   // Fall back to interview type
   switch (config.type) {
-    case 'behavioral': return BEHAVIORAL_PROMPT;
-    case 'technical': return TECHNICAL_PROMPT;
-    case 'mixed': return `${BEHAVIORAL_PROMPT}\n\n---\n\n${TECHNICAL_PROMPT}`;
-    default: return BEHAVIORAL_PROMPT;
+    case 'behavioral':
+      return BEHAVIORAL_PROMPT;
+    case 'technical':
+      return TECHNICAL_PROMPT;
+    case 'mixed':
+      return `${BEHAVIORAL_PROMPT}\n\n---\n\n${TECHNICAL_PROMPT}`;
+    default:
+      return BEHAVIORAL_PROMPT;
   }
 }
 

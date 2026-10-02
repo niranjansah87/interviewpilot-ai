@@ -22,8 +22,8 @@ type VADCallback = (state: VADState) => void;
 
 const SMOOTHING = 0.92; // Heavy smoothing
 const SILENCE_THRESHOLD = 0.015; // Ambient noise
-const LOW_THRESHOLD = 0.06;  // Quiet speech / breathing — won't trigger barge-in
-const SPEAK_THRESHOLD = 0.10; // Clear speech required for barge-in
+const LOW_THRESHOLD = 0.06; // Quiet speech / breathing — won't trigger barge-in
+const SPEAK_THRESHOLD = 0.1; // Clear speech required for barge-in
 const LOUD_THRESHOLD = 0.25; // Very loud
 
 export class AudioRuntimeManager {
@@ -85,13 +85,17 @@ export class AudioRuntimeManager {
   /** Subscribe to real-time audio levels (60fps). */
   onLevel(cb: LevelCallback): () => void {
     this.levelCallbacks.push(cb);
-    return () => { this.levelCallbacks = this.levelCallbacks.filter(c => c !== cb); };
+    return () => {
+      this.levelCallbacks = this.levelCallbacks.filter((c) => c !== cb);
+    };
   }
 
   /** Subscribe to VAD state changes. */
   onVAD(cb: VADCallback): () => void {
     this.vadCallbacks.push(cb);
-    return () => { this.vadCallbacks = this.vadCallbacks.filter(c => c !== cb); };
+    return () => {
+      this.vadCallbacks = this.vadCallbacks.filter((c) => c !== cb);
+    };
   }
 
   /** Get current raw frequency data for waveform visualization. */
@@ -110,19 +114,27 @@ export class AudioRuntimeManager {
 
     try {
       this.micSource?.disconnect();
-    } catch { /* already disconnected */ }
+    } catch {
+      /* already disconnected */
+    }
     try {
       this.micAnalyser?.disconnect();
-    } catch { /* already disconnected */ }
+    } catch {
+      /* already disconnected */
+    }
     try {
       this.speakerAnalyser?.disconnect();
-    } catch { /* already disconnected */ }
+    } catch {
+      /* already disconnected */
+    }
     try {
       this.speakerGain?.disconnect();
-    } catch { /* already disconnected */ }
+    } catch {
+      /* already disconnected */
+    }
 
     // Stop all mic tracks
-    this.micStream?.getTracks().forEach(t => t.stop());
+    this.micStream?.getTracks().forEach((t) => t.stop());
     this.micStream = null;
 
     // Close AudioContext

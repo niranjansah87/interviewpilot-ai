@@ -10,10 +10,7 @@ import { logger } from '@/monitoring/logger';
 
 export function apiSuccess<T>(data: T, status = 200) {
   const requestId = generateRequestId();
-  return NextResponse.json(
-    { data, requestId, timestamp: new Date().toISOString() },
-    { status },
-  );
+  return NextResponse.json({ data, requestId, timestamp: new Date().toISOString() }, { status });
 }
 
 export function apiEmpty(status = 204) {

@@ -24,11 +24,7 @@ setInterval(() => {
 /**
  * Check rate limit for a key. Throws RateLimitError if exceeded.
  */
-export function checkRateLimit(
-  key: string,
-  maxRequests = 10,
-  windowSeconds = 15 * 60,
-): void {
+export function checkRateLimit(key: string, maxRequests = 10, windowSeconds = 15 * 60): void {
   const now = Date.now();
   const entry = store[key];
 

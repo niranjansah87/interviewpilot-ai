@@ -22,9 +22,6 @@ export async function hashPassword(plain: string): Promise<string> {
  * Verify a plain-text password against a stored hash.
  * Use for login and password comparison.
  */
-export async function verifyPassword(
-  plain: string,
-  hashed: string,
-): Promise<boolean> {
+export async function verifyPassword(plain: string, hashed: string): Promise<boolean> {
   return bcrypt.compare(plain, hashed);
 }

@@ -83,12 +83,31 @@ export function generateIntroduction(ctx: InterviewContext): string {
   if (resume && (resume.projects.length > 0 || resume.experience.length > 0)) {
     const tech = new Set<string>();
     resume.projects.forEach((p) => p.technologies.forEach((t) => tech.add(t)));
-    resume.experience.forEach((e) => e.highlights.forEach((h) => {
-      // Extract tech mentions from highlights
-      ['React', 'Next.js', 'Node.js', 'TypeScript', 'PostgreSQL', 'Redis', 'Docker', 'AWS', 'Kubernetes', 'Python', 'Go', 'Rust', 'GraphQL', 'REST', 'MongoDB', 'SQL'].forEach(
-        (kw) => { if (h.includes(kw)) tech.add(kw); },
-      );
-    }));
+    resume.experience.forEach((e) =>
+      e.highlights.forEach((h) => {
+        // Extract tech mentions from highlights
+        [
+          'React',
+          'Next.js',
+          'Node.js',
+          'TypeScript',
+          'PostgreSQL',
+          'Redis',
+          'Docker',
+          'AWS',
+          'Kubernetes',
+          'Python',
+          'Go',
+          'Rust',
+          'GraphQL',
+          'REST',
+          'MongoDB',
+          'SQL',
+        ].forEach((kw) => {
+          if (h.includes(kw)) tech.add(kw);
+        });
+      }),
+    );
 
     if (tech.size > 0) {
       const techList = [...tech].slice(0, 8).join(', ');
@@ -97,8 +116,12 @@ export function generateIntroduction(ctx: InterviewContext): string {
   }
 
   // Interview description
-  const typeLabel = config.type === 'behavioral' ? 'behavioral' :
-    config.type === 'technical' ? 'technical' : 'mixed';
+  const typeLabel =
+    config.type === 'behavioral'
+      ? 'behavioral'
+      : config.type === 'technical'
+        ? 'technical'
+        : 'mixed';
 
   parts.push(
     `Today we'll conduct a ${candidate.currentRole ? candidate.currentRole + ' level ' : ''}${typeLabel} interview for a ${config.targetRole} position.`,
@@ -107,11 +130,15 @@ export function generateIntroduction(ctx: InterviewContext): string {
   // Job description alignment
   if (jobDescription && jobDescription.requiredSkills.length > 0) {
     const skills = jobDescription.requiredSkills.slice(0, 5).join(', ');
-    parts.push(`I see the role emphasizes ${skills}, so I'll focus our conversation around those areas.`);
+    parts.push(
+      `I see the role emphasizes ${skills}, so I'll focus our conversation around those areas.`,
+    );
   }
 
   // Interview style
-  parts.push("I'll ask follow-up questions when I need more detail, and I may challenge your reasoning to understand your thinking. Take your time — treat this as a real conversation.");
+  parts.push(
+    "I'll ask follow-up questions when I need more detail, and I may challenge your reasoning to understand your thinking. Take your time — treat this as a real conversation.",
+  );
   parts.push("Let's begin.");
 
   return parts.join(' ');
@@ -119,7 +146,10 @@ export function generateIntroduction(ctx: InterviewContext): string {
 
 // ---- Resume-Aware Question Generator ----
 
-export function generateResumeAwareQuestion(ctx: InterviewContext, topicIndex: number): string | null {
+export function generateResumeAwareQuestion(
+  ctx: InterviewContext,
+  topicIndex: number,
+): string | null {
   const { resume } = ctx;
   if (!resume || topicIndex >= resume.experience.length) return null;
 
@@ -142,13 +172,17 @@ export function compressContext(ctx: InterviewContext, maxTokens = 2000): string
 
   parts.push(`Candidate: ${ctx.candidate.fullName}`);
   if (ctx.candidate.currentRole) parts.push(`Current Role: ${ctx.candidate.currentRole}`);
-  if (ctx.candidate.technologies.length > 0) parts.push(`Tech: ${ctx.candidate.technologies.slice(0, 10).join(', ')}`);
+  if (ctx.candidate.technologies.length > 0)
+    parts.push(`Tech: ${ctx.candidate.technologies.slice(0, 10).join(', ')}`);
 
   if (ctx.resume?.experience.length) {
-    parts.push('Experience: ' + ctx.resume.experience
-      .map((e) => `${e.role} at ${e.company} (${e.duration})`)
-      .slice(0, 5)
-      .join('; '));
+    parts.push(
+      'Experience: ' +
+        ctx.resume.experience
+          .map((e) => `${e.role} at ${e.company} (${e.duration})`)
+          .slice(0, 5)
+          .join('; '),
+    );
   }
 
   if (ctx.jobDescription) {

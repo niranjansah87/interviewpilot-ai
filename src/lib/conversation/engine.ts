@@ -33,18 +33,35 @@ export type ConversationEvent =
   | 'end';
 
 // State transition table: [currentState][event] → nextState
-const TRANSITIONS: Record<ConversationState, Partial<Record<ConversationEvent, ConversationState>>> = {
-  idle:          { start: 'initializing' },
-  initializing:  { connected: 'listening', error: 'failed' },
-  listening:     { speech_started: 'listening', speech_stopped: 'processing', timeout: 'completing', error: 'failed', connected: 'listening' },
-  processing:    { response_started: 'responding', speech_stopped: 'processing', error: 'failed' },
-  responding:    { response_completed: 'listening', speech_started: 'processing', timeout: 'completing', error: 'failed' },
-  completing:    { end: 'completed', error: 'failed' },
-  completed:     {},
-  failed:        { start: 'initializing' },
+const TRANSITIONS: Record<
+  ConversationState,
+  Partial<Record<ConversationEvent, ConversationState>>
+> = {
+  idle: { start: 'initializing' },
+  initializing: { connected: 'listening', error: 'failed' },
+  listening: {
+    speech_started: 'listening',
+    speech_stopped: 'processing',
+    timeout: 'completing',
+    error: 'failed',
+    connected: 'listening',
+  },
+  processing: { response_started: 'responding', speech_stopped: 'processing', error: 'failed' },
+  responding: {
+    response_completed: 'listening',
+    speech_started: 'processing',
+    timeout: 'completing',
+    error: 'failed',
+  },
+  completing: { end: 'completed', error: 'failed' },
+  completed: {},
+  failed: { start: 'initializing' },
 };
 
-export function transition(current: ConversationState, event: ConversationEvent): ConversationState {
+export function transition(
+  current: ConversationState,
+  event: ConversationEvent,
+): ConversationState {
   const next = TRANSITIONS[current]?.[event];
   if (!next) {
     // Graceful: return current state for unknown transitions
@@ -114,7 +131,11 @@ export function createInterviewContext(
     turnCount: 0,
     startedAt: new Date(),
     lastActivityAt: new Date(),
-    candidateProfile: { name: candidateName, level: config.experienceLevel, role: config.targetRole },
+    candidateProfile: {
+      name: candidateName,
+      level: config.experienceLevel,
+      role: config.targetRole,
+    },
     recentHistory: [],
     summarizedHistory: null,
     followUpDepth: 0,
@@ -129,11 +150,32 @@ export function createInterviewContext(
 function getTopicsByType(type: InterviewConfig['type']): string[] {
   switch (type) {
     case 'behavioral':
-      return ['introduction', 'teamwork', 'leadership', 'conflict_resolution', 'failure_recovery', 'career_growth'];
+      return [
+        'introduction',
+        'teamwork',
+        'leadership',
+        'conflict_resolution',
+        'failure_recovery',
+        'career_growth',
+      ];
     case 'technical':
-      return ['introduction', 'system_design', 'problem_solving', 'trade_offs', 'past_projects', 'technical_depth'];
+      return [
+        'introduction',
+        'system_design',
+        'problem_solving',
+        'trade_offs',
+        'past_projects',
+        'technical_depth',
+      ];
     case 'mixed':
-      return ['introduction', 'teamwork', 'system_design', 'leadership', 'problem_solving', 'career_growth'];
+      return [
+        'introduction',
+        'teamwork',
+        'system_design',
+        'leadership',
+        'problem_solving',
+        'career_growth',
+      ];
   }
 }
 
@@ -141,10 +183,7 @@ function getTopicsByType(type: InterviewConfig['type']): string[] {
 
 export type DifficultyLevel = 1 | 2 | 3 | 4 | 5;
 
-export function adjustDifficulty(
-  score: number,
-  current: DifficultyLevel,
-): DifficultyLevel {
+export function adjustDifficulty(score: number, current: DifficultyLevel): DifficultyLevel {
   // Score 0-100: <40 = decrease, 40-70 = maintain, >70 = increase
   if (score < 40 && current > 1) return (current - 1) as DifficultyLevel;
   if (score > 70 && current < 5) return (current + 1) as DifficultyLevel;
@@ -153,23 +192,28 @@ export function adjustDifficulty(
 
 export function getDifficultyLabel(d: DifficultyLevel): string {
   switch (d) {
-    case 1: return 'foundational';
-    case 2: return 'intermediate';
-    case 3: return 'advanced';
-    case 4: return 'expert';
-    case 5: return 'principal';
+    case 1:
+      return 'foundational';
+    case 2:
+      return 'intermediate';
+    case 3:
+      return 'advanced';
+    case 4:
+      return 'expert';
+    case 5:
+      return 'principal';
   }
 }
 
 // ---- Follow-Up Decision Engine ----
 
 export type FollowUpDecision =
-  | 'clarify'      // Response vague — ask for more
-  | 'probe_deeper'  // Good response — explore further
-  | 'challenge'    // Flawed response — push back
-  | 'acknowledge'  // Strong — move forward
-  | 'transition'   // Topic exhausted — next topic
-  | 'conclude';    // All topics covered — end
+  | 'clarify' // Response vague — ask for more
+  | 'probe_deeper' // Good response — explore further
+  | 'challenge' // Flawed response — push back
+  | 'acknowledge' // Strong — move forward
+  | 'transition' // Topic exhausted — next topic
+  | 'conclude'; // All topics covered — end
 
 export function decideFollowUp(ctx: InterviewContext): FollowUpDecision {
   // Decision rules (deterministic, not AI-based):
@@ -189,8 +233,7 @@ export function decideFollowUp(ctx: InterviewContext): FollowUpDecision {
   if (ctx.followUpDepth >= 2) return 'transition';
 
   // Behavior: probe deeper on first pass, transition on second
-  if (ctx.followUpDepth === 0)
-    return Math.random() > 0.3 ? 'probe_deeper' : 'acknowledge';
+  if (ctx.followUpDepth === 0) return Math.random() > 0.3 ? 'probe_deeper' : 'acknowledge';
 
   return 'acknowledge';
 }

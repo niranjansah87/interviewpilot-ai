@@ -21,7 +21,8 @@ export interface PromptBlock {
 const SYSTEM_PROMPT: PromptBlock = {
   name: 'system',
   applies: () => true,
-  render: () => `
+  render: () =>
+    `
 You are an experienced technical interviewer conducting a professional interview.
 Your goal is to evaluate the candidate fairly, challenge their thinking constructively,
 and maintain a natural conversational flow.
@@ -108,7 +109,8 @@ Challenge their thinking at a strategic level. Probe for depth and breadth.
 const CANDIDATE_BLOCK: PromptBlock = {
   name: 'candidate',
   applies: (ctx) => ctx.candidateProfile.name !== 'Candidate',
-  render: (ctx) => `
+  render: (ctx) =>
+    `
 Candidate: ${ctx.candidateProfile.name}
 Target Role: ${ctx.candidateProfile.role}
 `.trim(),
@@ -119,7 +121,8 @@ Target Role: ${ctx.candidateProfile.role}
 const TOPIC_BLOCK: PromptBlock = {
   name: 'topic',
   applies: (ctx) => ctx.currentTopic !== null,
-  render: (ctx) => `
+  render: (ctx) =>
+    `
 Current topic: ${ctx.currentTopic ?? 'introduction'}
 Topics covered: ${ctx.topicHistory.join(', ') || 'none'}
 Questions asked: ${ctx.questionCount}/${ctx.config.maxQuestions}

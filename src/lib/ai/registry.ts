@@ -61,7 +61,12 @@ function createMockProvider(): AIProvider {
   return {
     name: 'mock',
     async createRealtimeSession() {
-      return { id: 'mock-session', status: 'connected', model: 'mock', expiresAt: new Date(Date.now() + 3600000) };
+      return {
+        id: 'mock-session',
+        status: 'connected',
+        model: 'mock',
+        expiresAt: new Date(Date.now() + 3600000),
+      };
     },
     async connectToSession(sessionId, onEvent) {
       return {
@@ -72,7 +77,9 @@ function createMockProvider(): AIProvider {
         sendText() {},
         interrupt() {},
         close() {},
-        onEvent() { return () => {}; },
+        onEvent() {
+          return () => {};
+        },
       };
     },
     async generateFeedback() {
